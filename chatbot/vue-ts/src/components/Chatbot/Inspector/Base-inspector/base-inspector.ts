@@ -18,6 +18,7 @@ export interface Properties {
     [property: string]: dia.Path;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 @Component({} as any)
 export abstract class BaseInspector extends Vue {
 
@@ -43,7 +44,7 @@ export abstract class BaseInspector extends Vue {
         this.removeCellListener(this.cell);
     }
 
-    public changeCellProp(path: dia.Path, value: any): void {
+    public changeCellProp(path: dia.Path, value: unknown): void {
         this.cell.prop(path, value);
     }
 

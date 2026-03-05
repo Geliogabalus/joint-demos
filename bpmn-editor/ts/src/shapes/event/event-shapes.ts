@@ -1,6 +1,4 @@
-import type { dia } from '@joint/plus';
 import { g, shapes, util, V } from '@joint/plus';
-import type { AppElement } from '../shapes-typing';
 import { ShapeTypes } from '../shapes-typing';
 import { eventAppearanceConfig, eventIconClasses, EventLabels, EventShapeTypes } from './event-config';
 import { ActivityShapeTypes } from '../activity/activity-config';
@@ -11,6 +9,9 @@ import { AnnotationShapeTypes } from '../annotation/annotation-config';
 import { PoolShapeTypes } from '../pool/pool-config';
 import { handles } from '../../configs/halo-config';
 import { getPoolParent, isPoolShared } from '../../utils';
+
+import type { dia } from '@joint/plus';
+import type { AppElement } from '../shapes-typing';
 
 const LABEL_Y_OFFSET = 14;
 
@@ -40,7 +41,7 @@ export abstract class Event extends shapes.bpmn2.Event implements AppElement {
         }, super.defaults);
     }
 
-    preinitialize(...args: any[]) {
+    preinitialize(...args: Parameters<shapes.bpmn2.Event['preinitialize']>): void {
         super.preinitialize(...args);
         // Add `labelBody` to markup
         this.markup = util.svg/* xml */ `

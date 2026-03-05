@@ -1,11 +1,12 @@
-import type { dia } from '@joint/plus';
 import { ui } from '@joint/plus';
 import { getToolbarConfig } from './toolbar-config';
 import { getFileFromGraph, resetGraphFromFile } from '../file/file';
 import { App } from '../app';
+
+import type { dia } from '@joint/plus';
 export class ToolbarService {
     toolbar: ui.Toolbar;
-    fileTools: { [key: string]: any };
+    fileTools: { action: string; content: string }[];
 
     constructor(private element: HTMLElement, private cmd: dia.CommandManager, private graph: dia.Graph) {
         const { tools, groups } = getToolbarConfig();
@@ -57,7 +58,7 @@ export class ToolbarService {
                     const reader = new FileReader();
 
                     reader.onload = (evt) => {
-                        let str = evt.target.result as string;
+                        const str = evt.target.result as string;
                         App.processor.reset();
                         resetGraphFromFile(graph, JSON.parse(str));
 

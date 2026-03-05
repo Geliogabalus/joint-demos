@@ -1,8 +1,9 @@
-import type { layout, ui } from '@joint/plus';
 import { dia, elementTools, linkTools, shapes, util } from '@joint/plus';
 import { BUS_COLOR, BUS_MARGIN, BUS_TREE_MARGIN, MIN_BUS_ELEMENT_SPAN, BUS_Y, TOP_LINK_COLOR, BOTTOM_LINK_COLOR } from './config';
 import { artificialIntelligenceTimeline } from './data';
 import { Milestone } from './shapes';
+
+import type { layout, ui } from '@joint/plus';
 
 const BUTTON_FILL = '#FFFFFF';
 const BUTTON_STROKE_COLOR = '#C9CAE0';
@@ -58,7 +59,7 @@ function routeOneDirection(tree: layout.TreeLayout, sourceElement: dia.Element, 
     const firstLeftLinkX = sourceBBox.width / 2 + sourceBBox.x + gap * (leftLinkCount - rightLinkCount - 1) / 2;
 
     const [firstLeftLink] = leftLinks;
-    let isFirstLinkStraight = (firstLeftLink)
+    const isFirstLinkStraight = (firstLeftLink)
         ? sourceCenter.x === firstLeftLink.getTargetElement().getBBox().center().x
         : false;
 

@@ -29,7 +29,7 @@ export interface TriggerCriteria {
     id: string;
     name: string;
     icon: string;
-    data?: Record<string, any>;
+    data?: Record<string, unknown>;
 }
 
 interface TriggerAttributes extends NodeAttributes {
@@ -50,7 +50,7 @@ export default class Trigger extends Node<TriggerAttributes> {
         this.markup = triggerMarkup;
     }
 
-    initialize(attributes: TriggerAttributes, options?: any): void {
+    initialize(attributes: TriggerAttributes, options?: dia.Cell.Options): void {
         super.initialize(attributes, options);
         this.on('change:criteria', this.updateHeight);
         this.updateHeight();
@@ -205,7 +205,7 @@ export default class Trigger extends Node<TriggerAttributes> {
 
         return {
             ...super.getInspectorConfig(),
-            headerText: `Trigger`,
+            headerText: 'Trigger',
             headerIcon: this.attr('icon/href'),
             headerIconBackground: this.attr('iconBackground/fill'),
             headerHint: 'Configure automation rules',

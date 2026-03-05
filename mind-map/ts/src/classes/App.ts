@@ -1,19 +1,20 @@
-import type { dia, ui, layout } from '@joint/plus';
-import type { Controller as _Controller } from './Controller';
-import type IdeaCollection from './IdeaCollection';
-import type TreeGraph from './TreeGraph';
 import { plugins } from '../plugins';
 import EditController from '../controllers/EditController';
 import ViewController from '../controllers/ViewController';
 import SelectionController from '../controllers/SelectionController';
 import LayoutController from '../controllers/LayoutController';
 import { Idea } from '../shapes/idea';
+
+import type { dia, ui, layout } from '@joint/plus';
+import type { Controller as _Controller } from './Controller';
+import type IdeaCollection from './IdeaCollection';
+import type TreeGraph from './TreeGraph';
 import type { Connection } from '../shapes/connection';
 
 export namespace App {
 
     export type Callback<
-        TFunction extends (...args: any) => void = (...args: any) => void
+        TFunction extends (...args: unknown[]) => void = (...args: unknown[]) => void
     > = _Controller.Callback<App, TFunction>;
 
     export type Controller = _Controller<App>;

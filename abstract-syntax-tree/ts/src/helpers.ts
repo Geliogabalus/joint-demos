@@ -1,13 +1,15 @@
-import type { Range } from '@codemirror/state';
 import { StateEffect, StateField } from '@codemirror/state';
-import type { DecorationSet } from '@codemirror/view';
 import { Decoration, keymap } from '@codemirror/view';
 import { EditorView, basicSetup } from 'codemirror';
 import { indentWithTab } from '@codemirror/commands';
 import { javascript } from '@codemirror/lang-javascript';
 import presets from './presets';
 
-export function getChildren(node: any) {
+import type { Range } from '@codemirror/state';
+import type { DecorationSet } from '@codemirror/view';
+import type { graphUtils } from '@joint/plus';
+
+export function getChildren(node: graphUtils.ConstructTreeNode) {
 
     switch (node.type) {
 
@@ -73,7 +75,7 @@ export function getChildren(node: any) {
     }
 }
 
-export function getLabel(node: any) {
+export function getLabel(node: graphUtils.ConstructTreeNode) {
 
     switch (node.type) {
 
@@ -94,7 +96,7 @@ export function getLabel(node: any) {
 
         case 'FunctionDeclaration':
         case 'FunctionExpression': {
-            const params = node.params.map((param: any) => param.name).join(',');
+            const params = node.params.map((param: graphUtils.ConstructTreeNode) => param.name).join(',');
             return 'function ' + (node.id && node.id.name || '') + '(' + params + ')';
         }
         default:
@@ -102,7 +104,7 @@ export function getLabel(node: any) {
     }
 }
 
-export function getElementColor(node: any) {
+export function getElementColor(node: graphUtils.ConstructTreeNode) {
 
     const color = ({
         'Program': 'black',
@@ -152,7 +154,7 @@ function tokenHover(e: Event) {
 export function changePreset() {
     const preset = document.getElementById('select-program') as HTMLSelectElement;
     const value = preset.value;
-    const code = (presets as any)[value];
+    const code = (presets as Record<string, string>)[value];
     editorView.dispatch({
         changes: { from: 0, to: editorView.state.doc.length, insert: code }
     });
@@ -166,7 +168,7 @@ const markField = StateField.define({
     create() { return Decoration.none; },
     update(value: DecorationSet, tr) {
         value = value.map(tr.changes);
-        for (let effect of tr.effects) {
+        for (const effect of tr.effects) {
             if (effect.is(highlightMark)) value = value.update({ add: effect.value, sort: true });
             else if (effect.is(filterMarks)) value = value.update({ filter: () => false });
         }

@@ -1,11 +1,12 @@
-import type { dia } from '@joint/plus';
 import { shapes, util, V } from '@joint/plus';
-import type { AppLink } from '../shapes-typing';
 import { ShapeTypes } from '../shapes-typing';
 import { flowAppearanceConfig, flowIconClasses, FlowLabels, FlowShapeTypes } from './flow-config';
 import { defaultAttrs } from '../shared-config';
 import { AnnotationShapeTypes } from '../annotation/annotation-config';
 import { constructLinkTools } from '../../configs/link-tools-config';
+
+import type { dia } from '@joint/plus';
+import type { AppLink } from '../shapes-typing';
 
 abstract class Flow extends shapes.bpmn2.Flow implements AppLink {
 
@@ -32,7 +33,7 @@ abstract class Flow extends shapes.bpmn2.Flow implements AppLink {
         }, super.defaults);
     }
 
-    constructor(...args: any[]) {
+    constructor(...args: ConstructorParameters<typeof shapes.bpmn2.Flow>) {
         super(...args);
         this.router('rightAngle', { useVertices: true });
     }
@@ -92,6 +93,8 @@ abstract class Flow extends shapes.bpmn2.Flow implements AppLink {
         const { x: cx, y: cy } = view.getPointAtRatio(0.5);
 
         const currentLabel = this.labels()[0]?.attrs || {};
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const labelAttrs: any = util.defaultsDeep({}, currentLabel, this.defaultLabel.attrs);
 
         return {
@@ -182,7 +185,7 @@ export class Message extends Flow {
 declare module '@joint/plus' {
     namespace shapes {
         namespace flow {
-            export { 
+            export {
                 Sequence,
                 Default,
                 Conditional,

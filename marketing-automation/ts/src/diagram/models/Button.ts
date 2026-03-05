@@ -1,7 +1,8 @@
-import type { dia } from '@joint/plus';
 import { util } from '@joint/plus';
 import { SystemButton } from '../../system/diagram/models';
 import Theme, { buttonBodyAttributes, buttonIconAttributes } from '../theme';
+
+import type { dia } from '@joint/plus';
 
 /** SVG markup for the button */
 const buttonMarkup = util.svg/* xml */`
@@ -37,7 +38,7 @@ export default class Button extends SystemButton<ButtonAttributes> {
                 },
                 icon: {
                     ...buttonIconAttributes,
-                    transform: `translate(calc(s/2), calc(s/2))`,
+                    transform: 'translate(calc(s/2), calc(s/2))',
                 }
             }
         };

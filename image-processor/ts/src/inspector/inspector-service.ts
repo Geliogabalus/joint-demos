@@ -12,12 +12,12 @@ export class InspectorService {
         this.element.innerHTML = '';
         const inspector = ui.Inspector.create(this.element, opts);
 
-        for (let prop in node.inputProperties) {
+        for (const prop in node.inputProperties) {
             this.disable(prop, node);
         }
 
         inspector.on('render', () => {
-            for (let prop in node.inputProperties) {
+            for (const prop in node.inputProperties) {
                 this.disable(prop, node);
             }
         });
@@ -36,7 +36,8 @@ export class InspectorService {
     disable(property: string, node: Node) {
         if (!ui.Inspector.instance) return;
 
-        const inspectorNode: Node = (<any>ui.Inspector.instance).getModel();
+        // @ts-expect-error - getModel is not typed
+        const inspectorNode: Node = ui.Inspector.instance.getModel();
         if (inspectorNode === node) {
             const element = this.element.querySelector(`.field[data-field="properties/${property}"]`);
             if (element) {
@@ -51,7 +52,8 @@ export class InspectorService {
     enable(property: string, node: Node) {
         if (!ui.Inspector.instance) return;
 
-        const inspectorNode: Node = (<any>ui.Inspector.instance).getModel();
+        // @ts-expect-error - getModel is not typed
+        const inspectorNode: Node = ui.Inspector.instance.getModel();
         if (inspectorNode === node) {
             const element = this.element.querySelector(`.field[data-field="properties/${property}"]`);
             if (element) {

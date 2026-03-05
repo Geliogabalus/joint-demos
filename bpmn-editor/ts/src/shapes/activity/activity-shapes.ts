@@ -1,7 +1,5 @@
-import type { dia } from '@joint/plus';
 import { type g, shapes, util, V } from '@joint/plus';
 import { activityIconClasses, ActivityLabels, ActivityShapeTypes, activityAppearanceConfig } from './activity-config';
-import type { AppElement, Marker } from '../shapes-typing';
 import { MarkerNames, ShapeTypes } from '../shapes-typing';
 import { DataShapeTypes } from '../data/data-config';
 import { GatewayShapeTypes } from '../gateway/gateway-config';
@@ -11,6 +9,9 @@ import { PoolShapeTypes } from '../pool/pool-config';
 import { AnnotationShapeTypes } from '../annotation/annotation-config';
 import { handles } from '../../configs/halo-config';
 import { isPoolShared, getPoolParent } from '../../utils';
+
+import type { dia } from '@joint/plus';
+import type { AppElement, Marker } from '../shapes-typing';
 
 export abstract class Activity extends shapes.bpmn2.Activity implements AppElement {
 
@@ -40,7 +41,7 @@ export abstract class Activity extends shapes.bpmn2.Activity implements AppEleme
         }, super.defaults);
     }
 
-    initialize(...args: any[]): void {
+    initialize(...args: Parameters<shapes.bpmn2.Activity['initialize']>): void {
         super.initialize(...args);
         this.on('change:markers', () => this.onMarkersChange());
     }
@@ -166,7 +167,9 @@ export abstract class Activity extends shapes.bpmn2.Activity implements AppEleme
         if (prevMarkers.includes(MarkerNames.SEQUENTIAL) && markers.includes(MarkerNames.PARALLEL)) {
             idxToRemove = markers.indexOf(MarkerNames.SEQUENTIAL);
         }
-        idxToRemove > -1 && markers.splice(idxToRemove, 1);
+        if (idxToRemove > -1) {
+            markers.splice(idxToRemove, 1);
+        }
 
         if (markers.includes(MarkerNames.AD_HOC) || markers.includes(MarkerNames.SUB_PROCESS)) {
             markers = markers.filter((marker: MarkerNames) => marker !== MarkerNames.AD_HOC && marker !== MarkerNames.SUB_PROCESS);
@@ -398,7 +401,9 @@ export class CallActivity extends Activity {
                 idxToRemove = markers.indexOf(MarkerNames.AD_HOC);
             }
         }
-        idxToRemove > -1 && markers.splice(idxToRemove, 1);
+        if (idxToRemove > -1) {
+            markers.splice(idxToRemove, 1);
+        }
         if (markers.includes(MarkerNames.SUB_PROCESS)) {
             return markers;
         }
@@ -454,7 +459,9 @@ export class SubProcess extends Activity {
                 idxToRemove = markers.indexOf(MarkerNames.AD_HOC);
             }
         }
-        idxToRemove > -1 && markers.splice(idxToRemove, 1);
+        if (idxToRemove > -1) {
+            markers.splice(idxToRemove, 1);
+        }
         if (markers.includes(MarkerNames.SUB_PROCESS)) {
             return markers;
         }
@@ -512,7 +519,9 @@ export class EventSubProcess extends Activity {
                 idxToRemove = markers.indexOf(MarkerNames.AD_HOC);
             }
         }
-        idxToRemove > -1 && markers.splice(idxToRemove, 1);
+        if (idxToRemove > -1) {
+            markers.splice(idxToRemove, 1);
+        }
         if (markers.includes(MarkerNames.SUB_PROCESS)) {
             return markers;
         }

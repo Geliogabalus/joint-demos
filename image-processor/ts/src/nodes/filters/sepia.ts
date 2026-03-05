@@ -1,6 +1,7 @@
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
+
+import type { ActionResult, NodeAttributes } from '../node';
 import type * as cv from '@techstark/opencv-js';
 export class Sepia extends Node {
     defaults(): NodeAttributes {
@@ -26,7 +27,7 @@ export class Sepia extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image }: { image: cv.Mat } = this.properties;
+        const { image } = this.properties as { image: cv.Mat };
 
         if (!image) return [null];
 
@@ -35,7 +36,7 @@ export class Sepia extends Node {
 
             for (let i = 0; i < result.rows; i++) {
                 for (let j = 0; j < result.cols; j++) {
-                    let pixel = result.ucharPtr(i,j);
+                    const pixel = result.ucharPtr(i,j);
                     const r = pixel[0];
                     const g = pixel[1];
                     const b = pixel[2];

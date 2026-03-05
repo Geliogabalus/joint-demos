@@ -1,7 +1,8 @@
 import { ui } from '@joint/plus';
-import type { AppElement, AppLink } from '../shapes/shapes-typing';
 import { constructMarkerContent, getShapeConstructorByType } from '../utils';
 import { eventBus, EventBusEvents } from '../event-bus';
+
+import type { AppElement, AppLink } from '../shapes/shapes-typing';
 
 const INSPECTOR_EMPTY = document.createElement('div');
 
@@ -95,7 +96,9 @@ export default class InspectorService {
             markersButtonGroup.once('option:select', (options, _, opt) => {
                 if (opt.markersUpdated) return;
 
-                shape.setMarkers && shape.setMarkers(options.map((option: any) => option.value));
+                if (shape.setMarkers) {
+                    shape.setMarkers(options.map((option: { value?: string }) => option.value));
+                }
                 this.createContentView(shape);
             });
 
@@ -116,7 +119,8 @@ export default class InspectorService {
         if (shapes.length > 0) {
             const availableShapes = shapes.map((shape) => {
                 const shapeConstructor = getShapeConstructorByType(shape);
-                const { label, icon } = (<any>shapeConstructor);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const { label, icon } = <any>shapeConstructor;
 
                 const shapeWrapper = document.createElement('div');
 

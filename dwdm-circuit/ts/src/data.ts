@@ -1,5 +1,7 @@
-import { dia } from '@joint/core';
-import { Node, Link, NodeLink } from './shapes';
+import { Node, NodeLink } from './shapes';
+
+import type { dia } from '@joint/core';
+import type { ExternalLink, Link } from './shapes';
 
 interface INode {
     x: number;
@@ -11,6 +13,7 @@ interface INode {
 }
 
 interface ICard {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ctor: any;
     id: string;
     x: number;
@@ -27,6 +30,7 @@ interface ICardPort {
 }
 
 interface ILink {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ctor: any;
     id: string;
     port: string;
@@ -65,7 +69,8 @@ export function load(graph: dia.Graph, data: IData) {
             const cardModel = new ctor({
                 id: childId,
                 position: { x: x + childX, y: y + childY + Node.HEADER_HEIGHT },
-                ports: { items: ports.map(({ id, group }) => ctor.createPort(id, group)) },
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ports: { items: ports.map(({ id, group }) => (ctor as any).createPort(id, group)) },
                 attrs: { label: { text: childId }},
                 z: 2,
             });
@@ -102,7 +107,7 @@ export function load(graph: dia.Graph, data: IData) {
         const linkModel = new ctor({
             target: { id, port },
             z: 2
-        });
+        }) as ExternalLink;
         linkModel.setDescription(description);
         linkModel.addTo(graph);
     });

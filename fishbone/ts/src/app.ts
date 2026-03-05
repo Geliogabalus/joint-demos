@@ -230,6 +230,7 @@ export const init = () => {
         const level = element.get('level');
         const elementPath = ['data', ...element.get('path')].join('/');
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const elementInputs: any = {
             name: {
                 type: 'content-editable',
@@ -265,7 +266,7 @@ export const init = () => {
                 properties: {
                     name: {
                         type: 'content-editable',
-                        label: `Name`
+                        label: 'Name'
                     },
                 }
             }

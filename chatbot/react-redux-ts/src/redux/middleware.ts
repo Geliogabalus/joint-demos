@@ -14,8 +14,12 @@ import { SharedEvents } from '../joint-plus/controller';
 import { importGraphFromJSON } from '../joint-plus/actions';
 import { onGraphStartBatch, onGraphStopBatch } from '../joint-plus/controllers';
 
-export const sideEffects = ({ getState }: { getState: (...args: any[]) => any }) => {
-    return (next: (...args: any[]) => any) => (action: { type: string, payload: any }) => {
+import type { Middleware } from 'redux';
+import type { dia } from '@joint/plus';
+import type { State } from './reducer';
+
+export const sideEffects: Middleware<object, State> = ({ getState }) => {
+    return (next) => (action: { type: string, payload: unknown }) => {
         if (action.type === STORE_JOINT) {
             return next(action);
         }
@@ -25,15 +29,15 @@ export const sideEffects = ({ getState }: { getState: (...args: any[]) => any })
         }
         switch (action.type) {
             case SharedEvents.JSON_EDITOR_CHANGED: {
-                const json = action.payload;
+                const json = action.payload as dia.Graph.JSON;
                 importGraphFromJSON(joint, json);
                 break;
             }
             case SharedEvents.GRAPH_START_BATCH:
-                onGraphStartBatch(joint, action.payload);
+                onGraphStartBatch(joint, action.payload as string);
                 break;
             case SharedEvents.GRAPH_STOP_BATCH:
-                onGraphStopBatch(joint, action.payload);
+                onGraphStopBatch(joint, action.payload as string);
         }
         return next(action);
     };

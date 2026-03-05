@@ -1,7 +1,8 @@
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
 import * as cv from '@techstark/opencv-js';
+
+import type { ActionResult, NodeAttributes } from '../node';
 export class Invert extends Node {
 
     defaults(): NodeAttributes {
@@ -27,7 +28,7 @@ export class Invert extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image }: { image: cv.Mat } = this.properties;
+        const { image } = this.properties as { image: cv.Mat };
 
         if (!image) return [null];
 
@@ -42,7 +43,7 @@ export class Invert extends Node {
             const negatedChannels = new cv.MatVector;
             cv.split(negatedImage, negatedChannels);
             negatedChannels.set(3, alpha);
-            cv.merge(negatedChannels as any, result);
+            cv.merge(negatedChannels as unknown as cv.Mat, result);
             return [result];
         } catch {
             return [null];

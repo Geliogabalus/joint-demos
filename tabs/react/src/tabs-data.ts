@@ -1,5 +1,6 @@
 interface TabData {
     title: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     json: any;
 }
 

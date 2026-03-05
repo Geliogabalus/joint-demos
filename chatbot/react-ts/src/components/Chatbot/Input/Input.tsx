@@ -1,6 +1,8 @@
-import React, { ChangeEvent, ReactElement, useContext, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 import eventBusServiceContext from '../../../services/event-bus-service.context';
 import { SharedEvents } from '../../../joint-plus/controller';
+
+import type { ChangeEvent, ReactElement } from 'react';
 
 interface Props {
     id?: string;
@@ -29,19 +31,19 @@ const Input = (props: Props): ReactElement => {
     useEffect(() => {
         return () => {
             onBlur();
-        }
+        };
     }, []);
 
     return (
         <input id={props.id}
-               type={props.type}
-               placeholder={props.placeholder}
-               spellCheck={('spellCheck' in props) ? props.spellCheck : true}
-               value={props.value}
-               defaultValue={props.defaultValue}
-               onChange={props.onChange}
-               onFocus={onFocus}
-               onBlur={onBlur}
+            type={props.type}
+            placeholder={props.placeholder}
+            spellCheck={('spellCheck' in props) ? props.spellCheck : true}
+            value={props.value}
+            defaultValue={props.defaultValue}
+            onChange={props.onChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
         />);
 };
 

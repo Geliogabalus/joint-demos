@@ -1,19 +1,20 @@
-import type { mvc } from '@joint/plus';
 import { dia, ui, util } from '@joint/plus';
 import { App } from '../app';
 
-export type ActionResult = any[];
+import type { mvc } from '@joint/plus';
+
+export type ActionResult = unknown[];
 export interface NodeInput {
     name: string,
     type: string,
     property: string,
-    defaultValue?: any
+    defaultValue?: unknown
 }
 
 export interface NodeOutput {
     name: string,
     type: string,
-    defaultValue?: any
+    defaultValue?: unknown
 }
 
 export class NodeView extends dia.ElementView {
@@ -62,13 +63,13 @@ export interface NodeAttributes extends dia.Element.Attributes {
     name: string;
     inputSettings: NodeInput[];
     outputSettings: NodeOutput[];
-    properties?: any;
-    outputs?: any[];
+    properties?: unknown;
+    outputs?: unknown[];
     group: string;
 }
 export abstract class Node extends dia.Element<NodeAttributes> {
     inputProperties: { [key: string]: {
-        prevValue: any
+        prevValue: unknown
     }} = {};
 
     constructor(attributes?: NodeAttributes, options?: dia.Graph.Options) {
@@ -223,13 +224,13 @@ export abstract class Node extends dia.Element<NodeAttributes> {
 
     abstract action(): Promise<ActionResult>;
 
-    setProperty(name: string, value: any) {
+    setProperty(name: string, value: unknown) {
         this.prop(`properties/${name}`, value);
     }
 
-    get properties(): any {
+    get properties(): { [key: string]: unknown } {
         const inputSettings: NodeInput[] = this.get('inputSettings');
-        const properties: { [key: string]: any } = this.get('properties');
+        const properties = this.get('properties') as { [key: string]: unknown };
 
         inputSettings.forEach((input) => {
             if (properties[input.property] == null) {
@@ -240,7 +241,7 @@ export abstract class Node extends dia.Element<NodeAttributes> {
         return properties;
     }
 
-    get outputs(): any[] {
+    get outputs(): unknown[] {
         const outputs = this.get('outputs');
         const outputSettings = this.get('outputSettings');
         return outputSettings.map((o, i) => {
@@ -272,7 +273,7 @@ export abstract class Node extends dia.Element<NodeAttributes> {
         };
     }
 
-    onInputConnectionAdd(input: NodeInput, value: any) {
+    onInputConnectionAdd(input: NodeInput, value: unknown) {
         this.inputProperties[input.property] = this.get(input.property);
         this.prop(`properties/${input.property}`, value);
 
@@ -286,6 +287,7 @@ export abstract class Node extends dia.Element<NodeAttributes> {
         App.inspectorService.enable(input.property, this);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     getContextToolbarItems(): any[] {
         return [];
     }
@@ -307,7 +309,7 @@ export abstract class Node extends dia.Element<NodeAttributes> {
         } : null;
     }
 
-    getCurrentData(): any[] {
+    getCurrentData(): unknown[] {
         return [];
     }
 

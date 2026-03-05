@@ -1,9 +1,10 @@
-import type { dia, ui } from '@joint/plus';
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
 import * as cv from '@techstark/opencv-js';
 import { App } from '../../app';
+
+import type { dia, ui } from '@joint/plus';
+import type { ActionResult, NodeAttributes } from '../node';
 
 export class Threshold extends Node {
 
@@ -57,7 +58,7 @@ export class Threshold extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image, threshold, value }: { image: cv.Mat, threshold: number, value: number } = this.properties;
+        const { image, threshold, value } = this.properties as { image: cv.Mat, threshold: number, value: number };
 
         if (!image) return [null];
 

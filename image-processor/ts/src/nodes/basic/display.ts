@@ -1,8 +1,9 @@
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, NodeView } from '../node';
-import type { mvc, dia } from '@joint/plus';
 import { ui, util } from '@joint/plus';
 import * as cv from '@techstark/opencv-js';
+
+import type { ActionResult, NodeAttributes } from '../node';
+import type { mvc, dia } from '@joint/plus';
 export class DisplayView extends NodeView {
 
     initialize(): void {
@@ -83,7 +84,7 @@ export class Display extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image }: { image: cv.Mat } = this.properties;
+        const { image } = this.properties as { image: cv.Mat };
         if (image) {
             cv.imshow(this.canvas, image);
             this.canvas.toBlob((blob) => {
@@ -96,7 +97,7 @@ export class Display extends Node {
         return [];
     }
 
-    getContextToolbarItems(): any[] {
+    getContextToolbarItems(): object[] {
         const nodeItems = super.getContextToolbarItems();
         return nodeItems.concat([{
             action: 'exportImage',

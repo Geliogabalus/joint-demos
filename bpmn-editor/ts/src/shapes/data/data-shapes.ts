@@ -1,6 +1,4 @@
-import type { dia } from '@joint/plus';
 import { shapes, util, V, type g } from '@joint/plus';
-import type { AppElement, AppLink, Marker } from '../shapes-typing';
 import { MarkerNames, ShapeTypes } from '../shapes-typing';
 import { dataObjectAppearanceConfig, dataStoreAppearanceConfig, dataAssociationAppearanceConfig, dataIconClasses, DataShapeTypes, DataLabels } from './data-config';
 import { ActivityShapeTypes } from '../activity/activity-config';
@@ -9,6 +7,9 @@ import { defaultAttrs, labelEditorWrapperStyles, markerClasses } from '../shared
 import { AnnotationShapeTypes } from '../annotation/annotation-config';
 import { handles } from '../../configs/halo-config';
 import { constructLinkTools } from '../../configs/link-tools-config';
+
+import type { dia } from '@joint/plus';
+import type { AppElement, AppLink, Marker } from '../shapes-typing';
 
 const LABEL_Y_OFFSET = 14;
 
@@ -42,7 +43,7 @@ abstract class Data extends shapes.bpmn2.DataObject implements AppElement {
         }, super.defaults);
     }
 
-    preinitialize(...args: any[]) {
+    preinitialize(...args: Parameters<shapes.bpmn2.DataObject['preinitialize']>): void {
         super.preinitialize(...args);
         // Add `labelBody` to markup
         this.markup = util.svg/* xml */ `
@@ -56,7 +57,7 @@ abstract class Data extends shapes.bpmn2.DataObject implements AppElement {
         `;
     }
 
-    initialize(...args: any[]): void {
+    initialize(...args: Parameters<shapes.bpmn2.DataObject['initialize']>): void {
         super.initialize(...args);
         this.on('change:markers', () => this.onMarkersChange());
     }
@@ -274,7 +275,7 @@ export class DataStore extends shapes.bpmn2.DataStore implements AppElement {
         }, super.defaults);
     }
 
-    preinitialize(...args: any[]) {
+    preinitialize(...args: Parameters<shapes.bpmn2.DataStore['preinitialize']>): void {
         super.preinitialize(...args);
         // Add `labelBody` to markup
         this.markup = util.svg/* xml */ `

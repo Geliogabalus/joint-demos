@@ -4,11 +4,12 @@ import { CARD_PORT_BG_COLOR, CARD_PORT_COLOR, CARD_PORT_LABEL_COLOR } from '../.
 
 export interface CardAttributes extends dia.Element.Attributes {
     hidden?: boolean;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     attrs?: any;
 }
 
 export abstract class Card extends dia.Element<CardAttributes> {
-    defaults(): Partial<CardAttributes> {
+    defaults(): CardAttributes {
         return {
             hidden: false,
             ports: {
@@ -35,7 +36,7 @@ export abstract class Card extends dia.Element<CardAttributes> {
                     }
                 }
             }
-        }
+        };
     }
 
     static createPort(id: string, group: string): dia.Element.Port {
@@ -77,7 +78,7 @@ export abstract class Card extends dia.Element<CardAttributes> {
                 // We defined the label in the port markup above
                 markup: []
             }
-        }
+        };
     }
 
     static isCard(cell: dia.Cell): cell is Card {
@@ -94,14 +95,14 @@ export class CardView extends dia.ElementView {
     }
 
     getMagnetFromLinkEnd(end: dia.LinkEnd): SVGElement {
-      const { model, paper } = this;
-      if (!isCellHidden(model)) {
+        const { model, paper } = this;
+        if (!isCellHidden(model)) {
         // Use the default implementation for visible elements.
-        return super.getMagnetFromLinkEnd(end);
-      }
-      const parent = model.getParentCell();
-      if (!parent) return this.el;
-      // Use the parent element node.
-      return parent.findView(paper!).el;
+            return super.getMagnetFromLinkEnd(end);
+        }
+        const parent = model.getParentCell();
+        if (!parent) return this.el;
+        // Use the parent element node.
+        return parent.findView(paper!).el;
     }
 }

@@ -75,6 +75,7 @@ export const init = () => {
         document.querySelector('#stats .stats-n-tokens').textContent = syntax.tokens.length.toString();
         document.querySelector('#stats .stats-tokens').innerHTML = '';
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         syntax.tokens.forEach((token: any) => {
             const li = document.createElement('li');
             li.setAttribute('data-range', JSON.stringify(token.range));
@@ -121,7 +122,7 @@ export const init = () => {
         displayTree();
     });
 
-    let subtrees: { [key: dia.Cell.ID]: dia.Cell[] } = {};
+    const subtrees: { [key: dia.Cell.ID]: dia.Cell[] } = {};
 
     paper.on('cell:pointerclick', function(cellView) {
         const cell = cellView.model;

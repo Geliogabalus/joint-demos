@@ -1,6 +1,5 @@
-import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Subscription } from 'rxjs';
-
 import './Chatbot.scss';
 import JointPlusService from '../../services/joint-plus.service';
 import JsonEditor from './JsonEditor/JsonEditor';
@@ -10,8 +9,10 @@ import { EventBusService } from '../../services/event-bus.service';
 import { SharedEvents } from '../../joint-plus/controller';
 import { importGraphFromJSON, loadStencilShapes, zoomToFit } from '../../joint-plus/actions';
 import { STENCIL_WIDTH } from '../../theme';
-
 import exampleGraphJSON from '../../joint-plus/config/example-graph.json';
+
+import type { ReactElement } from 'react';
+import type { dia } from '@joint/plus';
 
 const Chatbot = (): ReactElement => {
 
@@ -27,7 +28,7 @@ const Chatbot = (): ReactElement => {
     const [fileJSON, setFileJSON] = useState(null);
     const [subscriptions] = useState(new Subscription());
 
-    const openFile = useCallback((json: Object): void => {
+    const openFile = useCallback((json: dia.Graph.JSON): void => {
         setFileJSON(json);
         importGraphFromJSON(joint, json);
         zoomToFit(joint);
@@ -38,13 +39,13 @@ const Chatbot = (): ReactElement => {
         openFile(exampleGraphJSON);
     }, [joint, openFile]);
 
-    const onJsonEditorChange = useCallback((json: Object): void => {
+    const onJsonEditorChange = useCallback((json: dia.Graph.JSON): void => {
         if (joint) {
             importGraphFromJSON(joint, json);
         }
     }, [joint]);
 
-    const onJointGraphChange = useCallback((json: Object): void => {
+    const onJointGraphChange = useCallback((json: object): void => {
         setFileJSON(json);
     }, []);
 
@@ -80,10 +81,10 @@ const Chatbot = (): ReactElement => {
 
     useEffect(() => {
         subscriptions.add(
-            eventBusService.subscribe(SharedEvents.GRAPH_CHANGED, (json: Object) => onJointGraphChange(json))
+            eventBusService.subscribe(SharedEvents.GRAPH_CHANGED, (json: dia.Graph.JSON) => onJointGraphChange(json))
         );
         subscriptions.add(
-            eventBusService.subscribe(SharedEvents.JSON_EDITOR_CHANGED, (json: Object) => onJsonEditorChange(json))
+            eventBusService.subscribe(SharedEvents.JSON_EDITOR_CHANGED, (json: dia.Graph.JSON) => onJsonEditorChange(json))
         );
     }, [eventBusService, subscriptions, onJointGraphChange, onJsonEditorChange]);
 
@@ -122,17 +123,17 @@ const Chatbot = (): ReactElement => {
                 <div className="side-bar">
                     <div className="toggle-bar">
                         <div onClick={toggleStencil}
-                             className={'icon toggle-stencil ' + (!stencilOpened ? 'disabled-icon' : '')}
-                             data-tooltip="Toggle Element Palette"
-                             data-tooltip-position-selector=".toggle-bar"/>
+                            className={'icon toggle-stencil ' + (!stencilOpened ? 'disabled-icon' : '')}
+                            data-tooltip="Toggle Element Palette"
+                            data-tooltip-position-selector=".toggle-bar"/>
                         <div onClick={toggleJsonEditor}
-                             className={'icon toggle-editor ' + (!jsonEditorOpened ? 'disabled-icon' : '')}
-                             data-tooltip="Toggle JSON Editor"
-                             data-tooltip-position-selector=".toggle-bar"/>
+                            className={'icon toggle-editor ' + (!jsonEditorOpened ? 'disabled-icon' : '')}
+                            data-tooltip="Toggle JSON Editor"
+                            data-tooltip-position-selector=".toggle-bar"/>
                     </div>
                     <div ref={stencilRef}
-                         style={{ display: stencilOpened ? 'initial' : 'none' }}
-                         className="stencil-container"/>
+                        style={{ display: stencilOpened ? 'initial' : 'none' }}
+                        className="stencil-container"/>
                 </div>
                 <div className="main-container">
                     <div ref={paperRef} className="paper-container"/>

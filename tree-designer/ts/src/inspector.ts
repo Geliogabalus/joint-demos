@@ -130,6 +130,7 @@ const inputConnectionStyle = {
     }]
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const inputChildren: any = {
     type: 'list',
     label: 'Children',
@@ -187,7 +188,7 @@ const inputs = {
             ...inputSize,
             when: {
                 empty: {
-                    'data/children': null as any
+                    'data/children': null as unknown
                 }
             }
         },

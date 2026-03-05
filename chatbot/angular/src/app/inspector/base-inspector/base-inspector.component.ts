@@ -9,8 +9,9 @@ https://www.jointjs.com/license or from the JointJS+ archive as was
 distributed by client IO. See the LICENSE file.
 */
 
-import type { OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Component, Input } from '@angular/core';
+
+import type { OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import type { dia } from '@joint/plus';
 
 export interface Properties {
@@ -40,7 +41,7 @@ export abstract class BaseInspectorComponent implements OnChanges, OnDestroy {
         this.removeCellListener(this.cell);
     }
 
-    public changeCellProp(path: dia.Path, value: any): void {
+    public changeCellProp(path: dia.Path, value: unknown): void {
         this.cell.prop(path, value);
     }
 

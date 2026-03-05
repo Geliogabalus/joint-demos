@@ -5,9 +5,9 @@ import { fontsStyleSheet } from '../config/font-style-sheet';
 export class ToolbarService {
 
     toolbar: joint.ui.Toolbar;
-    fileTools: { [key: string]: any };
-    layoutTools: { [key: string]: any };
-    shareTools: { [key: string]: any };
+    fileTools: { action: string; content: string }[];
+    layoutTools: { action: string; content: string }[];
+    shareTools: { action: string; content: string }[];
     // Keep track of open dropdowns
     openDropdowns = {
         file: false,
@@ -297,7 +297,7 @@ export class ToolbarService {
                 const reader = new FileReader();
 
                 reader.onload = (evt) => {
-                    let str = evt.target.result as string;
+                    const str = evt.target.result as string;
                     graph.fromJSON(JSON.parse(str));
                     commandManager.reset();
                 };

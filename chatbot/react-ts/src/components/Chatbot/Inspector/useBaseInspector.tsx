@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
-import { dia } from '@joint/plus';
+import type { dia } from '@joint/plus';
 
 interface Props {
     cell: dia.Cell;
-    assignFormFields: Function;
+    assignFormFields: () => void;
 }
 
-export const useBaseInspector = (props: Props): Function => {
+export const useBaseInspector = (props: Props): ((path: dia.Path, value: unknown) => void) => {
 
     const { cell, assignFormFields } = props;
 
@@ -20,7 +20,7 @@ export const useBaseInspector = (props: Props): Function => {
         cell.off(null, null, context);
     }, [cell, context]);
 
-    const changeCellProp = (path: dia.Path, value: any): void => {
+    const changeCellProp = (path: dia.Path, value: unknown): void => {
         cell.prop(path, value);
     };
 

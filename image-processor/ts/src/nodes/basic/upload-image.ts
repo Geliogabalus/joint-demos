@@ -1,9 +1,10 @@
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, NodeView } from '../node';
-import type { mvc, dia, ui } from '@joint/plus';
 import { util } from '@joint/plus';
 import * as cv from '@techstark/opencv-js';
 import { App } from '../../app';
+
+import type { ActionResult, NodeAttributes } from '../node';
+import type { mvc, dia, ui } from '@joint/plus';
 export class UploadView extends NodeView {
     imageMode: 'large' | 'small' = 'small';
 
@@ -97,7 +98,7 @@ export class Upload extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { url }: { url: string } = this.properties;
+        const { url } = this.properties as { url: string };
         if (url) {
             try {
                 this.attr('image/href', url);
@@ -120,7 +121,7 @@ export class Upload extends Node {
 
                     canvas.width = img.naturalWidth;
                     canvas.height = img.naturalHeight;
-                    canvas.getContext('2d').drawImage(img as any, 0, 0);
+                    canvas.getContext('2d').drawImage(img as HTMLImageElement, 0, 0);
 
                     const mat = cv.imread(canvas);
                     resolve([mat]);
@@ -132,7 +133,7 @@ export class Upload extends Node {
         });
     }
 
-    getContextToolbarItems(): any[] {
+    getContextToolbarItems(): object[] {
         return [{
             action: 'uploadImage',
             content: 'Upload Image',
@@ -161,7 +162,7 @@ export class Upload extends Node {
                     const canvas = this.canvas;
                     canvas.width = img.naturalWidth;
                     canvas.height = img.naturalHeight;
-                    canvas.getContext('2d').drawImage(img as any, 0, 0);
+                    canvas.getContext('2d').drawImage(img as HTMLImageElement, 0, 0);
 
                     const mat = cv.imread(canvas);
                     App.processor.updateCurrentData(this.id, [mat]);

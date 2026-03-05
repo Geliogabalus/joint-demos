@@ -1,6 +1,4 @@
-import type { dia } from '@joint/plus';
 import { Controller } from '../classes/Controller';
-import type { App } from '../classes/App';
 import {
     selectParent,
     selectNextSibling,
@@ -11,6 +9,9 @@ import {
     showHelpDialog,
     openURL,
 } from '../actions';
+
+import type { dia } from '@joint/plus';
+import type { App } from '../classes/App';
 import type { IdeaView } from '../shapes/idea';
 
 export default class ViewController extends Controller<App> {
@@ -64,7 +65,9 @@ function onKeyUp(app: App, evt: dia.Event) {
     const { selection } = app;
     if (selection.isEmpty()) return;
     const el = selection.first();
-    selectPrevSibling(app, el) || selectParent(app, el);
+    if (!selectPrevSibling(app, el)) {
+        selectParent(app, el);
+    }
     evt.preventDefault();
 }
 
@@ -72,7 +75,9 @@ function onKeyDown(app: App, evt: dia.Event) {
     const { selection } = app;
     if (selection.isEmpty()) return;
     const el = selection.first();
-    selectNextSibling(app, el) || selectParent(app, el);
+    if (!selectNextSibling(app, el)) {
+        selectParent(app, el);
+    }
     evt.preventDefault();
 }
 

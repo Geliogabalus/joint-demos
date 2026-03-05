@@ -1,4 +1,3 @@
-import type { dia } from '@joint/plus';
 import { shapes } from '@joint/plus';
 import { fromBPMN, findExtensionElements } from '@joint/format-bpmn-import';
 import {
@@ -14,6 +13,8 @@ import {
     POOL_HEADER_SIZE,
     PHASE_HEADER_SIZE
 } from '../shapes';
+
+import type { dia } from '@joint/plus';
 
 export function importXML(graph: dia.Graph, xml: XMLDocument) {
 
@@ -61,7 +62,7 @@ export function importXML(graph: dia.Graph, xml: XMLDocument) {
         useLegacyPool: false
     });
     if (result.errors.length) {
-        console.error(result.errors);
+        console.warn(result.errors);
     }
 
     const cells = result.cells;
@@ -77,7 +78,7 @@ export function importXML(graph: dia.Graph, xml: XMLDocument) {
             phaseConstructor = HorizontalPhase;
         }
 
-        const xmlPhases: any[] = cell.prop('xmlPhases') || [];
+        const xmlPhases: shapes.bpmn2.Phase.Attributes<shapes.bpmn2.Phase>[] = cell.prop('xmlPhases') || [];
 
         xmlPhases.forEach((xmlPhase) => {
             const attributes = {

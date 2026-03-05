@@ -1,10 +1,11 @@
-import type { dia } from '@joint/plus';
 import { connectors, shapes } from '@joint/plus';
-import type { ImpFile, ImpFileConnection, ImpFileNode } from './file-format';
 import { App } from '../app';
-import type { Node } from '../nodes/node';
 import { createNodeByType, createNodeShape } from '../nodes/node-helper';
 import { Connection } from '../connection/connection';
+
+import type { dia } from '@joint/plus';
+import type { ImpFile, ImpFileConnection, ImpFileNode } from './file-format';
+import type { Node } from '../nodes/node';
 
 export function resetGraphFromFile(graph: dia.Graph, file: ImpFile) {
     graph.resetCells([]);
@@ -13,7 +14,7 @@ export function resetGraphFromFile(graph: dia.Graph, file: ImpFile) {
         const nodeCell = createNodeShape(createNodeByType(node.type));
         nodeCell.attributes.id = node.id;
         nodeCell.id = node.id;
-        for (let prop in node.attributes) {
+        for (const prop in node.attributes) {
             nodeCell.prop(prop, node.attributes[prop]);
         }
         nodeMap[node.id] = nodeCell;
@@ -61,7 +62,7 @@ export function getFileFromGraph(graph: dia.Graph): ImpFile {
         return {
             id: node.id as string,
             type: node.get('type'),
-            attributes: node.getFileAttributes().reduce((obj: any, prop) => {
+            attributes: node.getFileAttributes().reduce((obj: { [key: string]: unknown }, prop) => {
                 obj[prop] = node.prop(prop);
                 return obj;
             }, {})

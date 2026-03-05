@@ -43,7 +43,7 @@ const NavigatorElementView = dia.ElementView.extend({
     },
     // calls in an animation frame after a multiple changes
     // has been made to the model
-    confirmUpdate: function(flags: any) {
+    confirmUpdate: function(flags: number) {
         if (this.hasFlag(flags, UpdateFlags.Render)) this.render();
         if (this.hasFlag(flags, UpdateFlags.Update)) this.update();
         // using the original `updateTransformation()` method
@@ -66,8 +66,8 @@ const NavigatorElementView = dia.ElementView.extend({
 
 const NavigatorLinkView = dia.LinkView.extend({
     defaultTheme: null,
-    initialize: function() {
-        mvc.View.prototype.initialize.apply(this, arguments);
+    initialize: function(...args: unknown[]) {
+        mvc.View.prototype.initialize.apply(this, args);
     },
     onMount: () => { return; },
     render: () => { return; },
@@ -113,7 +113,7 @@ export class NavigatorService {
             widgetNamespace: {
                 ...ui.widgets,
                 iconButton: IconButton
-            } as any
+            } as { [name: string]: typeof ui.Widget }
         });
 
         this.toolbar.render();
@@ -179,7 +179,7 @@ export class NavigatorService {
 
     updateToolbarButtons() {
         // Minimap
-        const minimapButton: any = this.toolbar.getWidgetByName('minimap');
+        const minimapButton = this.toolbar.getWidgetByName('minimap') as typeof IconButton;
         if (this.navigator) {
             minimapButton.setIcon(`${baseUrl}/minimap-open.svg`);
             minimapButton.setTooltip('Hide minimap');
@@ -188,7 +188,7 @@ export class NavigatorService {
             minimapButton.setTooltip('Show minimap');
         }
         // Full screen
-        const fullscreenButton: any = this.toolbar.getWidgetByName('fullscreen');
+        const fullscreenButton = this.toolbar.getWidgetByName('fullscreen') as typeof IconButton;
         if (document.fullscreenElement) {
             fullscreenButton.setIcon(`${baseUrl}/exit-fullscreen.svg`);
             fullscreenButton.setTooltip('Exit full screen');

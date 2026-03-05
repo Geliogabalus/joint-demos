@@ -1,7 +1,8 @@
 import { Connection } from '../connection/connection';
+import { mvc } from '@joint/plus';
+
 import type { ActionResult, Node } from '../nodes/node';
 import type { dia } from '@joint/plus';
-import { mvc } from '@joint/plus';
 
 export type ErrorType = 'type-error';
 export class Processor {
@@ -10,10 +11,10 @@ export class Processor {
     outboundConnections: { [sourceId: string]: Connection[] } = {};
     inboundConnections: { [targetId: string]: Connection[] } = {};
 
-    listener: mvc.Listener<any[]> = new mvc.Listener();
+    listener: mvc.Listener<unknown[]> = new mvc.Listener();
 
     constructor(public graph: dia.Graph) {
-        this.listener.listenTo(graph, 'add', (cell: dia.Cell, _: any, options: any) => {
+        this.listener.listenTo(graph, 'add', (cell: dia.Cell, _: dia.Graph, options: dia.Cell.Options) => {
             if (cell.isElement()) {
                 this.addNode(cell as Node);
             }
@@ -84,7 +85,7 @@ export class Processor {
         this.process(connection.target.nodeId).then(() => {
             return;
         }).catch((error) => {
-            console.error(error);
+            console.warn(error);
             console.log('process error');
         });
     }
@@ -111,7 +112,7 @@ export class Processor {
 
         this.nodes[connection.target.nodeId].onInputConnectionRemove(input);
         this.process(connection.target.nodeId).catch((error) => {
-            console.error(error);
+            console.warn(error);
             console.log('process error');
         });
     }
@@ -135,9 +136,9 @@ export class Processor {
             });
             node.set('outputs', data);
 
-            for(let id in targetNodes) {
+            for(const id in targetNodes) {
                 await this.process(id).catch((error) => {
-                    console.error(error);
+                    console.warn(error);
                     console.log('process error');
                 });
             }

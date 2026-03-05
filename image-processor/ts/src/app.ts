@@ -1,7 +1,6 @@
 import { anchors, connectors, dia, highlighters, shapes, ui } from '@joint/plus';
 import { StencilService } from './stencil/stencil-service';
 import { Processor } from './processor/processor';
-import type { ConnectionSource, ConnectionTarget } from './connection/connection';
 import { Connection } from './connection/connection';
 import { Node, NodeView } from './nodes/node';
 import { createNodeShape } from './nodes/node-helper';
@@ -18,7 +17,7 @@ import { Invert } from './nodes/filters/invert';
 import { Sepia } from './nodes/filters/sepia';
 import { BooleanInput, BooleanInputView } from './nodes/inputs/boolean-input';
 import { Mirror } from './nodes/transform/mirror';
-import * as cv from '@techstark/opencv-js';
+import cv from '@techstark/opencv-js';
 import { CVService } from './cv/cv-service';
 import { Blend } from './nodes/transform/blend';
 import { Clip } from './nodes/transform/clip';
@@ -36,6 +35,8 @@ import { Division } from './nodes/math/division';
 import { Subtraction } from './nodes/math/subtraction';
 import { FillContours } from './nodes/transform/fill-contours';
 import { NavigatorService } from './navigator/navigator-service';
+
+import type { ConnectionSource, ConnectionTarget } from './connection/connection';
 
 joint.setTheme('light');
 
@@ -266,7 +267,7 @@ export class App {
         this.setInteractivity();
         this.setContextToolbar();
 
-        (<any>cv).onRuntimeInitialized = () => {
+        cv.onRuntimeInitialized = () => {
             App.cvService = new CVService(() => {
                 loadExample(this.graph, 'token-generator').then(() => {
                     this.cmd.reset();
@@ -432,7 +433,7 @@ export class App {
             const targetView = paper.findViewByModel(targetModel);
 
             const sourceMagnet: SVGElement = (sourceView as dia.ElementView).findPortNode(source.port);
-            const targetMagnet: SVGElement = (targetView as any).findPortNode(target.port);
+            const targetMagnet: SVGElement = (targetView as dia.ElementView).findPortNode(target.port);
             const targetGroup = targetMagnet.getAttribute('port-group');
 
             let inputIndex: number;
@@ -498,7 +499,7 @@ export class App {
             evt.stopPropagation();
 
             const shift = 100;
-            let { x, y } = paper.clientToLocalPoint(evt.clientX, evt.clientY);
+            const { x, y } = paper.clientToLocalPoint(evt.clientX, evt.clientY);
 
             const files = Array.from(evt.dataTransfer.files);
 
@@ -566,7 +567,6 @@ export class App {
                     }
                 }];
 
-            let contextToolbar: ui.ContextToolbar;
             let node: Node;
 
             if (cells.length === 1) {
@@ -574,7 +574,7 @@ export class App {
                 tools = tools.concat(node.getContextToolbarItems());
             }
 
-            contextToolbar = new ui.ContextToolbar({
+            const contextToolbar = new ui.ContextToolbar({
                 target: point,
                 root: this.paper.el,
                 padding: 0,

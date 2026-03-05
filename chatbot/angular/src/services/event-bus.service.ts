@@ -10,14 +10,15 @@ distributed by client IO. See the LICENSE file.
 */
 
 import { Injectable } from '@angular/core';
-import type { Observable, Subscription } from 'rxjs';
 import { Subject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { mvc } from '@joint/plus';
 
+import type { Observable, Subscription } from 'rxjs';
+
 interface SharedEvent {
     name: string;
-    value: any;
+    value: unknown;
 }
 
 @Injectable({
@@ -46,11 +47,11 @@ export class EventBusService implements mvc.Events {
         return this._events.asObservable();
     }
 
-    emit(eventName: string, value?: any): void {
+    emit(eventName: string, value?: unknown): void {
         this._events.next({ name: eventName, value: value });
     }
 
-    subscribe(eventName: string, callback: any): Subscription {
+    subscribe(eventName: string, callback: (value: unknown) => void): Subscription {
         return this._events.pipe(
             filter(e => e.name === eventName),
             map(e => e.value)

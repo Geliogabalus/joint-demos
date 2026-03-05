@@ -1,7 +1,8 @@
-import type { dia, ui } from '@joint/plus';
 import { fromBPMN } from '@joint/format-bpmn-import';
 import { bpmnImportOptions } from '../shapes/factories';
 import { importBPMN } from '../utils';
+
+import type { dia, ui } from '@joint/plus';
 
 interface FileImporter {
     canHandle(file: File): boolean;
@@ -24,7 +25,7 @@ export class XMLFileImporter implements FileImporter {
         const { cells, errors } = fromBPMN(xml, bpmnImportOptions);
 
         if (errors.length > 0) {
-            console.error(errors);
+            console.warn(errors);
             return;
         }
 
@@ -69,7 +70,7 @@ class CompositeFileImporter implements FileImporter {
         if (importer) {
             await importer.import(file, graph);
         } else {
-            console.error('No importer found for file:', file.name);
+            console.warn('No importer found for file:', file.name);
         }
     }
 }
@@ -103,7 +104,7 @@ export function setupFileImport(paperScroller: ui.PaperScroller, commandManager:
         if (fileImporter.canHandle(file)) {
             fileImporter.import(file, paperScroller.options.paper.model);
         } else {
-            console.error('Unsupported file type:', file.name);
+            console.warn('Unsupported file type:', file.name);
         }
     }
 

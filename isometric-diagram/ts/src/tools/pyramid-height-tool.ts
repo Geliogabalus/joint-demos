@@ -1,7 +1,9 @@
-import { elementTools, dia, g } from '@joint/core';
-import { PyramidShape } from '../shapes/isometric-shape';
+import { elementTools, g } from '@joint/core';
 import { ISOMETRIC_HEIGHT_TOOL_MARKUP } from './tools';
 import { GRID_SIZE } from '../theme';
+
+import type { dia } from '@joint/core';
+import type { PyramidShape } from '../shapes/isometric-shape';
 
 interface PyramidHeightControlOptions extends elementTools.Control.Options {
     /** The value of the isometric height after reset.
@@ -31,7 +33,7 @@ export class PyramidHeightControl extends elementTools.Control<PyramidHeightCont
 
     protected setPosition(_: dia.ElementView, coordinates: dia.Point) {
         const { height } = this.element.size();
-        const step = Math.round((this.element.topY - coordinates.y) / GRID_SIZE)
+        const step = Math.round((this.element.topY - coordinates.y) / GRID_SIZE);
         const isometricHeight = Math.max(height, this.element.isometricHeight + step * GRID_SIZE);
         this.element.set('isometricHeight', isometricHeight);
     }

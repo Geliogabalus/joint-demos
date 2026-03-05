@@ -1,8 +1,9 @@
-import type { ui, attributes as diaAttributes } from '@joint/plus';
 import { dia, V, util } from '@joint/plus';
+
+import type { ui, attributes as diaAttributes } from '@joint/plus';
 const { Element, ElementView } = dia;
 
-function measureText(svgDocument: SVGElement, text: string, attrs: object, annotations: any) {
+function measureText(svgDocument: SVGElement, text: string, attrs: object, annotations: unknown) {
     const vText = V('text').attr(attrs).text(text, annotations);
     vText.appendTo(svgDocument);
     const bbox = vText.getBBox();
@@ -13,7 +14,7 @@ function measureText(svgDocument: SVGElement, text: string, attrs: object, annot
 interface IdeaSectionCache {
     width: number;
     height: number;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 interface IdeaImageCache extends IdeaSectionCache {
@@ -89,7 +90,7 @@ export class Idea extends Element {
         this.cache = {};
     }
 
-    initialize(attributes?: dia.Element.Attributes, options?: any): void {
+    initialize(attributes?: dia.Element.Attributes, options?: dia.Graph.Options): void {
         super.initialize(attributes, options);
         this.on('change', this.onAttributeChange);
         this.setSizeFromContent();
@@ -140,7 +141,7 @@ export class Idea extends Element {
         const imageSize = attributes[IMAGE_SIZE_PROPERTY];
         let width = spacing * 2;
         let height = spacing * 2;
-        let x = spacing;
+        const x = spacing;
         let y = spacing;
         // image metrics
         let $image;
@@ -301,7 +302,7 @@ export class IdeaView extends ElementView {
         });
     }
 
-    confirmUpdate(flag: number, opt: { [key: string]: any; }): number {
+    confirmUpdate(flag: number, opt: { [key: string]: unknown; }): number {
         let flags = super.confirmUpdate(flag, opt);
         if (this.hasFlag(flags, FLAG_COLOR)) {
             // When only a color is changed there is no need to resize the DOM elements
@@ -337,8 +338,8 @@ export class IdeaView extends ElementView {
     update() {
         const $layout = this.model.layout();
         this.updateBody($layout);
-        this.updateImage($layout.$image);
-        this.updateLabel($layout.$label);
+        this.updateImage($layout.$image as IdeaImageCache);
+        this.updateLabel($layout.$label as IdeaLabelCache);
         this.cleanNodesCache();
     }
 

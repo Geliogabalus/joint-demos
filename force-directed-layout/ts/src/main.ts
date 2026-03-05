@@ -79,11 +79,11 @@ let dragging = false;
 
 function drag(
     elementView: dia.ElementView,
-    _event: any,
+    _event: dia.Event,
     clientX: number,
     clientY: number
 ) {
-    let element = elementView.model;
+    const element = elementView.model;
     const forceLayoutNode = forceLayout.getElementData(element.id);
 
     let x = forceLayoutNode.p.x;
@@ -118,7 +118,7 @@ function drag(
 }
 
 function dragend(elementView: dia.ElementView) {
-    let element = elementView.model;
+    const element = elementView.model;
 
     if (!elementView.model.prop('forceDirectedAttributes/fixed')) {
         forceLayout.changeElementData(element.id, {

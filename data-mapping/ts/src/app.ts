@@ -1,11 +1,12 @@
 import { dia, ui, setTheme, shapes, util, elementTools, format } from '@joint/plus';
-import type { Constant, Concat, GetDate, Record } from './shapes';
 import { Link } from './shapes';
 import { Decorator } from './highlighters';
 import { SourceArrowhead, TargetArrowhead, Button } from './link-tools';
 import { routerNamespace } from './routers';
 import { anchorNamespace } from './anchors';
 import { loadExample } from './example';
+
+import type { Constant, Concat, GetDate, Record } from './shapes';
 
 type Records = Constant | Concat | GetDate | Record;
 
@@ -301,7 +302,7 @@ export const init = () => {
         linkView.addTools(tools);
     }
 
-    function itemActionPicker(target: Element, elementView: dia.ElementView, itemId: string, tools: Array<{ [key: string]: any }>) {
+    function itemActionPicker(target: Element, elementView: dia.ElementView, itemId: string, tools: Array<{ [key: string]: unknown }>) {
 
         const element = elementView.model as Records;
         const ctxToolbar = new ui.ContextToolbar({
@@ -344,7 +345,7 @@ export const init = () => {
         });
     }
 
-    function elementActionPicker(target: Element, elementView: dia.ElementView, tools: Array<{ [key: string]: any }>) {
+    function elementActionPicker(target: Element, elementView: dia.ElementView, tools: Array<{ [key: string]: unknown }>) {
 
         const element = elementView.model as Records;
         const ctxToolbar = new ui.ContextToolbar({

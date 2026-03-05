@@ -1,9 +1,10 @@
-import type { dia, ui } from '@joint/plus';
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
 import * as cv from '@techstark/opencv-js';
 import { App } from '../../app';
+
+import type { dia, ui } from '@joint/plus';
+import type { ActionResult, NodeAttributes } from '../node';
 
 export class Blend extends Node {
 
@@ -49,7 +50,7 @@ export class Blend extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image1, image2, ratio }: { image1: cv.Mat, image2: cv.Mat, ratio: number } = this.properties;
+        const { image1, image2, ratio } = this.properties as { image1: cv.Mat, image2: cv.Mat, ratio: number };
 
         if (!(image1 && image2)) return [null];
 

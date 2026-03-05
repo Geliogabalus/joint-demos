@@ -2,9 +2,10 @@ import { g, dia, ui, shapes, util, V } from '@joint/plus';
 import { DirectedGraph } from '@joint/layout-directed-graph';
 import { data } from './gdata';
 import { tokensData } from './gtoken';
-import type { IData, IArc, IToken } from './interfaces/interfaces';
 import { Node, Link, Token } from './shapes';
 import WebGLHeatmap from '@nbxx/webgl-heatmap';
+
+import type { IData, IArc, IToken } from './interfaces/interfaces';
 
 export const init = () => {
     const canvas = document.getElementById('canvas');
@@ -12,11 +13,11 @@ export const init = () => {
     // 7 Days
     const processDuration = 7 * 24 * 60 * 60 * 1000;
     // Toolbar controls
-    const range: HTMLInputElement = document.querySelector('input[type="range"]');
-    const speedInput: HTMLInputElement = document.querySelector('input[type="number"]');
-    const startButton: HTMLButtonElement = document.querySelector('.start');
-    const stopButton = document.querySelector('.stop');
-    const timer = document.querySelector('.textTime');
+    const range: HTMLInputElement = document.querySelector('input[type="range"]') as HTMLInputElement;
+    const speedInput: HTMLInputElement = document.querySelector('input[type="number"]') as HTMLInputElement;
+    const startButton: HTMLButtonElement = document.querySelector('.start') as HTMLButtonElement;
+    const stopButton: HTMLButtonElement = document.querySelector('.stop') as HTMLButtonElement;
+    const timer: HTMLElement = document.querySelector('.textTime') as HTMLElement;
     // 200000 milliseconds / 200 seconds - used to increase/decrease rate of time in animation
     const DEFAULT_SPEED = 200000;
     let speed = DEFAULT_SPEED;
@@ -35,7 +36,7 @@ export const init = () => {
         range.value = target.value;
         // Update position of token based on time
         tokens.forEach((token) => {
-            token.data.move(Number(range.value));
+            token.data.move?.(Number(range.value));
         });
         paper.wakeUp();
         const milliseconds = Number(range.value);
@@ -61,12 +62,12 @@ export const init = () => {
         }
     });
 
-    startButton.addEventListener('click', () => {
+    startButton!.addEventListener('click', () => {
         startButton.setAttribute('disabled', '');
         startRangeAnimation();
     });
 
-    stopButton.addEventListener('click', () => {
+    stopButton!.addEventListener('click', () => {
         startButton.removeAttribute('disabled');
         stopRangeAnimation();
     });
@@ -121,7 +122,7 @@ export const init = () => {
         }
     });
 
-    canvas.appendChild(scroller.el);
+    canvas!.appendChild(scroller.el);
     scroller.render().center();
 
     let tokenLinks: Array<Link>;
@@ -130,7 +131,7 @@ export const init = () => {
     setTokens();
     paper.unfreeze({
         afterRender: () => {
-            cssLoader.classList.remove('loader');
+            cssLoader!.classList.remove('loader');
             startRangeAnimation();
             paper.unfreeze();
         }
@@ -151,16 +152,16 @@ export const init = () => {
 
         Object.keys(dataset.response.nodes).forEach((nodeLabel) => {
             // Add Elements
-            elements.push(
-                new Node({ id: nodeLabel }).setText(nodeLabel)
-            );
+            const node = new Node({ id: nodeLabel });
+            node.setText(nodeLabel);
+            elements.push(node);
         });
 
         Object.values(dataset.response.arcs).forEach((arc: IArc) => {
             // Add Links
-            links.push(
-                new Link().connect(arc.source, arc.target)
-            );
+            const link = new Link();
+            link.connect(arc.source, arc.target);
+            links.push(link);
         });
         return { cells: elements.concat(links), tokens: links };
     }
@@ -204,22 +205,22 @@ export const init = () => {
                 return;
             }
             // Calculate time passed since animation was started
-            let currentTime = Date.now();
-            let elapsedTime = currentTime - startTime;
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime;
             startTime = currentTime;
 
             // Elapsed time in milliseconds added to current range value
             range.value = String(Number(range.value) + (speed * elapsedTime));
 
             tokens.forEach((token) => {
-                token.data.move(Number(range.value));
+                token.data.move?.(Number(range.value));
             });
 
             updateHeatmap();
 
             const milliseconds = Number(range.value);
             const dateObject = new Date(milliseconds);
-            timer.innerHTML = dateObject.toLocaleString('en-GB');
+            timer!.innerHTML = dateObject.toLocaleString('en-GB');
 
             reqAnimId = util.nextFrame(fn);
         };
@@ -227,7 +228,7 @@ export const init = () => {
     }
 
     function stopRangeAnimation() {
-        util.cancelFrame(reqAnimId);
+        util.cancelFrame(reqAnimId!);
         reqAnimId = null;
     }
 
@@ -321,7 +322,7 @@ export const init = () => {
 
                     tokenElements.push(tokenElement);
                     // Create token data
-                    let token: IToken = {
+                    const token: IToken = {
                         data: {
                             id: `follow-${tokenEvent.caseId}-${tokenEvent.start}`,
                             currentLutIndex: 0,
@@ -335,7 +336,7 @@ export const init = () => {
                     // If range time is between token start/end time, update token position, if not, hide token
                     token.data.move = function(value: number): void {
                         if ((value >= this.start) && (value <= this.end)) {
-                            let index = this.currentLutIndex;
+                            const index = this.currentLutIndex;
                             const lut = this.lut[index];
                             if (lut) {
                                 this.element.set('hidden', false);
@@ -364,7 +365,7 @@ export const init = () => {
                                 y: 0,
                                 rotation: 0
                             };
-                            const point = p.pointAtLength(i * l);
+                            const point = p.pointAtLength(i * l) as g.Point;
                             lut.x = point.x;
                             lut.y = point.y;
 

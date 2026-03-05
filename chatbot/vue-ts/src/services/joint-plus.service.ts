@@ -10,12 +10,12 @@ distributed by client IO. See the LICENSE file.
 */
 
 import { Subscription } from 'rxjs';
-import type { dia, ui } from '@joint/plus';
-
-import type { EventBusService } from './event-bus.service';
-import type { Controller } from '../joint-plus/controller';
 import { createPlugins } from '../joint-plus/plugins';
 import { JointPlusController, KeyboardController } from '../joint-plus/controllers';
+
+import type { dia, ui } from '@joint/plus';
+import type { EventBusService } from './event-bus.service';
+import type { Controller } from '../joint-plus/controller';
 
 export class JointPlusService {
 
@@ -57,7 +57,7 @@ export class JointPlusService {
         stencil.remove();
         toolbar.remove();
         tooltip.remove();
-        Object.keys(controllers).forEach(name => (controllers as any)[name].stopListening());
+        Object.keys(controllers).forEach(name => (controllers as Record<string, Controller>)[name].stopListening());
         subscriptions.unsubscribe();
     }
 }

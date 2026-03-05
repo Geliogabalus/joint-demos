@@ -1,8 +1,9 @@
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
-import type * as cv from '@techstark/opencv-js';
 import { App } from '../../app';
+
+import type { ActionResult, NodeAttributes } from '../node';
+import type * as cv from '@techstark/opencv-js';
 export class Blur extends Node {
     defaults(): NodeAttributes {
         const defaults = super.defaults();
@@ -32,12 +33,12 @@ export class Blur extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image, radius }: { image: cv.Mat, radius: number } = this.properties;
+        const { image, radius } = this.properties as { image: cv.Mat, radius: number };
 
         if (!image) return [null];
 
         try {
-            const result: any = await App.cvService.do('blur', [image, radius]);
+            const result = await App.cvService.do('blur', [image, radius]) as cv.Mat;
             return [result];
         } catch {
             return [null];

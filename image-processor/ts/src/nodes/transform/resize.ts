@@ -1,9 +1,10 @@
-import type { dia, ui } from '@joint/plus';
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
 import * as cv from '@techstark/opencv-js';
 import { App } from '../../app';
+
+import type { dia, ui } from '@joint/plus';
+import type { ActionResult, NodeAttributes } from '../node';
 export class Resize extends Node {
 
     constructor(attributes?: NodeAttributes, options?: dia.Graph.Options) {
@@ -54,7 +55,7 @@ export class Resize extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image, width, height }: { image: cv.Mat, width: number, height: number } = this.properties;
+        const { image, width, height } = this.properties as { image: cv.Mat, width: number, height: number };
 
         if (!image) return [null];
 

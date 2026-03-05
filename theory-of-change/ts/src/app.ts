@@ -296,12 +296,12 @@ export const init = () => {
                     y: 5,
                     markup: removeButtonMarkup,
                     action: () => {
-                        const path: any[] = element.get('path');
+                        const path: string[] = element.get('path');
                         const siblings = util.getByPath(theoryOfChange, path.slice(0, -1));
                         if (Array.isArray(siblings)) {
                             // get the element that is being removed
                             const siblingIdx = path.at(-1);
-                            const [removedEl] = siblings.splice(siblingIdx, 1);
+                            const [removedEl] = siblings.splice(Number(siblingIdx), 1);
                             const removedIds = getAllElementDescendants(removedEl).map(el => el.id);
 
                             theoryOfChange.assumptionLinks = theoryOfChange.assumptionLinks.filter(link => {
@@ -428,6 +428,7 @@ export const init = () => {
             level1AddButton = '',
             maxLevel = 3
         } = options;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         items.forEach((level1item: any, index) => {
             // level 1
             const level1Element = new shapes.standard.HeaderedRectangle({
@@ -521,6 +522,7 @@ export const init = () => {
             const level2Items = Array.isArray(level1item[level2Key])
                 ? level1item[level2Key]
                 : level1item[level2Key] ? [level1item[level2Key]] : [];
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             level2Items.forEach((level2Item: any, level2Index: number) => {
                 const level2Element = new shapes.standard.HeaderedRectangle({
                     id: level2Item.id,
@@ -573,6 +575,7 @@ export const init = () => {
                 const level3Items = Array.isArray(level2Item[level3Key])
                     ? level2Item[level3Key]
                     : (level2Item[level3Key] ? [level2Item[level3Key]] : []);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 level3Items.forEach((level3Item: any, level3Index: number) => {
                     const level3Element = new shapes.standard.Rectangle({
                         id: level3Item.id,

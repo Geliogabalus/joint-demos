@@ -25,7 +25,7 @@ export default class IsometricShape extends dia.Element<IsometricElementAttribut
 
     tools: Tools = {};
 
-    constructor(...args: any[]) {
+    constructor(...args: ConstructorParameters<typeof dia.Element>) {
         super(...args);
         this.toggleView(View.Isometric);
     }
@@ -89,38 +89,38 @@ export default class IsometricShape extends dia.Element<IsometricElementAttribut
 }
 
 export class CuboidShape extends IsometricShape {
-    constructor(...args: any[]) {
+    constructor(...args: ConstructorParameters<typeof dia.Element>) {
         super(...args);
         const { defaultSize, defaultIsometricHeight } = this.attributes;
         this.tools = {
             [SIZE_KEY]: new SizeControl({ defaultSize }),
             [CONNECT_KEY]: new elementTools.Connect(CONNECT_TOOL_PRESET),
             [ISOMETRIC_HEIGHT_KEY]: new CenterBasedHeightControl({ defaultIsometricHeight }),
-        }
+        };
     }
 }
 
 export class ProportionalCuboidShape extends IsometricShape {
-    constructor(...args: any[]) {
+    constructor(...args: ConstructorParameters<typeof dia.Element>) {
         super(...args);
         const { defaultSize, defaultIsometricHeight } = this.attributes;
         this.tools = {
             [SIZE_KEY]: new ProportionalSizeControl({ defaultSize }),
             [CONNECT_KEY]: new elementTools.Connect(CONNECT_TOOL_PRESET),
             [ISOMETRIC_HEIGHT_KEY]: new CenterBasedHeightControl({ defaultIsometricHeight }),
-        }
+        };
     }
 }
 
 export class CylinderShape extends IsometricShape {
-    constructor(...args: any[]) {
+    constructor(...args: ConstructorParameters<typeof dia.Element>) {
         super(...args);
         const { defaultSize, defaultIsometricHeight } = this.attributes;
         this.tools = {
             [SIZE_KEY]: new ProportionalSizeControl({ defaultSize }),
             [CONNECT_KEY]: new elementTools.Connect(CONNECT_TOOL_PRESET),
             [ISOMETRIC_HEIGHT_KEY]: new CenterBasedHeightControl({ defaultIsometricHeight }),
-        }
+        };
     }
 
     get sideData(): string {
@@ -144,14 +144,14 @@ export class CylinderShape extends IsometricShape {
 }
 
 export class PyramidShape extends IsometricShape {
-    constructor(...args: any[]) {
+    constructor(...args: ConstructorParameters<typeof dia.Element>) {
         super(...args);
         const { defaultSize, defaultIsometricHeight } = this.attributes;
         this.tools = {
             [SIZE_KEY]: new ProportionalSizeControl({ defaultSize }),
             [CONNECT_KEY]: new elementTools.Connect(CONNECT_TOOL_PRESET),
             [ISOMETRIC_HEIGHT_KEY]: new PyramidHeightControl({ defaultIsometricHeight }),
-        }
+        };
     }
 
     get topX(): number {

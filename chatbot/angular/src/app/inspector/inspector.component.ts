@@ -10,16 +10,18 @@ distributed by client IO. See the LICENSE file.
 */
 
 import {
-    Component,
+    Component
+} from '@angular/core';
+import { Subscription } from 'rxjs';
+import { ShapeTypesEnum } from '../../joint-plus/shapes/app.shapes';
+import { SharedEvents } from '../../joint-plus/controller';
+
+import type {
     OnDestroy,
     OnInit
 } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { dia } from '@joint/plus';
-
-import { EventBusService } from '../../services/event-bus.service';
-import { ShapeTypesEnum } from '../../joint-plus/shapes/app.shapes';
-import { SharedEvents } from '../../joint-plus/controller';
+import type { dia } from '@joint/plus';
+import type { EventBusService } from '../../services/event-bus.service';
 
 
 @Component({

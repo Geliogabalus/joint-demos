@@ -1,15 +1,17 @@
 import {
     Component,
-    ElementRef,
-    ViewChild,
-    AfterViewInit,
-    OnDestroy,
+    ViewChild
 } from '@angular/core';
 import { dia, mvc, shapes, ui, format, util, highlighters } from '@joint/plus';
 import { DirectedGraph } from '@joint/layout-directed-graph';
 import { Node, GRID_SIZE } from './models/node';
 import { Edge } from './models/edge';
 import { createSampleDiagram } from './sample-diagram';
+
+import type {
+    ElementRef,
+    AfterViewInit,
+    OnDestroy } from '@angular/core';
 
 
 /** Cell namespace mapping type strings to shape constructors for graph deserialization. */
@@ -399,7 +401,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
         );
 
         this.routerWorker.onerror = (error) => {
-            console.error('Router worker error:', error);
+            console.warn('Router worker error:', error);
         };
 
         // Receive routed cells from the worker
@@ -407,7 +409,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
             const { command, ...data } = e.data;
             if (command === 'routed') {
                 const { cells } = data;
-                cells.forEach((cell: any) => {
+                cells.forEach((cell: { id: string; vertices: dia.Link.Vertex[]; source: dia.Link.EndJSON; target: dia.Link.EndJSON; router: null }) => {
                     const model = this.graph.getCell(cell.id);
                     if (!model || model.isElement()) return;
                     model.set({
@@ -439,8 +441,8 @@ export class AppComponent implements AfterViewInit, OnDestroy {
 
         // Forward graph changes to the worker
         this.controller.listenTo(this.graph, {
-            'change': (cell: dia.Cell, opt: any) => {
-                if (opt.fromWorker) return;
+            'change': (cell: dia.Cell, opt: dia.Cell.Options) => {
+                if (opt['fromWorker']) return;
                 this.routerWorker.postMessage([{
                     command: 'change',
                     cell: cell.toJSON(),

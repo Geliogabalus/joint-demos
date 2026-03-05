@@ -1,7 +1,8 @@
-import type { dia } from '@joint/plus';
 import { util } from '@joint/plus';
 import { SystemPlaceholder } from '../../system/diagram/models';
 import Theme, { buttonBodyAttributes, buttonIconAttributes } from '../theme';
+
+import type { dia } from '@joint/plus';
 
 /** SVG markup for the placeholder */
 const placeholderMarkup = util.svg/* xml*/`
@@ -47,7 +48,7 @@ export default class Placeholder extends SystemPlaceholder<PlaceholderAttributes
                 },
                 buttonIcon: {
                     ...buttonIconAttributes,
-                    transform: `translate(calc(w/2), calc(h/2))`,
+                    transform: 'translate(calc(w/2), calc(h/2))',
                 }
             }
         };

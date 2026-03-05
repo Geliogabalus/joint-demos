@@ -1,9 +1,10 @@
-import type { dia, ui } from '@joint/plus';
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
 import * as cv from '@techstark/opencv-js';
 import { App } from '../../app';
+
+import type { dia, ui } from '@joint/plus';
+import type { ActionResult, NodeAttributes } from '../node';
 export class Tint extends Node {
 
     constructor(attributes?: NodeAttributes, options?: dia.Graph.Options) {
@@ -53,7 +54,7 @@ export class Tint extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image, color, intensity }: { image: cv.Mat, color: any, intensity: number } = this.properties;
+        const { image, color, intensity } = this.properties as { image: cv.Mat, color: { r: number; g: number; b: number }, intensity: number };
 
         if (!image) return [null];
 
@@ -68,7 +69,7 @@ export class Tint extends Node {
             tintedImageChannels.set(3, imageChannels.get(3));
 
             const result = new cv.Mat();
-            cv.merge(tintedImageChannels as any, result);
+            cv.merge(tintedImageChannels as unknown as cv.Mat, result);
 
             return [result];
         } catch {

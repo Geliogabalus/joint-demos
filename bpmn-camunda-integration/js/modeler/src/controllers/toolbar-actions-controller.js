@@ -1,8 +1,8 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
+var __awaiter = (this && this.__awaiter) || function(thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function(resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function(resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator['throw'](value)); } catch (e) { reject(e); } }
         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
@@ -84,7 +84,7 @@ export default class ToolbarActionsController extends Controller {
 
 function onOpenFileDropdownClick(context) {
     const { toolbar } = context;
-    
+
     const contextToolbar = new ui.ContextToolbar({
         target: toolbar.getWidgetByName(toolbarToolNames.OPEN_FILE_DROPDOWN).el,
         root: toolbar.el,
@@ -95,12 +95,12 @@ function onOpenFileDropdownClick(context) {
         anchor: 'top-left',
         tools: openFileDropdownTools
     });
-    
+
     contextToolbar.on(`action:${openFileDropdownToolNames.LOAD_XML}`, loadFromXML(context));
     contextToolbar.on(`action:${openFileDropdownToolNames.DOWNLOAD_XML}`, () => onDownloadXMLClick(context));
-    
+
     contextToolbar.render();
-    
+
     return contextToolbar;
 }
 
@@ -189,7 +189,7 @@ function showNotification(variant, title, message, opts = {}) {
 
     if (autoClose > 0) {
         setTimeout(() => {
-            try { dialog.close(); } catch (e) { /* already closed */ }
+            try { dialog.close(); } catch { /* already closed */ }
         }, autoClose);
     }
 
@@ -504,109 +504,216 @@ function processXMLWithZeebeExtensions(paper, processName = null) {
     // Add zeebe:taskDefinition to all service tasks (required by Camunda 8)
     const serviceTasks = xml.getElementsByTagNameNS(bpmnNS, 'serviceTask');
     for (let i = 0; i < serviceTasks.length; i++) {
-            const serviceTask = serviceTasks[i];
-            const taskId = serviceTask.getAttribute('id');
-            const httpConnectorData = httpConnectorConfigs.get(taskId);
+        const serviceTask = serviceTasks[i];
+        const taskId = serviceTask.getAttribute('id');
+        const httpConnectorData = httpConnectorConfigs.get(taskId);
 
-            let extensionElements = serviceTask.getElementsByTagNameNS(bpmnNS, 'extensionElements')[0];
-            if (!extensionElements) {
-                extensionElements = xml.createElementNS(bpmnNS, 'bpmn:extensionElements');
-                serviceTask.insertBefore(extensionElements, serviceTask.firstChild);
+        let extensionElements = serviceTask.getElementsByTagNameNS(bpmnNS, 'extensionElements')[0];
+        if (!extensionElements) {
+            extensionElements = xml.createElementNS(bpmnNS, 'bpmn:extensionElements');
+            serviceTask.insertBefore(extensionElements, serviceTask.firstChild);
+        }
+
+        if (httpConnectorData) {
+            const httpConfig = httpConnectorData.httpConfig;
+            // This is an HTTP Connector task
+            serviceTask.setAttribute('zeebe:modelerTemplate', 'io.camunda.connectors.HttpJson.v2');
+            serviceTask.setAttribute('zeebe:modelerTemplateVersion', '12');
+
+            // Add task definition
+            const taskDefinition = xml.createElementNS(zeebeNS, 'zeebe:taskDefinition');
+            taskDefinition.setAttribute('type', 'io.camunda:http-json:1');
+            taskDefinition.setAttribute('retries', String(httpConnectorData.retries));
+            extensionElements.appendChild(taskDefinition);
+
+            // Add IO mapping
+            const ioMapping = xml.createElementNS(zeebeNS, 'zeebe:ioMapping');
+
+            // Authentication type
+            const authInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            authInput.setAttribute('source', '="noAuth"');
+            authInput.setAttribute('target', 'authentication.type');
+            ioMapping.appendChild(authInput);
+
+            // Method
+            const methodInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            const methodValue = httpConfig.method || 'GET';
+            methodInput.setAttribute('source', `="${methodValue}"`);
+            methodInput.setAttribute('target', 'method');
+            ioMapping.appendChild(methodInput);
+
+            // URL
+            const urlInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            const urlValue = httpConfig.url || '';
+            urlInput.setAttribute('source', `="${urlValue}"`);
+            urlInput.setAttribute('target', 'url');
+            ioMapping.appendChild(urlInput);
+
+            // Headers (if provided)
+            if (httpConfig.headers) {
+                const headersInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+                headersInput.setAttribute('source', `=${httpConfig.headers}`);
+                headersInput.setAttribute('target', 'headers');
+                ioMapping.appendChild(headersInput);
             }
 
-            if (httpConnectorData) {
-                const httpConfig = httpConnectorData.httpConfig;
-                // This is an HTTP Connector task
-                serviceTask.setAttribute('zeebe:modelerTemplate', 'io.camunda.connectors.HttpJson.v2');
-                serviceTask.setAttribute('zeebe:modelerTemplateVersion', '12');
+            // Query params (if provided)
+            if (httpConfig.queryParams) {
+                const queryInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+                queryInput.setAttribute('source', `=${httpConfig.queryParams}`);
+                queryInput.setAttribute('target', 'queryParameters');
+                ioMapping.appendChild(queryInput);
+            }
 
-                // Add task definition
-                const taskDefinition = xml.createElementNS(zeebeNS, 'zeebe:taskDefinition');
-                taskDefinition.setAttribute('type', 'io.camunda:http-json:1');
-                taskDefinition.setAttribute('retries', String(httpConnectorData.retries));
-                extensionElements.appendChild(taskDefinition);
+            // Body (if provided)
+            if (httpConfig.body) {
+                const bodyInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+                bodyInput.setAttribute('source', `=${httpConfig.body}`);
+                bodyInput.setAttribute('target', 'body');
+                ioMapping.appendChild(bodyInput);
+            }
 
-                // Add IO mapping
+            // Store response
+            const storeResponseInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            storeResponseInput.setAttribute('source', '=false');
+            storeResponseInput.setAttribute('target', 'storeResponse');
+            ioMapping.appendChild(storeResponseInput);
+
+            // Timeouts (configurable, default 20 seconds; 0 = no timeout)
+            const connTimeout = httpConfig.connectionTimeoutInSeconds !== undefined ? httpConfig.connectionTimeoutInSeconds : 20;
+            const connTimeoutInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            connTimeoutInput.setAttribute('source', `=${connTimeout}`);
+            connTimeoutInput.setAttribute('target', 'connectionTimeoutInSeconds');
+            ioMapping.appendChild(connTimeoutInput);
+
+            const readTimeout = httpConfig.readTimeoutInSeconds !== undefined ? httpConfig.readTimeoutInSeconds : 20;
+            const readTimeoutInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            readTimeoutInput.setAttribute('source', `=${readTimeout}`);
+            readTimeoutInput.setAttribute('target', 'readTimeoutInSeconds');
+            ioMapping.appendChild(readTimeoutInput);
+
+            const writeTimeout = httpConfig.writeTimeoutInSeconds !== undefined ? httpConfig.writeTimeoutInSeconds : 0;
+            const writeTimeoutInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            writeTimeoutInput.setAttribute('source', `=${writeTimeout}`);
+            writeTimeoutInput.setAttribute('target', 'writeTimeoutInSeconds');
+            ioMapping.appendChild(writeTimeoutInput);
+
+            // Ignore null values
+            const ignoreNullInput = xml.createElementNS(zeebeNS, 'zeebe:input');
+            ignoreNullInput.setAttribute('source', '=false');
+            ignoreNullInput.setAttribute('target', 'ignoreNullValues');
+            ioMapping.appendChild(ignoreNullInput);
+
+            // Add user-defined input mappings if present
+            const inputMappings = elementInputMappings.get(taskId);
+            if (inputMappings && inputMappings.length > 0) {
+                for (const mapping of inputMappings) {
+                    if (mapping.target && mapping.source) {
+                        const inputElement = xml.createElementNS(zeebeNS, 'zeebe:input');
+                        let sourceExpr = mapping.source.trim();
+                        if (!sourceExpr.startsWith('=')) {
+                            sourceExpr = '=' + sourceExpr;
+                        }
+                        inputElement.setAttribute('source', sourceExpr);
+                        inputElement.setAttribute('target', mapping.target);
+                        ioMapping.appendChild(inputElement);
+                    }
+                }
+            }
+
+            // Add output mappings if present
+            const outputMappings = elementOutputMappings.get(taskId);
+            if (outputMappings && outputMappings.length > 0) {
+                for (const mapping of outputMappings) {
+                    if (mapping.target && mapping.source) {
+                        const outputElement = xml.createElementNS(zeebeNS, 'zeebe:output');
+                        // Source is FEEL expression, ensure it starts with '='
+                        let sourceExpr = mapping.source.trim();
+                        if (!sourceExpr.startsWith('=')) {
+                            sourceExpr = '=' + sourceExpr;
+                        }
+                        outputElement.setAttribute('source', sourceExpr);
+                        outputElement.setAttribute('target', mapping.target);
+                        ioMapping.appendChild(outputElement);
+                    }
+                }
+            }
+
+            extensionElements.appendChild(ioMapping);
+
+            // Add task headers
+            const taskHeaders = xml.createElementNS(zeebeNS, 'zeebe:taskHeaders');
+
+            const templateVersionHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+            templateVersionHeader.setAttribute('key', 'elementTemplateVersion');
+            templateVersionHeader.setAttribute('value', '12');
+            taskHeaders.appendChild(templateVersionHeader);
+
+            const templateIdHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+            templateIdHeader.setAttribute('key', 'elementTemplateId');
+            templateIdHeader.setAttribute('value', 'io.camunda.connectors.HttpJson.v2');
+            taskHeaders.appendChild(templateIdHeader);
+
+            const resultVarHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+            resultVarHeader.setAttribute('key', 'resultVariable');
+            resultVarHeader.setAttribute('value', httpConfig.resultVariable || '');
+            taskHeaders.appendChild(resultVarHeader);
+
+            const resultExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+            resultExprHeader.setAttribute('key', 'resultExpression');
+            resultExprHeader.setAttribute('value', httpConnectorData.resultExpression || '');
+            taskHeaders.appendChild(resultExprHeader);
+
+            const errorExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+            errorExprHeader.setAttribute('key', 'errorExpression');
+            errorExprHeader.setAttribute('value', httpConnectorData.errorExpression || '');
+            taskHeaders.appendChild(errorExprHeader);
+
+            const retryBackoffHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+            retryBackoffHeader.setAttribute('key', 'retryBackoff');
+            retryBackoffHeader.setAttribute('value', httpConnectorData.retryBackoff);
+            taskHeaders.appendChild(retryBackoffHeader);
+
+            extensionElements.appendChild(taskHeaders);
+        } else {
+            // Regular service task
+            const taskName = serviceTask.getAttribute('name') || 'default';
+            const taskDefinition = xml.createElementNS(zeebeNS, 'zeebe:taskDefinition');
+            taskDefinition.setAttribute('type', taskName);
+            extensionElements.appendChild(taskDefinition);
+
+            // Add Zeebe task headers if result/error expressions are set
+            const headers = serviceTaskHeaders.get(taskId);
+            if (headers && (headers.resultExpression || headers.errorExpression)) {
+                const taskHeaders = xml.createElementNS(zeebeNS, 'zeebe:taskHeaders');
+
+                if (headers.resultExpression) {
+                    const resultExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+                    resultExprHeader.setAttribute('key', 'resultExpression');
+                    resultExprHeader.setAttribute('value', headers.resultExpression);
+                    taskHeaders.appendChild(resultExprHeader);
+                }
+
+                if (headers.errorExpression) {
+                    const errorExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
+                    errorExprHeader.setAttribute('key', 'errorExpression');
+                    errorExprHeader.setAttribute('value', headers.errorExpression);
+                    taskHeaders.appendChild(errorExprHeader);
+                }
+
+                extensionElements.appendChild(taskHeaders);
+            }
+
+            // Add I/O mappings if present
+            const inputMappings = elementInputMappings.get(taskId);
+            const outputMappings = elementOutputMappings.get(taskId);
+            const hasInputMappings = inputMappings && inputMappings.length > 0;
+            const hasOutputMappings = outputMappings && outputMappings.length > 0;
+
+            if (hasInputMappings || hasOutputMappings) {
                 const ioMapping = xml.createElementNS(zeebeNS, 'zeebe:ioMapping');
 
-                // Authentication type
-                const authInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                authInput.setAttribute('source', '="noAuth"');
-                authInput.setAttribute('target', 'authentication.type');
-                ioMapping.appendChild(authInput);
-
-                // Method
-                const methodInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                const methodValue = httpConfig.method || 'GET';
-                methodInput.setAttribute('source', `="${methodValue}"`);
-                methodInput.setAttribute('target', 'method');
-                ioMapping.appendChild(methodInput);
-
-                // URL
-                const urlInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                const urlValue = httpConfig.url || '';
-                urlInput.setAttribute('source', `="${urlValue}"`);
-                urlInput.setAttribute('target', 'url');
-                ioMapping.appendChild(urlInput);
-
-                // Headers (if provided)
-                if (httpConfig.headers) {
-                    const headersInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                    headersInput.setAttribute('source', `=${httpConfig.headers}`);
-                    headersInput.setAttribute('target', 'headers');
-                    ioMapping.appendChild(headersInput);
-                }
-
-                // Query params (if provided)
-                if (httpConfig.queryParams) {
-                    const queryInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                    queryInput.setAttribute('source', `=${httpConfig.queryParams}`);
-                    queryInput.setAttribute('target', 'queryParameters');
-                    ioMapping.appendChild(queryInput);
-                }
-
-                // Body (if provided)
-                if (httpConfig.body) {
-                    const bodyInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                    bodyInput.setAttribute('source', `=${httpConfig.body}`);
-                    bodyInput.setAttribute('target', 'body');
-                    ioMapping.appendChild(bodyInput);
-                }
-
-                // Store response
-                const storeResponseInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                storeResponseInput.setAttribute('source', '=false');
-                storeResponseInput.setAttribute('target', 'storeResponse');
-                ioMapping.appendChild(storeResponseInput);
-
-                // Timeouts (configurable, default 20 seconds; 0 = no timeout)
-                const connTimeout = httpConfig.connectionTimeoutInSeconds !== undefined ? httpConfig.connectionTimeoutInSeconds : 20;
-                const connTimeoutInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                connTimeoutInput.setAttribute('source', `=${connTimeout}`);
-                connTimeoutInput.setAttribute('target', 'connectionTimeoutInSeconds');
-                ioMapping.appendChild(connTimeoutInput);
-
-                const readTimeout = httpConfig.readTimeoutInSeconds !== undefined ? httpConfig.readTimeoutInSeconds : 20;
-                const readTimeoutInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                readTimeoutInput.setAttribute('source', `=${readTimeout}`);
-                readTimeoutInput.setAttribute('target', 'readTimeoutInSeconds');
-                ioMapping.appendChild(readTimeoutInput);
-
-                const writeTimeout = httpConfig.writeTimeoutInSeconds !== undefined ? httpConfig.writeTimeoutInSeconds : 0;
-                const writeTimeoutInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                writeTimeoutInput.setAttribute('source', `=${writeTimeout}`);
-                writeTimeoutInput.setAttribute('target', 'writeTimeoutInSeconds');
-                ioMapping.appendChild(writeTimeoutInput);
-
-                // Ignore null values
-                const ignoreNullInput = xml.createElementNS(zeebeNS, 'zeebe:input');
-                ignoreNullInput.setAttribute('source', '=false');
-                ignoreNullInput.setAttribute('target', 'ignoreNullValues');
-                ioMapping.appendChild(ignoreNullInput);
-
-                // Add user-defined input mappings if present
-                const inputMappings = elementInputMappings.get(taskId);
-                if (inputMappings && inputMappings.length > 0) {
+                if (hasInputMappings) {
                     for (const mapping of inputMappings) {
                         if (mapping.target && mapping.source) {
                             const inputElement = xml.createElementNS(zeebeNS, 'zeebe:input');
@@ -621,13 +728,10 @@ function processXMLWithZeebeExtensions(paper, processName = null) {
                     }
                 }
 
-                // Add output mappings if present
-                const outputMappings = elementOutputMappings.get(taskId);
-                if (outputMappings && outputMappings.length > 0) {
+                if (hasOutputMappings) {
                     for (const mapping of outputMappings) {
                         if (mapping.target && mapping.source) {
                             const outputElement = xml.createElementNS(zeebeNS, 'zeebe:output');
-                            // Source is FEEL expression, ensure it starts with '='
                             let sourceExpr = mapping.source.trim();
                             if (!sourceExpr.startsWith('=')) {
                                 sourceExpr = '=' + sourceExpr;
@@ -640,111 +744,7 @@ function processXMLWithZeebeExtensions(paper, processName = null) {
                 }
 
                 extensionElements.appendChild(ioMapping);
-
-                // Add task headers
-                const taskHeaders = xml.createElementNS(zeebeNS, 'zeebe:taskHeaders');
-
-                const templateVersionHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                templateVersionHeader.setAttribute('key', 'elementTemplateVersion');
-                templateVersionHeader.setAttribute('value', '12');
-                taskHeaders.appendChild(templateVersionHeader);
-
-                const templateIdHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                templateIdHeader.setAttribute('key', 'elementTemplateId');
-                templateIdHeader.setAttribute('value', 'io.camunda.connectors.HttpJson.v2');
-                taskHeaders.appendChild(templateIdHeader);
-
-                const resultVarHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                resultVarHeader.setAttribute('key', 'resultVariable');
-                resultVarHeader.setAttribute('value', httpConfig.resultVariable || '');
-                taskHeaders.appendChild(resultVarHeader);
-
-                const resultExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                resultExprHeader.setAttribute('key', 'resultExpression');
-                resultExprHeader.setAttribute('value', httpConnectorData.resultExpression || '');
-                taskHeaders.appendChild(resultExprHeader);
-
-                const errorExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                errorExprHeader.setAttribute('key', 'errorExpression');
-                errorExprHeader.setAttribute('value', httpConnectorData.errorExpression || '');
-                taskHeaders.appendChild(errorExprHeader);
-
-                const retryBackoffHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                retryBackoffHeader.setAttribute('key', 'retryBackoff');
-                retryBackoffHeader.setAttribute('value', httpConnectorData.retryBackoff);
-                taskHeaders.appendChild(retryBackoffHeader);
-
-                extensionElements.appendChild(taskHeaders);
-            } else {
-                // Regular service task
-                const taskName = serviceTask.getAttribute('name') || 'default';
-                const taskDefinition = xml.createElementNS(zeebeNS, 'zeebe:taskDefinition');
-                taskDefinition.setAttribute('type', taskName);
-                extensionElements.appendChild(taskDefinition);
-
-                // Add Zeebe task headers if result/error expressions are set
-                const headers = serviceTaskHeaders.get(taskId);
-                if (headers && (headers.resultExpression || headers.errorExpression)) {
-                    const taskHeaders = xml.createElementNS(zeebeNS, 'zeebe:taskHeaders');
-
-                    if (headers.resultExpression) {
-                        const resultExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                        resultExprHeader.setAttribute('key', 'resultExpression');
-                        resultExprHeader.setAttribute('value', headers.resultExpression);
-                        taskHeaders.appendChild(resultExprHeader);
-                    }
-
-                    if (headers.errorExpression) {
-                        const errorExprHeader = xml.createElementNS(zeebeNS, 'zeebe:header');
-                        errorExprHeader.setAttribute('key', 'errorExpression');
-                        errorExprHeader.setAttribute('value', headers.errorExpression);
-                        taskHeaders.appendChild(errorExprHeader);
-                    }
-
-                    extensionElements.appendChild(taskHeaders);
-                }
-
-                // Add I/O mappings if present
-                const inputMappings = elementInputMappings.get(taskId);
-                const outputMappings = elementOutputMappings.get(taskId);
-                const hasInputMappings = inputMappings && inputMappings.length > 0;
-                const hasOutputMappings = outputMappings && outputMappings.length > 0;
-
-                if (hasInputMappings || hasOutputMappings) {
-                    const ioMapping = xml.createElementNS(zeebeNS, 'zeebe:ioMapping');
-
-                    if (hasInputMappings) {
-                        for (const mapping of inputMappings) {
-                            if (mapping.target && mapping.source) {
-                                const inputElement = xml.createElementNS(zeebeNS, 'zeebe:input');
-                                let sourceExpr = mapping.source.trim();
-                                if (!sourceExpr.startsWith('=')) {
-                                    sourceExpr = '=' + sourceExpr;
-                                }
-                                inputElement.setAttribute('source', sourceExpr);
-                                inputElement.setAttribute('target', mapping.target);
-                                ioMapping.appendChild(inputElement);
-                            }
-                        }
-                    }
-
-                    if (hasOutputMappings) {
-                        for (const mapping of outputMappings) {
-                            if (mapping.target && mapping.source) {
-                                const outputElement = xml.createElementNS(zeebeNS, 'zeebe:output');
-                                let sourceExpr = mapping.source.trim();
-                                if (!sourceExpr.startsWith('=')) {
-                                    sourceExpr = '=' + sourceExpr;
-                                }
-                                outputElement.setAttribute('source', sourceExpr);
-                                outputElement.setAttribute('target', mapping.target);
-                                ioMapping.appendChild(outputElement);
-                            }
-                        }
-                    }
-
-                    extensionElements.appendChild(ioMapping);
-                }
+            }
         }
     }
 
@@ -920,9 +920,6 @@ function processXMLWithZeebeExtensions(paper, processName = null) {
             // and add zeebe:subscription if needed
             const messageRef = messageEventDef.getAttribute('messageRef');
             if (!messageRef) {
-                // Create a message element and reference it
-                const messageId = `Message_${eventId}`;
-
                 // Check if we need to add zeebe subscription
                 let extensionElements = catchEvent.getElementsByTagNameNS(bpmnNS, 'extensionElements')[0];
                 if (!extensionElements) {
@@ -1299,7 +1296,7 @@ function loadDeployedProcesses(controller) {
             const response = yield fetch('http://localhost:3000/api/processes');
 
             if (!response.ok) {
-                console.error('Failed to load deployed processes:', response.status, response.statusText);
+                console.warn('Failed to load deployed processes:', response.status, response.statusText);
                 return;
             }
 
@@ -1307,7 +1304,7 @@ function loadDeployedProcesses(controller) {
             controller.deployedProcesses = result.items || [];
             console.log(`Loaded ${controller.deployedProcesses.length} deployed processes:`, controller.deployedProcesses);
         } catch (error) {
-            console.error('Error loading deployed processes:', error);
+            console.warn('Error loading deployed processes:', error);
             controller.deployedProcesses = [];
         }
     });
@@ -1475,7 +1472,7 @@ function loadProcessIntoCanvas(context, process) {
             const displayName = process.name || process.processDefinitionId || 'Process';
             console.log(`Process "${displayName}" (v${process.version}) loaded successfully!`);
         } catch (error) {
-            console.error('Error loading process:', error);
+            console.warn('Error loading process:', error);
             showNotification('error', 'Load Failed', `Failed to load process:<br>${error.message}`);
         }
     });
@@ -1643,7 +1640,7 @@ function extractZeebeExtensions(xmlDoc) {
                         source = source.substring(1);
                         // Remove quotes if present (both single and double)
                         if ((source.startsWith('"') && source.endsWith('"')) ||
-                            (source.startsWith("'") && source.endsWith("'"))) {
+                            (source.startsWith('\'') && source.endsWith('\''))) {
                             source = source.substring(1, source.length - 1);
                         }
                     }

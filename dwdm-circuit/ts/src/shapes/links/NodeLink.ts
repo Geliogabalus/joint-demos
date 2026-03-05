@@ -1,6 +1,8 @@
-import { dia, util } from '@joint/core';
+import { util } from '@joint/core';
 import Link from './Link';
 import { NODE_LINK_COLOR } from '../../theme';
+
+import type { dia } from '@joint/core';
 
 const LINK_MARKUP = util.svg`
     <path @selector="wrapper" fill="none" cursor="pointer" stroke="transparent" stroke-linecap="round"/>
@@ -34,7 +36,7 @@ export default class NodeLink extends Link {
         };
     }
 
-    preinitialize(...args: any[]): void {
+    preinitialize(...args: Parameters<Link['preinitialize']>): void {
         super.preinitialize(...args);
         this.markup = LINK_MARKUP;
     }

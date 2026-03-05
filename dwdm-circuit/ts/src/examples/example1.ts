@@ -1,10 +1,11 @@
-import { IData } from '../data';
 import {
     Multiplexer, Demultiplexer, ROADMultiplexer,
     RightAmplifier, LeftAmplifier,
     FiberProtectionUnit, OpticalPowerMonitoring,
     NodeLink, FiberLink, ExternalLink,
 } from '../shapes';
+
+import type { IData } from '../data';
 
 const data: IData = {
     nodes: [
@@ -656,7 +657,7 @@ const data: IData = {
         port: 'Port-20-5',
         description: '1530nm'
     }],
-}
+};
 
 export default data;
 

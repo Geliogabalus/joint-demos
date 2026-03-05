@@ -9,13 +9,13 @@ https://www.jointjs.com/license or from the JointJS+ archive as was
 distributed by client IO. See the LICENSE file.
 */
 
-import type { dia, ui } from '@joint/plus';
-
-import type { Controller } from '../joint-plus/controller';
 import { createPlugins } from '../joint-plus/plugins';
 import { JointPlusController, KeyboardController } from '../joint-plus/controllers';
 import { actionCreator } from '../redux/helpers/actionCreator';
 import { STORE_JOINT } from '../redux/helpers/actionTypes';
+
+import type { dia, ui } from '@joint/plus';
+import type { Controller } from '../joint-plus/controller';
 
 export class JointPlusService {
 
@@ -35,7 +35,7 @@ export class JointPlusService {
         paperElement: Element,
         stencilElement: Element,
         toolbarElement: Element,
-        public readonly dispatch: (...args: any[]) => any,
+        public readonly dispatch: (action: { type: string, payload: unknown }) => void,
     ) {
         Object.assign(this, createPlugins(scopeElement, paperElement, stencilElement, toolbarElement));
         this.controllers = {
@@ -52,7 +52,7 @@ export class JointPlusService {
         stencil.remove();
         toolbar.remove();
         tooltip.remove();
-        Object.keys(controllers).forEach(name => (controllers as any)[name].stopListening());
+        Object.keys(controllers).forEach(name => (controllers as Record<string, Controller>)[name].stopListening());
     }
 }
 

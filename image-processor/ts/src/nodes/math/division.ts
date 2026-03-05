@@ -1,7 +1,8 @@
-import type { ui } from '@joint/plus';
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
+
+import type { ui } from '@joint/plus';
+import type { ActionResult, NodeAttributes } from '../node';
 
 export class Division extends Node {
 
@@ -34,7 +35,7 @@ export class Division extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { a, b }: { a: number, b: number } = this.properties;
+        const { a, b } = this.properties as { a: number, b: number };
 
         const result = a / b;
         this.set('result', result);

@@ -1,12 +1,13 @@
 import * as joint from '@joint/plus';
+import * as appShapes from '../shapes/app-shapes';
+import { ZOOM_SETTINGS } from './navigator-service';
+
 import type { StencilService } from './stencil-service';
 import type { ToolbarService } from './toolbar-service';
 import type { InspectorService } from './inspector-service';
 import type { HaloService } from './halo-service';
 import type { KeyboardService } from './keyboard-service';
-import * as appShapes from '../shapes/app-shapes';
 import type { NavigatorService } from './navigator-service';
-import { ZOOM_SETTINGS } from './navigator-service';
 
 type Services = {
     stencilService: StencilService,
@@ -110,7 +111,7 @@ class KitchenSinkService {
                 'normal': joint.routers.normal,
                 'orthogonal': joint.routers.orthogonal,
                 // Redefine the rightAngle router to use vertices.
-                'rightAngle': function(vertices: joint.g.Point[], opt: Record<string, any>, linkView: joint.dia.LinkView) {
+                'rightAngle': function(vertices: joint.g.Point[], opt: Record<string, unknown>, linkView: joint.dia.LinkView) {
                     opt.useVertices = true;
                     return joint.routers.rightAngle.call(this, vertices, opt, linkView);
                 }
@@ -482,7 +483,7 @@ class KitchenSinkService {
             }
         });
 
-        this.graph.on('change', (cell: joint.dia.Cell, opt: any) => {
+        this.graph.on('change', (cell: joint.dia.Cell, opt: joint.dia.Cell.Options) => {
 
             if (cell instanceof joint.dia.Graph || !cell.isLink() || !opt.inspector) { return; }
 
@@ -510,9 +511,11 @@ class KitchenSinkService {
 
     applyOnSelection(method: string) {
         this.graph.startBatch('selection');
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.selection.collection.models.forEach(function(model: joint.dia.Cell) { (model as any)[method](); });
         this.graph.stopBatch('selection');
     }
+
 
     changeSnapLines(checked: boolean) {
 

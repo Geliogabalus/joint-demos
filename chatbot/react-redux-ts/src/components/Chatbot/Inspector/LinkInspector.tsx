@@ -1,8 +1,9 @@
-import React, { ChangeEvent, ReactElement, useCallback, useState } from 'react';
-import { shapes } from '@joint/plus';
-
+import React, { useCallback, useState } from 'react';
 import { useBaseInspector } from './useBaseInspector';
 import Input from '../Input/Input';
+
+import type { ChangeEvent, ReactElement } from 'react';
+import type { shapes } from '@joint/plus';
 
 interface Props {
     cell: shapes.app.Link;
@@ -30,9 +31,9 @@ const LinkInspector = (props: Props): ReactElement => {
 
             <label>Label
                 <Input type="text"
-                       placeholder="Enter label"
-                       value={label}
-                       onChange={(e: ChangeEvent<HTMLInputElement>) => changeCellProp(cellProps.label, e.target.value)}
+                    placeholder="Enter label"
+                    value={label}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => changeCellProp(cellProps.label, e.target.value)}
                 />
             </label>
         </>

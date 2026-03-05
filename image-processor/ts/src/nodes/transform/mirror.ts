@@ -1,9 +1,10 @@
-import type { dia, ui } from '@joint/plus';
 import { util } from '@joint/plus';
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, calculateHeight } from '../node';
 import * as cv from '@techstark/opencv-js';
 import { App } from '../../app';
+
+import type { dia, ui } from '@joint/plus';
+import type { ActionResult, NodeAttributes } from '../node';
 export class Mirror extends Node {
 
     constructor(attributes?: NodeAttributes, options?: dia.Graph.Options) {
@@ -44,7 +45,7 @@ export class Mirror extends Node {
     }
 
     async action(): Promise<ActionResult> {
-        const { image, direction }: { image: cv.Mat, direction: string } = this.properties;
+        const { image, direction } = this.properties as { image: cv.Mat, direction: string };
 
         if (!image) return [null];
 

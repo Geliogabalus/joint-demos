@@ -1,11 +1,12 @@
 import { g, dia } from '@joint/core';
 import Obstacles from './obstacles';
-import IsometricShape, { View } from './shapes/isometric-shape';
+import { View } from './shapes/isometric-shape';
 import { Computer, Database, ActiveDirectory, User, Firewall, Switch, Router, Link, cellNamespace } from './shapes';
 import { sortElements, drawGrid, switchView } from './utils';
 import { GRID_SIZE, GRID_COUNT, HIGHLIGHT_COLOR, SCALE, ISOMETRIC_SCALE } from './theme';
-
 import '../style.css';
+
+import type IsometricShape from './shapes/isometric-shape';
 
 const canvasEl = document.getElementById('canvas') as HTMLDivElement;
 const buttonEl = document.getElementById('toggle') as HTMLButtonElement;
@@ -35,7 +36,7 @@ const paper = new dia.Paper({
             return obstacles.isFree(newBBox, element.cid)
                 ? { x, y }
                 : element.position();
-        }
+        };
     },
     gridSize: GRID_SIZE,
     async: true,

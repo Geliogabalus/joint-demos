@@ -1,7 +1,9 @@
-import { dia, elementTools, g } from '@joint/core';
-import IsometricShape from '../shapes/isometric-shape';
+import { elementTools, g } from '@joint/core';
 import { GRID_SIZE } from '../theme';
 import { SIZE_TOOL_MARKUP } from './tools';
+
+import type { dia } from '@joint/core';
+import type IsometricShape from '../shapes/isometric-shape';
 
 export class SizeControl extends elementTools.Control {
 
@@ -26,7 +28,7 @@ export class SizeControl extends elementTools.Control {
         const x = Math.round((coordinates.x - width) / GRID_SIZE);
         const y = Math.round((coordinates.y - height) / GRID_SIZE);
 
-        const { x: elX, y: elY } = element.position()
+        const { x: elX, y: elY } = element.position();
         const newWidth = Math.max(GRID_SIZE, width + x * GRID_SIZE);
         const newHeight = Math.max(GRID_SIZE, height + y * GRID_SIZE);
         const newBBox = new g.Rect(elX, elY, newWidth, newHeight);

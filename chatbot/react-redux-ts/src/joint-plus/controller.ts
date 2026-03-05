@@ -9,8 +9,9 @@ https://www.jointjs.com/license or from the JointJS+ archive as was
 distributed by client IO. See the LICENSE file.
 */
 
-import type JointPlusService from '../services/joint-plus.service';
 import { mvc } from '@joint/plus';
+
+import type JointPlusService from '../services/joint-plus.service';
 
 export enum SharedEvents {
     JSON_EDITOR_CHANGED = 'json-editor-changed',
@@ -20,7 +21,7 @@ export enum SharedEvents {
     GRAPH_STOP_BATCH = 'graph-stop-batch',
 }
 
-type ControllerCallback = (service: JointPlusService, ...args: any[]) => void;
+type ControllerCallback = (service: JointPlusService, ...args: unknown[]) => void;
 
 interface ControllerEventMap {
     [eventName: string]: ControllerCallback;
@@ -38,7 +39,7 @@ export abstract class Controller {
         mvc.Events.stopListening.call(this);
     }
 
-    protected listenTo(object: any, events: ControllerEventMap): void {
+    protected listenTo(object: mvc.Events, events: ControllerEventMap): void {
         Object.keys(events).forEach(event => {
             const callback = events[event];
             if (typeof callback !== 'function') return;

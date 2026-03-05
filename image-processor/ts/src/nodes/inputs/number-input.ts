@@ -1,7 +1,8 @@
-import type { ActionResult, NodeAttributes } from '../node';
 import { Node, NodeView } from '../node';
-import type { mvc, dia } from '@joint/plus';
 import { util } from '@joint/plus';
+
+import type { ActionResult, NodeAttributes } from '../node';
+import type { mvc, dia } from '@joint/plus';
 
 export class NumberInputView extends NodeView {
 
@@ -19,14 +20,14 @@ export class NumberInputView extends NodeView {
 
 export class NumberInput extends Node {
 
-    initialize(attributes: NodeAttributes, options: any): void {
+    initialize(attributes: NodeAttributes, options: dia.Graph.Options): void {
         super.initialize(attributes, options);
 
         if (this.attr('input/props/value') != null) {
             this.updateCurrentData();
         }
 
-        this.on('change:attrs', (_input: NumberInput, _attrs: any, options: any) => {
+        this.on('change:attrs', (_input: NumberInput, _attrs: dia.Cell.Attributes, options: dia.Cell.Options) => {
             if (options.propertyPath === 'attrs/input/props/value') {
                 this.updateCurrentData();
             }
@@ -76,11 +77,11 @@ export class NumberInput extends Node {
         }, defaults) as NodeAttributes;
     }
 
-    async action(_inputs: any[] = []): Promise<ActionResult> {
+    async action(_inputs: unknown[] = []): Promise<ActionResult> {
         return [];
     }
 
-    getCurrentData(): any[] {
+    getCurrentData(): unknown[] {
         return [Number(this.attr('input/props/value'))];
     }
 

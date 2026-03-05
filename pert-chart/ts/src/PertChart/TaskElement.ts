@@ -7,10 +7,11 @@ import {
     ASSIGNEE_PADDING, FILTER_SHADOW_ID, ASSIGNEE_ROW_HEIGHT,
     TASK_OUTLINE_COLOR
 } from './theme';
-import type { TaskResource, TaskData } from './types';
 import { blendWithWhite, getItemIcon, measureTextSize } from './utils';
-import type { dia } from '@joint/plus';
 import { shapes, util } from '@joint/plus';
+
+import type { TaskResource, TaskData } from './types';
+import type { dia } from '@joint/plus';
 
 const { Record, RecordView } = shapes.standard;
 
@@ -40,12 +41,12 @@ export class TaskElement extends Record {
         `;
     }
 
-    defaults(): any {
+    defaults(): dia.Element.Attributes {
         return {
             ...super.defaults,
             type: 'task',
             z: 2,
-            size: { width: TASK_WIDTH },
+            size: { width: TASK_WIDTH, height: undefined },
             // padding: will be set dynamically based on the assignees
             itemHeight: 30,
             itemIcon: { width: 16, height: 16, padding: TASK_PADDING },
@@ -126,8 +127,8 @@ export class TaskElement extends Record {
                         textWrap: false
                     }
                 },
-                // @ts-ignore
-            }, super.defaults.attrs)
+            // @ts-expect-error - base class has defaults as an object
+            }, super.defaults.attrs) as dia.Cell.Selectors
         };
     }
 
@@ -137,7 +138,7 @@ export class TaskElement extends Record {
         assignees: TaskAssigneeLayout[];
     };
 
-    initialize(...args: any[]): void {
+    initialize(...args: Parameters<typeof Record.prototype.initialize>): void {
         super.initialize(...args);
         this.on('change', (el, opt) => {
             if ('assignees' in el.changed) {

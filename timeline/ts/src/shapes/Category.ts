@@ -1,7 +1,8 @@
-import type { dia } from '@joint/core';
 import { shapes, util } from '@joint/core';
 import { TOP_COLOR, BOTTOM_COLOR, TOP_TEXT_COLOR, BOTTOM_TEXT_COLOR } from '../config';
 import { measureTextSize } from '../utils';
+
+import type { dia } from '@joint/core';
 import type { ITimelineShape } from './index';
 
 const HORIZONTAL_PADDING = 20;
@@ -39,7 +40,7 @@ export class Category extends shapes.standard.Rectangle implements ITimelineShap
         }, super.defaults);
     }
 
-    preinitialize(attributes?: shapes.standard.RectangleAttributes, options?: any): void {
+    preinitialize(attributes?: shapes.standard.RectangleAttributes, options?: dia.Graph.Options): void {
         super.preinitialize(attributes, options);
 
         this.on('change:direction', (el, direction: 'T' | 'B') => {
@@ -71,7 +72,7 @@ export class Category extends shapes.standard.Rectangle implements ITimelineShap
 
     updateSize() {
         const text = this.attr('label/text') || '';
-        const { fontSize, fontFamily } = this.attr('label') as any;
+        const { fontSize, fontFamily } = this.attr('label') as { fontSize: number; fontFamily: string };
         const padding = HORIZONTAL_PADDING;
 
         const { width } = measureTextSize(text, fontSize, fontFamily);
