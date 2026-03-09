@@ -5,8 +5,6 @@ import {
     g,
     dia,
     shapes,
-    util,
-    connectionPoints,
     V,
     elementTools,
     mvc,
@@ -144,7 +142,7 @@ graph.addCells([r1, r2, l1]);
 // shared objects that sync automatically.
 const ydoc = new Y.Doc();
 // Define a shared Y.Map instance
-const ymap = ydoc.getMap();
+const ymap = ydoc.getMap<dia.Cell.JSON>();
 
 graph.getCells().forEach((cell) => {
     ymap.set(cell.id as string, cell.toJSON({ ignoreDefaults: false }));
@@ -221,7 +219,7 @@ paper.on('element:mouseleave', (elementView, evt) => {
     elementView.removeTools();
 });
 
-function isRemotelySelected(cellId) {
+function isRemotelySelected(cellId: dia.Cell.ID) {
     return Array.from(provider.awareness.getStates()).some(([, state]) => {
         if (state.user === localUser || !state.selection) {
             return false;
@@ -230,24 +228,43 @@ function isRemotelySelected(cellId) {
     });
 }
 
-class UserCursor extends mvc.View {
-    preinitialize(options) {
+interface User {
+    name: string;
+    color: string;
+}
+
+interface Cursor {
+    x: number;
+    y: number;
+}
+
+interface UserCursorOptions extends mvc.ViewOptions<undefined, SVGGElement> {
+    paper: dia.Paper;
+    user: User;
+    cursor: Cursor;
+}
+
+class UserCursor extends mvc.View<undefined, SVGGElement> {
+    static cursors: Map<string, UserCursor> = new Map();
+
+    paper!: dia.Paper;
+    user!: User;
+    cursor!: Cursor;
+
+    preinitialize(options: UserCursorOptions) {
         this.tagName = 'g';
         this.svgElement = true;
         this.paper = options.paper;
-        this.options = options || {};
-        this.user = this.options.user;
-        this.cursor = this.options.cursor;
+        this.user = options.user;
+        this.cursor = options.cursor;
     }
 
-    attributes() {
-        return {
-            pointerEvents: 'none',
-            filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4))',
-        };
-    }
+    attributes = {
+        pointerEvents: 'none',
+        filter: 'drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.4))',
+    };
 
-    render() {
+    render(): this {
         V('circle', {
             r: 5,
             fill: this.user.color,
@@ -264,15 +281,16 @@ class UserCursor extends mvc.View {
 
         this.update();
         this.vel.appendTo(this.paper.getLayerView(dia.Paper.Layers.FRONT).el);
+        return this;
     }
 
     update() {
         this.vel.attr('transform', `translate(${this.cursor.x}, ${this.cursor.y})`);
     }
 
-    static get(paper, user, cursor) {
+    static get(paper: dia.Paper, user: User, cursor: Cursor): UserCursor {
         if (UserCursor.cursors.has(user.name)) {
-            const existingView = UserCursor.cursors.get(user.name);
+            const existingView = UserCursor.cursors.get(user.name)!;
             existingView.cursor = cursor;
             existingView.update();
             return existingView;
@@ -283,7 +301,7 @@ class UserCursor extends mvc.View {
         return view;
     }
 
-    static remove(user) {
+    static remove(user: User): void {
         const existingView = UserCursor.cursors.get(user.name);
         if (existingView) {
             existingView.remove();
@@ -291,8 +309,6 @@ class UserCursor extends mvc.View {
         }
     }
 }
-
-UserCursor.cursors = new Map();
 
 const colors = ['#FF5733', '#33FF57', '#3357FF', '#F333FF', '#33FFF5'];
 
@@ -305,7 +321,7 @@ const setUser = () => {
     return user;
 };
 
-const setCursorPosition = (x, y) => {
+const setCursorPosition = (x: number, y: number) => {
     provider.awareness.setLocalStateField('cursor', {
         x,
         y,
@@ -314,7 +330,7 @@ const setCursorPosition = (x, y) => {
 
 provider.awareness.on('change', () => {
     // Map each awareness state to a dom-string
-    const strings = [];
+    const strings: string[] = [];
     highlighters.mask.removeAll(paper, 'selection');
     provider.awareness.getStates().forEach((state) => {
         if (state.user) {
@@ -331,7 +347,7 @@ provider.awareness.on('change', () => {
             }
             // Update the selection
             const selection = state.selection || [];
-            const cells = selection.map((id) => graph.getCell(id));
+            const cells = (selection as dia.Cell.ID[]).map((id) => graph.getCell(id));
             cells.forEach((cell) => {
                 if (!cell) {
                     return;
@@ -350,7 +366,7 @@ provider.awareness.on('change', () => {
             });
         }
     });
-    document.querySelector('#users').innerHTML = strings.join('');
+    document.querySelector('#users')!.innerHTML = strings.join('');
 });
 
 const localUser = setUser();
