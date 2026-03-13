@@ -1,9 +1,11 @@
 import { dia, shapes } from '@joint/core';
 import { init as initCollaboration } from './collaboration';
 import { init as initInteractions } from './interactions';
+import { TextBox, TextBoxView } from './shapes/text-box';
+
 const textMargin = 5;
 
-export const cellNamespace = { ...shapes };
+export const cellNamespace = { ...shapes, custom: { TextBox, TextBoxView }};
 
 export let graph: dia.Graph;
 
@@ -37,35 +39,16 @@ export function init() {
         paper.setDimensions(window.innerWidth, window.innerHeight);
     });
 
-    const r1 = new shapes.standard.Rectangle({
+    const r1 = new TextBox({
         id: 'rect1',
         position: { x: 100, y: 100 },
-        size: { width: 140, height: 100 },
-        attrs: {
-            label: {
-                fontSize: 14,
-                fontFamily: 'sans-serif',
-                text: 'Text wrapping',
-            },
-        },
+        attrs: { label: { text: 'Hello World' }},
     });
 
-    const r2 = new shapes.standard.Rectangle({
+    const r2 = new TextBox({
         id: 'rect2',
         position: { x: 400, y: 100 },
-        size: { width: 140, height: 100 },
-        attrs: {
-            label: {
-                fontSize: 12,
-                fontFamily: 'sans-serif',
-                text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-                textWrap: {
-                    width: -10,
-                    height: -10,
-                    ellipsis: true,
-                },
-            },
-        },
+        attrs: { label: { text: 'Double-click to edit' }},
     });
 
     const l1 = new shapes.standard.Link({

@@ -145,3 +145,14 @@ export function isRemotelySelected(cellId: dia.Cell.ID) {
         return state.selection.includes(cellId);
     });
 }
+
+export function setEditingCell(cellId: dia.Cell.ID | null) {
+    provider.awareness.setLocalStateField('editing', cellId);
+}
+
+export function isRemotelyEditing(cellId: dia.Cell.ID) {
+    return Array.from(provider.awareness.getStates()).some(([, state]) => {
+        if (state.user === localUser || !state.editing) return false;
+        return state.editing === cellId;
+    });
+}
