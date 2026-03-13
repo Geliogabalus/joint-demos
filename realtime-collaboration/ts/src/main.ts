@@ -1,4 +1,4 @@
 import './styles.css';
-import './graph';
-import './collaboration';
-import './interactions';
+import { init } from './app';
+
+init();
