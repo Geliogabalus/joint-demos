@@ -50,7 +50,7 @@ export function render(states: Map<number, AwarenessState>, localUser: User): vo
 
     states.forEach((state) => {
         if (!state.user || state.user.name === localUser.name) return;
-        remoteStrings.push(`<div class="user" style='color:${state.user.color};'>• ${state.user.name}</div>`);
+        remoteStrings.push(`<div class="user" style='color:${state.user.color};'><span class="user-bullet">•</span><span class="user-name">${state.user.name}</span></div>`);
     });
 
     remoteEl.innerHTML = remoteStrings.join('');

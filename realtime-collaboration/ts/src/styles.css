@@ -44,18 +44,21 @@ html, body {
 }
 
 .user-name {
-    cursor: text;
     border-radius: 3px;
     padding: 1px 5px;
     outline: none;
     transition: background 0.15s;
 }
 
-.user-name:hover {
+.user-local .user-name {
+    cursor: text;
+}
+
+.user-local .user-name:hover {
     background: rgba(0, 0, 0, 0.06);
 }
 
-.user-name:focus {
+.user-local .user-name:focus {
     background: rgba(255, 255, 255, 0.95);
     outline: 2px solid currentColor;
     outline-offset: 1px;
