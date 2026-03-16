@@ -22,7 +22,8 @@ export function init() {
         overflow: true,
         model: graph,
         cellViewNamespace: cellNamespace,
-        gridSize: 1,
+        gridSize: 10,
+        drawGrid: { name: 'dot', args: { color: '#ccc' }},
         async: true,
         linkPinning: false,
         defaultAnchor: {
