@@ -170,7 +170,23 @@ export function isEditingName() {
 }
 
 export function isInteractionBlocked(cellId: dia.Cell.ID) {
-    return isEditingName() || isRemotelySelected(cellId) || isRemotelyEditing(cellId);
+    return (
+        isEditingName() ||
+        isRemotelySelected(cellId) ||
+        isRemotelyEditing(cellId) ||
+        isConnectedToEditingLink(cellId)
+    );
+}
+
+function isConnectedToEditingLink(cellId: dia.Cell.ID): boolean {
+    for (const [, state] of provider.awareness.getStates()) {
+        if (state.user?.name === localUser.name || !state.editing) continue;
+        const editingCell = graph.getCell(state.editing);
+        if (!editingCell?.isLink()) continue;
+        const link = editingCell as dia.Link;
+        if (link.getSourceCell()?.id === cellId || link.getTargetCell()?.id === cellId) return true;
+    }
+    return false;
 }
 
 export function isRemotelyEditing(cellId: dia.Cell.ID) {

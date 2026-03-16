@@ -54,6 +54,10 @@ html, body {
     cursor: text;
 }
 
+.joint-link .label {
+    cursor: pointer;
+}
+
 .user-name--editing {
     background: rgba(255, 220, 0, 0.35);
     border-radius: 3px;
