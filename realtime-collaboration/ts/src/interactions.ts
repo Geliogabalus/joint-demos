@@ -1,7 +1,7 @@
 import { dia, elementTools } from '@joint/core';
 
 import { graph, paper } from './app';
-import { provider, localUser, isRemotelySelected, isRemotelyEditing, setCursorPosition, setEditingCell } from './collaboration';
+import { provider, localUser, isInteractionBlocked, isEditingName, setCursorPosition, setEditingCell } from './collaboration';
 import { TextBox } from './shapes/text-box';
 
 let activeEditor: HTMLElement | null = null;
@@ -9,6 +9,7 @@ let activeEditor: HTMLElement | null = null;
 export function init() {
 
     paper.on('blank:pointerdblclick', (_evt, x, y) => {
+        if (isEditingName()) return;
         const box = new TextBox({
             position: { x: x - 40, y: y - 20 },
             attrs: { label: { text: 'New box' }},
@@ -18,12 +19,12 @@ export function init() {
 
     paper.on('element:pointerdblclick', (elementView) => {
         const cell = elementView.model as dia.Element;
-        if (isRemotelySelected(cell.id) || isRemotelyEditing(cell.id)) return;
+        if (isInteractionBlocked(cell.id)) return;
         startEditing(cell);
     });
 
     paper.on('element:mouseenter', (elementView) => {
-        if (isRemotelySelected(elementView.model.id) || isRemotelyEditing(elementView.model.id)) return;
+        if (isInteractionBlocked(elementView.model.id)) return;
         elementView.addTools(
             new dia.ToolsView({
                 tools: [
@@ -48,7 +49,7 @@ export function init() {
     });
 
     paper.on('cell:pointerdown', (cellView, evt) => {
-        if (isRemotelySelected(cellView.model.id) || isRemotelyEditing(cellView.model.id)) {
+        if (isInteractionBlocked(cellView.model.id)) {
             cellView.preventDefaultInteraction(evt);
             return;
         }

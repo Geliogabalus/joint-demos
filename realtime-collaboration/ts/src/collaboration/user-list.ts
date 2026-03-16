@@ -4,11 +4,12 @@ interface AwarenessState {
     user?: { name: string; color: string };
     cursor?: { x: number; y: number };
     selection?: string[];
+    editingName?: boolean;
 }
 
 let remoteEl: HTMLElement;
 
-export function init(localUser: User, onNameChange: (name: string) => void): void {
+export function init(localUser: User, onNameChange: (name: string) => void, onEditingChange: (editing: boolean) => void): void {
     const usersEl = document.querySelector('#users')!;
 
     const localEl = document.createElement('div');
@@ -21,7 +22,12 @@ export function init(localUser: User, onNameChange: (name: string) => void): voi
 
     const nameEl = localEl.querySelector('.user-name') as HTMLElement;
 
+    nameEl.addEventListener('focus', () => {
+        onEditingChange(true);
+    });
+
     nameEl.addEventListener('blur', () => {
+        onEditingChange(false);
         const newName = nameEl.textContent?.trim() || localUser.name;
         nameEl.textContent = newName;
         if (newName !== localUser.name) {
@@ -50,7 +56,8 @@ export function render(states: Map<number, AwarenessState>, localUser: User): vo
 
     states.forEach((state) => {
         if (!state.user || state.user.name === localUser.name) return;
-        remoteStrings.push(`<div class="user" style='color:${state.user.color};'><span class="user-bullet">•</span><span class="user-name">${state.user.name}</span></div>`);
+        const editingClass = state.editingName ? ' user-name--editing' : '';
+        remoteStrings.push(`<div class="user" style='color:${state.user.color};'><span class="user-bullet">•</span><span class="user-name${editingClass}">${state.user.name}</span></div>`);
     });
 
     remoteEl.innerHTML = remoteStrings.join('');

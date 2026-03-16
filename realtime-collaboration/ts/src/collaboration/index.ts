@@ -81,6 +81,8 @@ export function init() {
     initUserList(localUser, (newName) => {
         localUser.name = newName;
         provider.awareness.setLocalStateField('user', localUser);
+    }, (editing) => {
+        provider.awareness.setLocalStateField('editingName', editing);
     });
 
     // Awareness: cursors, selection highlights, user list
@@ -90,6 +92,7 @@ export function init() {
         const activeNames = new Set<string>();
 
         highlighters.mask.removeAll(paper, 'selection');
+        highlighters.mask.removeAll(paper, 'editing');
 
         states.forEach((state) => {
             if (!state.user) return;
@@ -122,6 +125,18 @@ export function init() {
                     { attrs: { stroke: state.user.color, strokeWidth: 3 }}
                 );
             });
+
+            if (!isLocal && state.editing) {
+                const cell = graph.getCell(state.editing);
+                if (cell) {
+                    highlighters.mask.add(
+                        cell.findView(paper),
+                        cell.isLink() ? 'line' : 'body',
+                        'editing',
+                        { attrs: { stroke: state.user.color, strokeWidth: 3, strokeDasharray: '6 3' }}
+                    );
+                }
+            }
         });
 
         for (const [name, user] of remoteUsers) {
@@ -148,6 +163,14 @@ export function isRemotelySelected(cellId: dia.Cell.ID) {
 
 export function setEditingCell(cellId: dia.Cell.ID | null) {
     provider.awareness.setLocalStateField('editing', cellId);
+}
+
+export function isEditingName() {
+    return !!provider.awareness.getLocalState()?.editingName;
+}
+
+export function isInteractionBlocked(cellId: dia.Cell.ID) {
+    return isEditingName() || isRemotelySelected(cellId) || isRemotelyEditing(cellId);
 }
 
 export function isRemotelyEditing(cellId: dia.Cell.ID) {

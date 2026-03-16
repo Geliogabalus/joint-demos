@@ -54,6 +54,12 @@ html, body {
     cursor: text;
 }
 
+.user-name--editing {
+    background: rgba(255, 220, 0, 0.35);
+    border-radius: 3px;
+    padding: 1px 5px;
+}
+
 .user-local .user-name:hover {
     background: rgba(0, 0, 0, 0.06);
 }
