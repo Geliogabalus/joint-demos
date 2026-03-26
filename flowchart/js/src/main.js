@@ -1,4 +1,4 @@
-import { dia, shapes, highlighters, linkTools } from '@joint/plus';
+import { dia, shapes, highlighters, linkTools } from '@joint/core';
 import './styles.scss';
 
 // Styles
