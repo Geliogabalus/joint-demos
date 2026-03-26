@@ -1,0 +1,127 @@
+@import '@joint/plus/joint-plus.css';
+
+:root {
+    --color-primary: #4a7cc9;
+    --color-selection: #80bdff;
+    --color-related: #ff6b6b;
+    --color-border: #ddd;
+    --color-sidebar-bg: #f8f9fa;
+    --color-handle-bg: rgba(255, 255, 255, 0.4);
+    --color-shadow: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+#sidebar {
+    width: 200px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--color-border);
+    background: var(--color-sidebar-bg);
+    z-index: 2;
+    position: relative;
+}
+
+#stencil {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    border: none;
+}
+
+#navigator {
+    height: 150px;
+    flex-shrink: 0;
+    border-top: 1px solid var(--color-border);
+    position: relative;
+}
+
+#navigator .joint-navigator {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+#canvas {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Add container button hover */
+#canvas .joint-tool .add-container-btn {
+    transition: fill 0.15s ease, stroke 0.15s ease;
+}
+
+#canvas .joint-tool:hover circle.add-container-btn {
+    fill: var(--color-selection);
+    stroke: var(--color-selection);
+}
+
+#canvas .joint-tool:hover text.add-container-btn {
+    fill: #fff;
+}
+
+/* Stencil */
+#stencil .joint-stencil .joint-type-groupmodel [joint-selector="body"] {
+    fill: var(--color-stencil-bg);
+    fill-opacity: 1;
+}
+
+#stencil .joint-stencil .joint-cell:hover [joint-selector="body"] {
+    filter: drop-shadow(2px 2px 2px var(--color-shadow));
+}
+
+/* Halo & Selection handles */
+#canvas .joint-halo .handle,
+#canvas .joint-selection .handle {
+    background-color: var(--color-handle-bg);
+    border-radius: 2px;
+}
+
+/* Selection */
+#canvas .joint-selection-wrapper {
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+}
+
+#canvas .related-link {
+    stroke: var(--color-related);
+    stroke-width: 2px;
+}
+
+/* Snaplines */
+#canvas .joint-snaplines .snapline.horizontal {
+    border-bottom: 1px dashed var(--color-selection);
+}
+
+#canvas .joint-snaplines .snapline.vertical {
+    border-right: 1px dashed var(--color-selection);
+}

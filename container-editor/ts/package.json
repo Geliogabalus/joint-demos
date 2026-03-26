@@ -1,0 +1,23 @@
+{
+  "name": "@joint/demo-container-editor",
+  "version": "4.2.3",
+  "main": "src/main.ts",
+  "author": {
+    "name": "client IO",
+    "url": "https://client.io"
+  },
+  "license": "http://jointjs.com/license",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@joint/plus": "4.2.2"
+  }
+}
