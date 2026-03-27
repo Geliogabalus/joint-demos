@@ -3,7 +3,8 @@
 :root {
     --color-primary: #4a7cc9;
     --color-selection: #80bdff;
-    --color-related: #ff6b6b;
+    --color-related-link: #ff6b6b;
+    --color-related-element: #fceaea;
     --color-border: #ddd;
     --color-sidebar-bg: #f8f9fa;
     --color-handle-bg: rgba(255, 255, 255, 0.4);
@@ -51,6 +52,7 @@ html, body {
     overflow: hidden;
     position: relative;
     border: none;
+    background: transparent;
 }
 
 #navigator {
@@ -90,13 +92,8 @@ html, body {
 }
 
 /* Stencil */
-#stencil .joint-stencil .joint-type-groupmodel [joint-selector="body"] {
-    fill: var(--color-stencil-bg);
-    fill-opacity: 1;
-}
-
-#stencil .joint-stencil .joint-cell:hover [joint-selector="body"] {
-    filter: drop-shadow(2px 2px 2px var(--color-shadow));
+#stencil .joint-cell:hover :where([joint-selector="body"], [joint-selector="top"]) {
+    stroke: var(--color-selection);
 }
 
 /* Halo & Selection handles */
@@ -113,8 +110,12 @@ html, body {
 }
 
 #canvas .related-link {
-    stroke: var(--color-related);
+    stroke: var(--color-related-link);
     stroke-width: 2px;
+}
+
+#canvas .related-neighbor {
+    fill: var(--color-related-element);
 }
 
 /* Snaplines */
@@ -124,4 +125,18 @@ html, body {
 
 #canvas .joint-snaplines .snapline.vertical {
     border-right: 1px dashed var(--color-selection);
+}
+
+/* Inline text editor */
+#canvas .inline-text-editor {
+    position: absolute;
+    box-sizing: border-box;
+    transform-origin: 0 0;
+    border: 1px solid var(--color-selection);
+    border-radius: 2px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.95);
+    text-align: center;
+    padding: 2px 4px;
+    z-index: 10;
 }

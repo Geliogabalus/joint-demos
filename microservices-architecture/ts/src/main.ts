@@ -1,14 +1,15 @@
 import { dia, ui, highlighters } from '@joint/plus';
-import { ContainerModel, RectangleModel, CircleModel, GroupModel, LinkModel, cellNamespace } from './models';
+import { ContainerModel, ServiceModel, DBModel, GroupModel, LinkModel, cellNamespace } from './models';
 import { layoutContainers } from './layout';
 import { addContainerTools } from './containers';
 import { createExampleDiagram } from './example';
 import { NavigatorElementView } from './views';
 import { groupAwareAnchor, groupAwareRouter } from './link-routing';
 import { colors, icons } from './theme';
+import { openTextEditor } from './text-editor';
 import './styles.css';
 
-/** Initializes the container editor: graph, paper, tools, stencil, and example diagram. */
+/** Initializes the microservices architecture demo: graph, paper, tools, stencil, and example diagram. */
 export const init = () => {
 
     const canvasEl = document.getElementById('canvas')!;
@@ -42,6 +43,7 @@ export const init = () => {
         embeddingMode: true,
         findParentBy: 'bbox',
         clickThreshold: 10,
+        moveThreshold: 10,
         validateEmbedding: (childView: dia.CellView, parentView: dia.CellView) => {
             const child = childView.model as dia.Element;
             const parent = parentView.model as dia.Element;
@@ -131,6 +133,11 @@ export const init = () => {
         });
     });
 
+    paper.on('link:connect', () => {
+        // Make sure the new link is highlighted if connected to a selected element
+        selection.collection.reset(selection.collection.toArray());
+    });
+
     // --- Snaplines ---
     const snaplines = new ui.Snaplines({ paper });
 
@@ -211,14 +218,53 @@ export const init = () => {
 
     selection.removeHandle('resize');
     selection.removeHandle('rotate');
-    selection.changeHandle('remove', { icon: icons.remove });
+    selection.changeHandle('remove', { icon: icons.remove, attrs: { '.handle': { title: 'Remove' } } });
+
+    selection.on('action:group:pointerup', () => {
+        const elements = selection.collection
+            .toArray()
+            .filter(c => c.isElement()) as dia.Element[];
+        if (elements.length < 2) return;
+        const containerId = elements[0].parent();
+        if (!containerId) return;
+        const container = graph.getCell(containerId) as dia.Element;
+        if (!container) return;
+        const group = new GroupModel({ attrs: { label: { text: 'Group' } } });
+        graph.startBatch('group');
+        group.addTo(graph);
+        container.embed(group);
+        group.embed(elements, { reparent: true });
+        group.fitContent();
+        graph.stopBatch('group');
+        selection.collection.reset([group]);
+    });
 
     // React to selection changes — show halos and highlight connected links
     selection.collection.on('reset add remove', () => {
         ui.Halo.clear(paper);
         ui.FreeTransform.clear(paper);
         highlighters.addClass.removeAll(paper, 'related-link');
+        highlighters.addClass.removeAll(paper, 'related-neighbor');
         const cells = selection.collection.toArray();
+
+        // Show "group" handle only when all selected elements share the same
+        // container parent and none of them is a group or container.
+        selection.removeHandle('group');
+        if (cells.length >= 2 && cells.every(c => {
+            if (!c.isElement()) return false;
+            const el = c as dia.Element;
+            return !ContainerModel.isContainer(el) && !GroupModel.isGroup(el);
+        })) {
+            const firstParent = (cells[0] as dia.Element).parent();
+            if (firstParent) {
+                const parent = graph.getCell(firstParent);
+                if (parent && ContainerModel.isContainer(parent as dia.Element)
+                    && cells.every(c => (c as dia.Element).parent() === firstParent)) {
+                    selection.addHandle({ name: 'group', position: ui.Selection.HandlePosition.SW, icon: icons.group, attrs: { '.handle': { title: 'Group' } } });
+                }
+            }
+        }
+
         if (cells.length === 1) {
             const cell = cells[0];
             const view = cell.findView(paper);
@@ -230,6 +276,14 @@ export const init = () => {
                         link.toFront({ ignoreCommandManager: true });
                         highlighters.addClass.add(linkView, 'line', 'related-link', {
                             className: 'related-link'
+                        });
+                    }
+                });
+                graph.getNeighbors(cell as dia.Element).forEach(neighbor => {
+                    const neighborView = neighbor.findView(paper);
+                    if (neighborView) {
+                        highlighters.addClass.add(neighborView, 'body', 'related-neighbor', {
+                            className: 'related-neighbor'
                         });
                     }
                 });
@@ -253,7 +307,7 @@ export const init = () => {
                 if (containerCount <= 1) {
                     halo.removeHandle('remove');
                 } else {
-                    halo.changeHandle('remove', { icon: icons.remove });
+                    halo.changeHandle('remove', { icon: icons.remove, attrs: { '.handle': { title: 'Remove' } } });
                 }
                 halo.render();
             } else {
@@ -274,13 +328,31 @@ export const init = () => {
                 if (isGroup) {
                     halo.removeHandle('fork');
                     halo.removeHandle('link');
+                    halo.removeHandle('unlink');
+                    halo.addHandle({ name: 'ungroup', position: 'sw', icon: icons.ungroup, attrs: { '.handle': { title: 'Ungroup' } } });
+                    halo.on('action:ungroup:pointerup', () => {
+                        const group = cell as dia.Element;
+                        const containerId = group.parent();
+                        if (!containerId) return;
+                        const container = graph.getCell(containerId) as dia.Element;
+                        if (!container) return;
+                        const children = group.getEmbeddedCells().filter(c => c.isElement()) as dia.Element[];
+                        graph.startBatch('ungroup');
+                        children.forEach(child => container.embed(child, { reparent: true }));
+                        group.remove();
+                        graph.stopBatch('ungroup');
+                        selection.collection.reset(children);
+                    });
                 }
-                halo.changeHandle('remove', { icon: icons.remove });
-                halo.changeHandle('clone', { icon: icons.clone });
+                halo.changeHandle('remove', { icon: icons.remove, attrs: { '.handle': { title: 'Remove' } } });
+                halo.changeHandle('clone', { icon: icons.clone, attrs: { '.handle': { title: 'Clone' } } });
                 if (!isGroup) {
-                    halo.changeHandle('fork', { icon: icons.fork });
-                    halo.changeHandle('link', { icon: icons.link, position: 'se' });
-                    halo.changeHandle('unlink', { icon: icons.unlink, position: 'sw' });
+                    halo.changeHandle('fork', { icon: icons.fork, attrs: { '.handle': { title: 'Fork' } } });
+                    halo.changeHandle('link', { icon: icons.link, position: 'se', attrs: { '.handle': { title: 'Link' } } });
+                    halo.changeHandle('unlink', { icon: icons.unlink, position: 'sw', attrs: { '.handle': { title: 'Unlink' } } });
+                    halo.on('action:unlink:pointerdown', (evt) => {
+                        highlighters.addClass.removeAll(paper, 'related-neighbor');
+                    });
                 }
                 halo.render();
                 if (isGroup) {
@@ -337,15 +409,33 @@ export const init = () => {
 
     stencil.render();
     stencil.load([
-        new RectangleModel({ position: { x: 25, y: 20 }, attrs: { label: { text: 'Rect' } } }),
-        new CircleModel({ position: { x: 100, y: 20 }, attrs: { label: { text: 'Circle' } } }),
+        new ServiceModel({ position: { x: 25, y: 20 }, attrs: { label: { text: 'Service' } } }),
+        new DBModel({ position: { x: 125, y: 20 }, attrs: { label: { text: 'DB' } } }),
         new GroupModel({ position: { x: 25, y: 90 }, attrs: { label: { text: 'Group' } } })
     ]);
 
     // --- Click selection: set selection.collection ---
-    paper.on('element:pointerclick', (elementView: dia.ElementView) => {
+    paper.on('element:pointerclick', (elementView: dia.ElementView, evt: dia.Event) => {
         const element = elementView.model;
-        selection.collection.reset([element]);
+        if (keyboard.isActive('ctrl meta', evt)) {
+            if (ContainerModel.isContainer(element)) return;
+            // Clear any selected containers before cherry-picking elements
+            const hasContainers = selection.collection.toArray().some((cell: dia.Cell) =>
+                cell.isElement() && ContainerModel.isContainer(cell as dia.Element)
+            );
+            if (hasContainers) selection.collection.reset([]);
+            if (selection.collection.has(element)) {
+                selection.collection.remove(element);
+            } else {
+                selection.collection.add(element);
+            }
+        } else {
+            selection.collection.reset([element]);
+        }
+    });
+
+    paper.on('element:pointerdblclick', (elementView: dia.ElementView) => {
+        openTextEditor(paper, elementView.model);
     });
 
     paper.on('blank:pointerdown', (evt: dia.Event) => {

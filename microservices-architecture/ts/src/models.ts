@@ -1,4 +1,4 @@
-import { dia } from '@joint/plus';
+import { dia, util, shapes } from '@joint/plus';
 import { colors, containerPalette } from './theme';
 
 let containerColorIndex = 0;
@@ -78,7 +78,12 @@ export class ContainerModel extends dia.Element {
                     fontSize: 14,
                     fontWeight: 700,
                     fill: colors.containerLabelFill,
-                    pointerEvents: 'none'
+                    pointerEvents: 'none',
+                    textWrap: {
+                        width: 'calc(w - 20)',
+                        maxLineCount: 1,
+                        ellipsis: true
+                    }
                 }
             },
             z: 1
@@ -103,8 +108,8 @@ export class ContainerModel extends dia.Element {
     }
 }
 
-/** Rectangular element that can be embedded in containers or groups. */
-export class RectangleModel extends dia.Element {
+/** Rectangular service element that can be embedded in containers or groups. */
+export class ServiceModel extends dia.Element {
 
     preinitialize() {
         this.markup = [{
@@ -119,8 +124,8 @@ export class RectangleModel extends dia.Element {
     defaults() {
         return {
             ...super.defaults,
-            type: 'RectangleModel',
-            size: { width: 50, height: 50 },
+            type: 'ServiceModel',
+            size: { width: 70, height: 50 },
             z: 2,
             attrs: {
                 root: {
@@ -142,56 +147,54 @@ export class RectangleModel extends dia.Element {
                     y: 'calc(0.5 * h)',
                     fontFamily: 'sans-serif',
                     fontSize: 11,
-                    fill: colors.elementLabelFill
+                    fill: colors.elementLabelFill,
+                    textWrap: {
+                        width: 'calc(w - 10)',
+                        maxLineCount: 2,
+                        ellipsis: true
+                    }
                 }
             }
         };
     }
 }
 
-/** Elliptical element that can be embedded in containers or groups. */
-export class CircleModel extends dia.Element {
-
-    preinitialize() {
-        this.markup = [{
-            tagName: 'ellipse',
-            selector: 'body'
-        }, {
-            tagName: 'text',
-            selector: 'label'
-        }];
-    }
+/** Cylinder (database) element that can be embedded in containers or groups. */
+export class DBModel extends shapes.standard.Cylinder {
 
     defaults() {
-        return {
-            ...super.defaults,
-            type: 'CircleModel',
-            size: { width: 50, height: 50 },
+        const attributes = {
+            type: 'DBModel',
+            size: { width: 50, height: 40 },
             z: 2,
             attrs: {
                 root: {
                     highlighterSelector: 'body',
                 },
                 body: {
-                    cx: 'calc(0.5 * w)',
-                    cy: 'calc(0.5 * h)',
-                    rx: 'calc(0.5 * w)',
-                    ry: 'calc(0.5 * h)',
+                    lateralArea: 10,
                     fill: colors.elementFill,
                     stroke: colors.elementStroke,
-                    strokeWidth: 1
+                    strokeWidth: 1,
+                },
+                top: {
+                    fill: colors.elementFill,
+                    stroke: colors.elementStroke,
+                    strokeWidth: 1,
                 },
                 label: {
-                    textVerticalAnchor: 'middle',
-                    textAnchor: 'middle',
-                    x: 'calc(0.5 * w)',
-                    y: 'calc(0.5 * h)',
                     fontFamily: 'sans-serif',
                     fontSize: 11,
-                    fill: colors.elementLabelFill
+                    fill: colors.elementLabelFill,
+                    textWrap: {
+                        width: 'calc(w + 20)',
+                        maxLineCount: 2,
+                        ellipsis: true
+                    }
                 }
             }
         };
+        return util.defaultsDeep(attributes, super.defaults);
     }
 }
 
@@ -200,6 +203,13 @@ export class GroupModel extends dia.Element {
 
     static isGroup(el: dia.Element): el is GroupModel {
         return el.get('type') === 'GroupModel';
+    }
+
+    fitContent(opt?: Record<string, unknown>) {
+        return this.fitToChildren({
+            padding: { top: 30, left: 10, right: 10, bottom: 10 },
+            ...opt
+        });
     }
 
     preinitialize() {
@@ -237,7 +247,12 @@ export class GroupModel extends dia.Element {
                     y: 5,
                     fontFamily: 'sans-serif',
                     fontSize: 10,
-                    fill: colors.groupLabelFill
+                    fill: colors.groupLabelFill,
+                    textWrap: {
+                        width: 'calc(w - 10)',
+                        maxLineCount: 1,
+                        ellipsis: true
+                    }
                 }
             }
         };
@@ -295,8 +310,8 @@ export class LinkModel extends dia.Link {
 /** Namespace for model/view resolution by the graph and paper. */
 export const cellNamespace = {
     ContainerModel,
-    RectangleModel,
-    CircleModel,
+    ServiceModel,
+    DBModel,
     GroupModel,
     LinkModel
 };

@@ -1,8 +1,8 @@
-# JointJS+: Container Editor (TypeScript) <a href="https://www.jointjs.com/jointjs-plus"><img src="../../jointjs-plus-badge.svg" alt="JointJS+" width="123" align="right" /></a>
+# JointJS+: Microservices Architecture (TypeScript) <a href="https://www.jointjs.com/jointjs-plus"><img src="../../jointjs-plus-badge.svg" alt="JointJS+" width="123" align="right" /></a>
 
-Container Editor is a JointJS+ demo application that allows you to organize elements into containers and groups, with links that intelligently route between groups.
+Microservices Architecture is a JointJS+ demo application for modeling microservices with services, databases, and groups organized into containers, with links that intelligently route between groups.
 
-This demo is also available online at [jointjs.com](https://jointjs.com/demos/container-editor).
+This demo is also available online at [jointjs.com](https://jointjs.com/demos/microservices-architecture).
 
 ## Features
 
@@ -33,7 +33,7 @@ This demo is also available online at [jointjs.com](https://jointjs.com/demos/co
 You can download this demo using our [`@joint/cli` tool](https://www.npmjs.com/package/@joint/cli):
 
 ```bash
-npx @joint/cli download container-editor/ts
+npx @joint/cli download microservices-architecture/ts
 ```
 
 Alternatively, you can get the [copy of the repository](https://github.com/clientIO/joint-demos/archive/refs/heads/main.zip) from GitHub as usual.
