@@ -2,13 +2,20 @@ import { linkTools, elementTools, dia, shapes, highlighters } from '@joint/core'
 import { Node, Edge } from '../shared/shapes';
 import ResizeTool from '../shared/resize-tool';
 import { AvoidRouter } from '../shared/avoid-router';
-import json from './example.json';
+import { createExampleCells } from '../shared/example-graph';
+import { markAwaiting, unmarkAwaiting } from '../shared/awaiting';
 
-// Avoid Docs
-// https://www.adaptagrams.org/documentation/annotated.html
-
-// There is a bug in JointJS, that does not allow you to use port
-// ids that are numbers.
+// Web Worker variant — the libavoid router runs in a dedicated Worker so
+// routing never blocks the main thread. The main thread owns the JointJS
+// graph; the worker owns a mirror graph plus a libavoid instance, and the
+// two stay in sync via the `add` / `remove` / `change` / `reset` commands
+// wired up below. The worker posts `routed` back with the computed link
+// geometry, and in the meantime each affected link wears an
+// `awaiting-update` highlighter so the user sees a pending state.
+//
+// Libavoid docs: https://www.adaptagrams.org/documentation/annotated.html
+//
+// Note: JointJS does not currently allow port ids that are pure numbers.
 
 export const init = async() => {
 
@@ -75,14 +82,11 @@ export const init = async() => {
         },
     });
 
-    graph.fromJSON(json);
+    // Seed the graph from the shared sample. Every link starts in the
+    // awaiting-update state until the worker's first `routed` reply lands.
+    graph.addCells(createExampleCells());
 
-
-    graph.getLinks().forEach((link) => {
-        highlighters.addClass.add(link.findView(paper), 'line', 'awaiting-update', {
-            className: 'awaiting-update'
-        });
-    });
+    graph.getLinks().forEach((link) => markAwaiting(link.findView(paper)));
 
 
     canvasEl.appendChild(paper.el);
@@ -162,40 +166,62 @@ export const init = async() => {
         highlighters.addClass.remove(linkView);
     });
 
-    // Start the Avoid Router.
+    // --- Avoid Router (Web Worker) ---
+    //
+    // Commands we send:
+    //   reset  — full cell set; called on bootstrap, and any time we want the
+    //            worker to start from a clean libavoid state.
+    //   add    — new cell appeared in the graph.
+    //   remove — cell was removed.
+    //   change — routing-relevant change on a cell (see the `change` handler
+    //            below for the filters we apply before posting).
+    //
+    // Messages we receive:
+    //   routed — array of links with worker-computed { vertices, source, target }.
 
-    const routerWorker = new Worker(new URL('./worker.js', import.meta.url));
+    let routerWorker;
 
-    routerWorker.onmessage = (e) => {
-        const { command, ...data } = e.data;
-        switch (command) {
-            case 'routed': {
-                const { cells } = data;
-                cells.forEach((cell) => {
-                    const model = graph.getCell(cell.id);
-                    if (model.isElement()) return;
-                    model.set({
-                        vertices: cell.vertices,
-                        source: cell.source,
-                        target: cell.target,
-                        router: null
-                    }, {
-                        fromWorker: true
+    function createRouterWorker() {
+        const w = new Worker(new URL('./worker.js', import.meta.url));
+        w.onmessage = (e) => {
+            const { command, ...data } = e.data;
+            switch (command) {
+                case 'routed': {
+                    const { cells } = data;
+                    cells.forEach((cell) => {
+                        const model = graph.getCell(cell.id);
+                        if (model.isElement()) return;
+                        // Skip if the user has disconnected an endpoint locally while
+                        // the worker was routing — applying would snap it back.
+                        if (!model.source()?.id || !model.target()?.id) return;
+                        model.set({
+                            vertices: cell.vertices,
+                            source: cell.source,
+                            target: cell.target,
+                            router: null
+                        }, {
+                            fromWorker: true
+                        });
+                        unmarkAwaiting(model.findView(paper));
                     });
-                });
-                highlighters.addClass.removeAll(paper, 'awaiting-update');
-                break;
+                    break;
+                }
+                default:
+                    console.log('Unknown command', command);
+                    break;
             }
-            default:
-                console.log('Unknown command', command);
-                break;
-        }
-    };
+        };
+        return w;
+    }
 
-    routerWorker.postMessage([{
-        command: 'reset',
-        cells: graph.toJSON().cells
-    }]);
+    // `reset` tears down any prior worker so libavoid never sees stale state.
+    function resetRouter(cells) {
+        routerWorker?.terminate();
+        routerWorker = createRouterWorker();
+        routerWorker.postMessage([{ command: 'reset', cells }]);
+    }
+
+    resetRouter(graph.toJSON().cells);
 
     graph.on('change', (cell, opt) => {
 
@@ -203,18 +229,29 @@ export const init = async() => {
             return;
         }
 
+        if (cell.isLink()) {
+            // The worker only cares about source/target changes on links.
+            if (!cell.hasChanged('source') && !cell.hasChanged('target')) return;
+            // If the link was dangling and is still dangling, there's nothing to route.
+            const wasRoutable = Boolean(cell.previous('source')?.id && cell.previous('target')?.id);
+            const isRoutable = Boolean(cell.source()?.id && cell.target()?.id);
+            if (!wasRoutable && !isRoutable) return;
+        }
+
         routerWorker.postMessage([{
             command: 'change',
             cell: cell.toJSON()
         }]);
 
+        // When an element moves or resizes, fall connected links back to the
+        // rightAngle router for the duration of the worker round-trip — it gives
+        // a reasonable-looking route immediately instead of freezing the stale
+        // libavoid vertices in place.
         if (cell.isElement() && (cell.hasChanged('position') || cell.hasChanged('size'))) {
             const links = graph.getConnectedLinks(cell);
             links.forEach((link) => {
                 link.router() || link.router('rightAngle');
-                highlighters.addClass.add(link.findView(paper), 'line', 'awaiting-update', {
-                    className: 'awaiting-update'
-                });
+                markAwaiting(link.findView(paper));
             });
         }
 
@@ -232,17 +269,26 @@ export const init = async() => {
             command: 'add',
             cell: cell.toJSON()
         }]);
+        if (cell.isLink()) {
+            markAwaiting(cell.findView(paper));
+        }
     });
 
+    // When the user drops a dragged endpoint onto a port, show a rightAngle
+    // route as a placeholder until the worker's computed route arrives.
     paper.on('link:snap:connect', (linkView) => {
         linkView.model.router('rightAngle');
     });
 
+    // When the user drags an endpoint off a port, clear the stale libavoid
+    // geometry immediately. The link then stays in 'awaiting-update' until
+    // the user reconnects it or removes it.
     paper.on('link:snap:disconnect', (linkView) => {
         linkView.model.set({
             vertices: [],
             router: null
         });
+        markAwaiting(linkView);
     });
 
 };
