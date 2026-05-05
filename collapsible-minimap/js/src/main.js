@@ -251,8 +251,10 @@ function showMinimap() {
             async: true,
             sorting: dia.Paper.sorting.APPROX,
             elementView: NavigatorElementView,
-            linkView: NavigatorLinkView,
             cellViewNamespace: {},
+            viewManagement: true,
+            // Don't render links in the navigator
+            cellVisibility: (cell) => !cell.isLink(),
             background: {
                 color: 'transparent'
             }

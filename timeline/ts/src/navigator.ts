@@ -65,8 +65,9 @@ export function setupNavigator(graph: dia.Graph, paperScroller: ui.PaperScroller
         paperOptions: {
             async: true,
             overflow: true,
-            viewport: (view) => {
-                if (view.model.get('type') !== 'timeline.Milestone') return false;
+            viewManagement: true,
+            cellVisibility: (cell) => {
+                if (cell.get('type') !== 'timeline.Milestone') return false;
                 return true;
             },
             elementView: NavigatorElementView,
