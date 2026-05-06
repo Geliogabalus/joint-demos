@@ -53,7 +53,7 @@
 <script lang="ts">
     import Component from 'vue-class-component';
     import { Prop } from 'vue-property-decorator';
-    import { shapes } from '@joint/plus';
+    import type { app } from '../../../../joint-plus/shapes';
 
     import { BaseInspector } from '../Base-inspector/base-inspector';
     interface InspectorPort {
@@ -62,7 +62,7 @@
     }
     @Component({})
     export default class MessageInspector extends BaseInspector {
-        @Prop() cell: shapes.app.Message;
+        @Prop() cell: app.Message;
         public label = '';
         public description = '';
         public icon = '';

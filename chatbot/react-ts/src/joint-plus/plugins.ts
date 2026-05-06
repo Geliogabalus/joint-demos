@@ -13,7 +13,7 @@ import { dia, shapes, ui } from '@joint/plus';
 
 import { toolbarConfig } from './config/toolbar.config';
 import { BACKGROUND_COLOR, SECONDARY_BACKGROUND_COLOR, GRID_SIZE, PADDING_L, PADDING_S } from '../theme';
-import './shapes/index';
+import { app } from './shapes';
 
 export function createPlugins(
     scopeElement: Element,
@@ -23,7 +23,7 @@ export function createPlugins(
 ) {
     // Graph
     // https://docs.jointjs.com/api/dia/SearchGraph
-    const graph = new dia.SearchGraph({}, { cellNamespace: shapes });
+    const graph = new dia.SearchGraph({}, { cellNamespace: { app }});
     graph.setQuadTreeLazyMode(false);
 
     // Paper
@@ -58,7 +58,7 @@ export function createPlugins(
         viewManagement: {
             disposeHidden: true,
         },
-        defaultLink: () => new shapes.app.Link(),
+        defaultLink: () => new app.Link(),
         validateConnection: (
             sourceView: dia.CellView,
             sourceMagnet: SVGElement,
@@ -107,12 +107,11 @@ export function createPlugins(
                 color: SECONDARY_BACKGROUND_COLOR
             }
         },
-        dragStartClone: (element: dia.Element) => {
-            const name = element.get('name');
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const Shape = (shapes.app as any)[name];
+        dragStartClone: (cell: dia.Cell) => {
+            const name = cell.get('name') as keyof typeof app;
+            const Shape = app[name] as unknown as typeof app.Base;
             if (!Shape) throw new Error(`Invalid stencil shape name: ${name}`);
-            return Shape.fromStencilShape(element);
+            return Shape.fromStencilShape(cell as dia.Element);
         },
         layout: {
             columnWidth: 110,

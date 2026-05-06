@@ -10,6 +10,7 @@ import { ShapeTypesEnum } from '../../../joint-plus/shapes/app.shapes';
 
 import type { ReactElement } from 'react';
 import type { dia, shapes } from '@joint/plus';
+import { app } from 'src/joint-plus/shapes';
 
 const Inspector = (): ReactElement => {
     const [cell, setCell] = useState<dia.Cell>(null);
@@ -33,9 +34,9 @@ const Inspector = (): ReactElement => {
     const chooseInspector = (): ReactElement => {
         switch (cell.get('type')) {
             case ShapeTypesEnum.MESSAGE:
-                return <MessageInspector cell={cell as shapes.app.Message}/>;
+                return <MessageInspector cell={cell as app.Message}/>;
             case ShapeTypesEnum.LINK:
-                return <LinkInspector cell={cell as dia.Link}/>;
+                return <LinkInspector cell={cell as app.Link}/>;
             case ShapeTypesEnum.FLOWCHART_START:
                 return <LabelInspector cell={cell}/>;
             case ShapeTypesEnum.FLOWCHART_END:

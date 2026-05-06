@@ -9,7 +9,7 @@ https://www.jointjs.com/license or from the JointJS+ archive as was
 distributed by client IO. See the LICENSE file.
 */
 
-import { ui, shapes, format } from '@joint/plus';
+import { ui, format } from '@joint/plus';
 import { SharedEvents } from './controller';
 import { addCellTools } from './tools';
 import { ZOOM_MAX, ZOOM_MIN, ZOOM_STEP } from '../theme';
@@ -131,8 +131,7 @@ export function importGraphFromJSON(service: JointPlusService, json: dia.Graph.J
 
 export function loadStencilShapes(service: JointPlusService): void {
     const { stencil } = service;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const stencilShapes = stencilConfig.shapes.map(shape => new (shapes.stencil as any)[shape.name](shape));
+    const stencilShapes = stencilConfig.shapes.map(shapeData => new (shapeData.shape)(shapeData));
     stencil.load(stencilShapes);
 }
 

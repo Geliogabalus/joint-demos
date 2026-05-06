@@ -36,6 +36,9 @@ import { importGraphFromJSON, loadStencilShapes, zoomToFit } from '../../joint-p
 
 import exampleGraphJSON from '../../joint-plus/config/example-graph.json';
 
+import type { dia } from '@joint/plus';
+
+
 @Component({
     components: {
         Inspector,
@@ -54,10 +57,10 @@ export default class Chatbot extends Vue {
     public mounted(): void {
         const { $el, $refs: { paper, stencil, toolbar }, subscriptions, $eventBusService } = this;
         subscriptions.add(
-            $eventBusService.subscribe(SharedEvents.GRAPH_CHANGED, (json: Object) => this.onJointGraphChange(json))
+            $eventBusService.subscribe(SharedEvents.GRAPH_CHANGED, (json: dia.Graph.JSON) => this.onJointGraphChange(json))
         );
         subscriptions.add(
-            $eventBusService.subscribe(SharedEvents.JSON_EDITOR_CHANGED, (json: Object) => this.onJsonEditorChange(json))
+            $eventBusService.subscribe(SharedEvents.JSON_EDITOR_CHANGED, (json: dia.Graph.JSON) => this.onJsonEditorChange(json))
         );
 
         this.joint = new JointPlusService(
@@ -76,7 +79,7 @@ export default class Chatbot extends Vue {
         this.joint.destroy();
     }
 
-    public openFile(json: Object): void {
+    public openFile(json: dia.Graph.JSON): void {
         const { joint } = this;
         this.fileJSON = json;
         importGraphFromJSON(joint, json);
@@ -98,14 +101,14 @@ export default class Chatbot extends Vue {
         this.openFile(exampleGraphJSON);
     }
 
-    private onJsonEditorChange(json: Object): void {
+    private onJsonEditorChange(json: dia.Graph.JSON): void {
         const { joint } = this;
         if (joint) {
             importGraphFromJSON(joint, json);
         }
     }
 
-    private onJointGraphChange(json: Object): void {
+    private onJointGraphChange(json: dia.Graph.JSON): void {
         this.fileJSON = json;
     }
 

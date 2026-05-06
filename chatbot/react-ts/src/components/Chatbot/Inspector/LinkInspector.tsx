@@ -3,10 +3,10 @@ import { useBaseInspector } from './useBaseInspector';
 import Input from '../Input/Input';
 
 import type { ChangeEvent, ReactElement } from 'react';
-import type { shapes } from '@joint/plus';
+import { app } from 'src/joint-plus/shapes';
 
 interface Props {
-    cell: shapes.app.Link;
+    cell: app.Link;
 }
 
 const cellProps = {

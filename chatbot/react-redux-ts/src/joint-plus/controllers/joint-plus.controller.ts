@@ -15,7 +15,8 @@ import * as actions from '../actions';
 import { actionCreator } from '../../redux/helpers/actionCreator';
 import { ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from '../../theme';
 
-import type { dia, shapes } from '@joint/plus';
+import type { dia } from '@joint/plus';
+import type { app } from '../shapes';
 import type JointPlusService from '../../services/joint-plus.service';
 
 const DEBOUNCE_TIME_MS = 500;
@@ -81,7 +82,7 @@ function onCellRemove(service: JointPlusService, removedCell: dia.Cell): void {
     }
 }
 
-function onElementPortsChange(_service: JointPlusService, message: shapes.app.Message): void {
+function onElementPortsChange(_service: JointPlusService, message: app.Message): void {
     message.toggleAddPortButton('out');
 }
 
@@ -134,14 +135,14 @@ function onPaperElementPointerup(service: JointPlusService, _elementView: dia.El
 
 function onPaperElementPortAdd(_service: JointPlusService, elementView: dia.ElementView, evt: dia.Event): void {
     evt.stopPropagation();
-    const message = elementView.model as shapes.app.Message;
+    const message = elementView.model as app.Message;
     message.addDefaultPort();
 }
 
 function onPaperElementPortRemove(_service: JointPlusService, elementView: dia.ElementView, evt: dia.Event): void {
     evt.stopPropagation();
     const portId = elementView.findAttribute('port', evt.target);
-    const message = elementView.model as shapes.app.Message;
+    const message = elementView.model as app.Message;
     message.removePort(portId);
 }
 

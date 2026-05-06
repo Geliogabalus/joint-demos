@@ -16,31 +16,39 @@ import {
     USER_INPUT_ICON
 } from '../../theme';
 
+import { stencil } from '../shapes';
+
 export const stencilConfig = {
     shapes: [{
-        name: 'FlowchartStart'
+        name: 'FlowchartStart',
+        shape: stencil.FlowchartStart
     }, {
-        name: 'FlowchartEnd'
+        name: 'FlowchartEnd',
+        shape: stencil.FlowchartEnd
     }, {
         name: 'Message',
+        shape: stencil.Message,
         attrs: {
             label: { text: 'User action' },
             icon: { xlinkHref: USER_INPUT_ICON }
         }
     }, {
         name: 'Message',
+        shape: stencil.Message,
         attrs: {
             label: { text: 'Entity' },
             icon: { xlinkHref: ENTITY_ICON }
         }
     }, {
         name: 'Message',
+        shape: stencil.Message,
         attrs: {
             label: { text: 'Message' },
             icon: { xlinkHref: MESSAGE_ICON }
         }
     }, {
         name: 'Message',
+        shape: stencil.Message,
         attrs: {
             label: { text: 'Confirmation' },
             icon: { xlinkHref: CONFIRMATION_ICON }
