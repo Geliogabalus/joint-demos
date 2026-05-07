@@ -1,6 +1,7 @@
-import { dia, ui, util, shapes, layout } from '@joint/plus';
+import { dia, ui, util, layout } from '@joint/plus';
 import { DirectedGraph } from '@joint/layout-directed-graph';
 import './shapes';
+import { Child, Container, Link } from './shapes';
 
 interface Structure {
     label: string;
@@ -10,11 +11,19 @@ interface Structure {
     children?: Structure[];
 }
 
+const cellNamespace = {
+    app: {
+        Container,
+        Child,
+        Link
+    }
+};
+
 export const init = () => {
 
     const canvas = document.getElementById('canvas') as HTMLDivElement;
 
-    const graph = new dia.Graph();
+    const graph = new dia.Graph({}, { cellNamespace });
 
     const paper = new dia.Paper({
         model: graph,
@@ -62,7 +71,7 @@ export const init = () => {
             const position = model.position();
             ghost = view.vel.clone();
             ghost.node.style.transition = '0.2s opacity';
-            ghost.appendTo(paper.viewport);
+            ghost.appendTo(paper.getLayerView(dia.Paper.Layers.FRONT).el);
             evt.data.ghost = ghost;
             evt.data.dx = x - position.x;
             evt.data.dy = y - position.y;
@@ -134,16 +143,16 @@ const structure: Structure = {
 };
 
 const findContainerFromPoint = (graph: dia.Graph, x: number, y: number): dia.Element => {
-    const modelsFromPoint = graph.findModelsFromPoint({ x: x, y: y });
-    return modelsFromPoint.filter(shapes.app.Container.isContainer)[0];
+    const modelsFromPoint = graph.findElementsAtPoint({ x: x, y: y });
+    return modelsFromPoint.filter(Container.isContainer)[0];
 };
 
-const createCells = (struct: Structure, graph: dia.Graph): shapes.app.Container => {
+const createCells = (struct: Structure, graph: dia.Graph): Container => {
 
     const label = struct.label;
     const children = struct.children || [];
     const embeds = struct.embeds || [];
-    const root = new shapes.app.Container({
+    const root = new Container({
         attrs: {
             label: {
                 text: label
@@ -158,7 +167,7 @@ const createCells = (struct: Structure, graph: dia.Graph): shapes.app.Container 
 
     if (embeds.length > 0) {
         embeds.forEach((text: string) => {
-            const embed = new shapes.app.Child({
+            const embed = new Child({
                 attrs: {
                     label: {
                         text: text
@@ -180,7 +189,7 @@ const createCells = (struct: Structure, graph: dia.Graph): shapes.app.Container 
     if (children.length > 0) {
         children.forEach((childStruct: Structure) => {
             const child = createCells(childStruct, graph);
-            const link = new shapes.app.Link();
+            const link = new Link();
             link.source(root, { anchor: { name: 'bottom', args: { dy: -20 }}});
             link.target(child, { anchor: { name: 'top' }});
             link.addTo(graph);
@@ -226,9 +235,9 @@ const layoutCells = (graph: dia.Graph): void => {
 
     const directedGraphCells = graph.getLinks() as dia.Cell[];
 
-    graph.getElements().forEach((container: shapes.app.Container) => {
+    graph.getElements().forEach((container: Container) => {
 
-        if (!shapes.app.Container.isContainer(container)) {
+        if (!Container.isContainer(container)) {
             return;
         }
         directedGraphCells.push(container);
