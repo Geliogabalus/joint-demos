@@ -1,84 +1,85 @@
-import * as joint from '@joint/plus';
+import { shapes, g, connectionPoints, util } from '@joint/plus';
 
 const cache = new Map();
-export namespace app {
 
-    export class Link extends joint.shapes.standard.Link {
-
-        defaultLabel = {
-            attrs: {
-                rect: {
-                    fill: '#ffffff',
-                    stroke: '#353535',
-                    strokeWidth: 1,
-                    width: 'calc(w + 10)',
-                    height: 'calc(h + 10)',
-                    x: 'calc(x - 5)',
-                    y: 'calc(y - 5)'
-                }
+export class Link extends shapes.standard.Link {
+    defaultLabel = {
+        attrs: {
+            rect: {
+                fill: '#ffffff',
+                stroke: '#353535',
+                strokeWidth: 1,
+                width: 'calc(w + 10)',
+                height: 'calc(h + 10)',
+                x: 'calc(x - 5)',
+                y: 'calc(y - 5)'
             }
-        };
-
-        private getDataWidthCached = function(d: string){
-            if (cache.has(d)) {
-                return cache.get(d);
-            } else {
-                const bbox = (new joint.g.Path(d)).bbox();
-                cache.set(d, bbox ? bbox.width : 0);
-                return cache.get(d);
-            }
-        };
-
-        static connectionPoint(line: joint.g.Line, view: joint.dia.CellView, magnet: SVGElement, _opt: Record<string, unknown>, type: string, linkView: joint.dia.LinkView): joint.g.Point {
-            const link = linkView.model as Link;
-            const markerWidth = (link.get('type') === 'app.Link') ? link.getMarkerWidth(type) : 0;
-            const opt: { offset: number; stroke: boolean; selector?: string } = { offset: markerWidth, stroke: true };
-            // connection point for UML shapes lies on the root group containing all the shapes components
-            const modelType = view.model.get('type');
-            // taking the border stroke-width into account
-            if (modelType === 'standard.InscribedImage') { opt.selector = 'border'; }
-            return joint.connectionPoints.boundary.call(this, line, view, magnet, opt, type as joint.dia.LinkEnd, linkView);
         }
+    };
 
-        defaults() {
-            return joint.util.defaultsDeep({
-                type: 'app.Link',
-                router: {
-                    name: 'normal'
-                },
-                connector: {
-                    name: 'rounded'
-                },
-                labels: [],
-                attrs: {
-                    line: {
-                        stroke:'#3771B8',
-                        strokeDasharray: '0',
-                        strokeWidth: 2,
-                        fill: 'none',
-                        sourceMarker: {
-                            type: 'path',
-                            d: 'M 0 0 0 0',
-                            stroke: 'none'
-                        },
-                        'targetMarker': {
-                            'd':'M 0 0 0 0'
-                        }
+    private getDataWidthCached = function(d: string){
+        if (cache.has(d)) {
+            return cache.get(d);
+        } else {
+            const bbox = (new g.Path(d)).bbox();
+            cache.set(d, bbox ? bbox.width : 0);
+            return cache.get(d);
+        }
+    };
+
+    static connectionPoint(line: joint.g.Line, view: joint.dia.CellView, magnet: SVGElement, _opt: Record<string, unknown>, type: string, linkView: joint.dia.LinkView): joint.g.Point {
+        const link = linkView.model as Link;
+        const markerWidth = (link.get('type') === 'app.Link') ? link.getMarkerWidth(type) : 0;
+        const opt = { offset: markerWidth, stroke: true } as { offset: number; stroke: boolean; selector?: string };
+        // connection point for UML shapes lies on the root group containing all the shapes components
+        const modelType = view.model.get('type');
+        // taking the border stroke-width into account
+        if (modelType === 'standard.InscribedImage') { opt.selector = 'border'; }
+        return connectionPoints.boundary.call(this, line, view, magnet, opt, type, linkView);
+    }
+
+    defaults() {
+        return util.defaultsDeep({
+            type: 'app.Link',
+            router: {
+                name: 'normal'
+            },
+            connector: {
+                name: 'rounded'
+            },
+            labels: [],
+            attrs: {
+                line: {
+                    stroke:'#3771B8',
+                    strokeDasharray: '0',
+                    strokeWidth: 2,
+                    fill: 'none',
+                    sourceMarker: {
+                        type: 'path',
+                        d: 'M 0 0 0 0',
+                        stroke: 'none'
+                    },
+                    'targetMarker': {
+                        'd':'M 0 0 0 0'
                     }
                 }
-            }, joint.shapes.standard.Link.prototype.defaults);
-        }
+            }
+        }, super.defaults);
+    }
 
-        getMarkerWidth(type: string) {
-            const d = (type === 'source') ? this.attr('line/sourceMarker/d') : this.attr('line/targetMarker/d');
-            return this.getDataWidth(d);
-        }
+    getMarkerWidth(type: string) {
+        const d = (type === 'source') ? this.attr('line/sourceMarker/d') : this.attr('line/targetMarker/d');
+        return this.getDataWidth(d);
+    }
 
-        getDataWidth(d: string) {
-            return this.getDataWidthCached(d);
-        }
+    getDataWidth(d: string) {
+        return this.getDataWidthCached(d);
     }
 }
 
-// re-export build-in shapes from rappid
-export const standard = joint.shapes.standard;
+export const cellNamespace = {
+    ...shapes,
+    app: {
+        Link
+    }
+};

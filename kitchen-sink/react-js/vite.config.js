@@ -40,6 +40,34 @@ function copyAndDeleteThemeAssets() {
     };
 }
 
+function serveStaticAssets() {
+    return {
+        name: 'serve-static-assets',
+        configureServer(server) {
+            server.middlewares.use('/assets', (req, res, next) => {
+                const filePath = path.resolve(__dirname, 'src', 'assets', decodeURIComponent(req.url || '/').replace(/^\//, ''));
+                if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+                    const ext = path.extname(filePath).toLowerCase();
+                    const mimeTypes = {
+                        '.svg': 'image/svg+xml',
+                        '.png': 'image/png',
+                        '.jpg': 'image/jpeg',
+                        '.jpeg': 'image/jpeg',
+                        '.gif': 'image/gif',
+                        '.woff': 'font/woff',
+                        '.woff2': 'font/woff2',
+                        '.ttf': 'font/ttf',
+                    };
+                    res.setHeader('Content-Type', mimeTypes[ext] || 'application/octet-stream');
+                    res.end(fs.readFileSync(filePath));
+                } else {
+                    next();
+                }
+            });
+        }
+    };
+}
+
 function copyStaticAssets() {
     const assetsToCopy = [
         'src/assets',
@@ -76,7 +104,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // https://vitejs.dev/config/
 /** @type {import('vite').UserConfig} */
 export default defineConfig({
-    plugins: [react(), copyAndDeleteThemeAssets(), copyStaticAssets()],
+    plugins: [react(), copyAndDeleteThemeAssets(), copyStaticAssets(), serveStaticAssets()],
     resolve: {
         alias: {
             '/assets': path.resolve(__dirname, 'src/assets'),

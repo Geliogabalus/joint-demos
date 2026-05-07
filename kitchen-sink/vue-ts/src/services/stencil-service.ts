@@ -11,7 +11,7 @@ distributed by client IO. See the LICENSE file.
 
 import { ui, dia, util } from '@joint/plus';
 import { stencilGroups, stencilShapes } from '../config/stencil';
-import * as appShapes from '../shapes/app-shapes';
+import { cellNamespace } from '../shapes/app-shapes';
 
 const HIGHLIGHT_COLOR = '#F4F7FB';
 
@@ -84,9 +84,9 @@ export class StencilService {
             paperOptions: function() {
                 return {
                     model: new dia.Graph({}, {
-                        cellNamespace: appShapes
+                        cellNamespace: cellNamespace
                     }),
-                    cellViewNamespace: appShapes
+                    cellViewNamespace: cellNamespace
                 };
             },
             search: {
@@ -123,10 +123,10 @@ export class StencilService {
         });
 
         // We create a single tooltip paper that will be reused for all tooltips
-        this.tooltipGraph = new dia.Graph({}, { cellNamespace: appShapes });
+        this.tooltipGraph = new dia.Graph({}, { cellNamespace: cellNamespace });
         this.tooltipPaper = new dia.Paper({
             model: this.tooltipGraph,
-            cellViewNamespace: appShapes,
+            cellViewNamespace: cellNamespace,
             width: 140,
             height: 120,
             async: true,
