@@ -164,20 +164,7 @@ export class AnnotationLink extends shapes.bpmn2.AnnotationLink implements AppLi
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace annotation {
-            export {
-                Annotation,
-                AnnotationLink
-            };
-        }
-    }
-}
+export const annotation = {
+    Annotation, AnnotationLink
+};
 
-Object.assign(shapes, {
-    annotation: {
-        Annotation,
-        AnnotationLink
-    }
-});

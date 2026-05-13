@@ -182,24 +182,7 @@ export class Message extends Flow {
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace flow {
-            export {
-                Sequence,
-                Default,
-                Conditional,
-                Message
-            };
-        }
-    }
-}
+export const flow = {
+    Sequence, Default, Conditional, Message
+};
 
-Object.assign(shapes, {
-    flow: {
-        Sequence,
-        Default,
-        Conditional,
-        Message
-    }
-});

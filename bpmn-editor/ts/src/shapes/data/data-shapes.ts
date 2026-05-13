@@ -398,26 +398,7 @@ export class DataAssociation extends shapes.bpmn2.DataAssociation implements App
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace data {
-            export {
-                DataObject,
-                DataInput,
-                DataOutput,
-                DataStore,
-                DataAssociation
-            };
-        }
-    }
-}
+export const data = {
+    DataStore, DataObject, DataInput, DataOutput, DataAssociation
+};
 
-Object.assign(shapes, {
-    data: {
-        DataStore,
-        DataObject,
-        DataInput,
-        DataOutput,
-        DataAssociation
-    }
-});

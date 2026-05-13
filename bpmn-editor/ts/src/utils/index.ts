@@ -1,8 +1,9 @@
-import { type dia, shapes, util, g } from '@joint/plus';
+import { type dia, util, g } from '@joint/plus';
 import type { AppElement, AppLink, Marker } from '../shapes/shapes-typing';
+import { cellNamespace } from '../shapes';
 
 export function getShapeConstructorByType(type: string): dia.Cell.Constructor<AppElement | AppLink> {
-    return util.getByPath(shapes, type, '.');
+    return util.getByPath(cellNamespace, type, '.');
 }
 
 export function constructMarkerContent(marker: Marker) {

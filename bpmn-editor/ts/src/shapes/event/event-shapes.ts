@@ -258,7 +258,7 @@ export class SignalStart extends Start {
 
 // Intermediate Catching
 
-abstract class IntermediateCatching extends Event {
+export abstract class IntermediateCatching extends Event {
 
     static label = EventLabels['event.IntermediateCatching'];
     static icon = eventIconClasses.INTERMEDIATE_CATCHING;
@@ -1080,104 +1080,24 @@ export class CompensationEnd extends End {
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace event {
-            export {
-                // Start
-                Start,
-                MessageStart,
-                TimerStart,
-                ConditionalStart,
-                SignalStart,
-                // Intermediate Catching
-                IntermediateCatching,
-                MessageIntermediateCatching,
-                TimerIntermediateCatching,
-                ConditionalIntermediateCatching,
-                LinkIntermediateCatching,
-                SignalIntermediateCatching,
-                // Intermediate boundary
-                IntermediateBoundary,
-                MessageIntermediateBoundary,
-                TimerIntermediateBoundary,
-                ConditionalIntermediateBoundary,
-                SignalIntermediateBoundary,
-                ErrorIntermediateBoundary,
-                EscalationIntermediateBoundary,
-                CompensationIntermediateBoundary,
-                CancelIntermediateBoundary,
-                // Intermediate boundary non-interrupting
-                MessageIntermediateBoundaryNonInterrupting,
-                TimerIntermediateBoundaryNonInterrupting,
-                ConditionalIntermediateBoundaryNonInterrupting,
-                SignalIntermediateBoundaryNonInterrupting,
-                EscalationIntermediateBoundaryNonInterrupting,
-                // Intermediate throwing
-                IntermediateThrowing,
-                MessageIntermediateThrowing,
-                LinkIntermediateThrowing,
-                SignalIntermediateThrowing,
-                EscalationIntermediateThrowing,
-                CompensationIntermediateThrowing,
-                // End
-                End,
-                MessageEnd,
-                SignalEnd,
-                ErrorEnd,
-                EscalationEnd,
-                TerminationEnd,
-                CompensationEnd
-            };
-        }
-    }
-}
-
-Object.assign(shapes, {
-    event: {
-        // Start
-        Start,
-        MessageStart,
-        TimerStart,
-        ConditionalStart,
-        SignalStart,
-        // Intermediate Catching
-        IntermediateCatching,
-        MessageIntermediateCatching,
-        TimerIntermediateCatching,
-        ConditionalIntermediateCatching,
-        LinkIntermediateCatching,
-        SignalIntermediateCatching,
-        // Intermediate boundary
-        IntermediateBoundary,
-        MessageIntermediateBoundary,
-        TimerIntermediateBoundary,
-        ConditionalIntermediateBoundary,
-        SignalIntermediateBoundary,
-        ErrorIntermediateBoundary,
-        EscalationIntermediateBoundary,
-        CompensationIntermediateBoundary,
-        CancelIntermediateBoundary,
-        // Intermediate boundary non-interrupting
-        MessageIntermediateBoundaryNonInterrupting,
-        TimerIntermediateBoundaryNonInterrupting,
-        ConditionalIntermediateBoundaryNonInterrupting,
-        SignalIntermediateBoundaryNonInterrupting,
-        EscalationIntermediateBoundaryNonInterrupting,
-        // Intermediate throwing
-        IntermediateThrowing,
-        MessageIntermediateThrowing,
-        LinkIntermediateThrowing,
-        SignalIntermediateThrowing,
-        EscalationIntermediateThrowing,
-        CompensationIntermediateThrowing,
-        // End
-        End,
-        MessageEnd,
-        SignalEnd,
-        ErrorEnd,
-        EscalationEnd,
-        TerminationEnd,
-        CompensationEnd
-    }
-});
+export const event = {
+    // Start
+    Start, MessageStart, TimerStart, ConditionalStart, SignalStart,
+    // Intermediate Catching
+    IntermediateCatching,
+    MessageIntermediateCatching, TimerIntermediateCatching, ConditionalIntermediateCatching,
+    LinkIntermediateCatching, SignalIntermediateCatching,
+    // Intermediate boundary
+    IntermediateBoundary, MessageIntermediateBoundary, TimerIntermediateBoundary,
+    ConditionalIntermediateBoundary, SignalIntermediateBoundary, ErrorIntermediateBoundary,
+    EscalationIntermediateBoundary, CompensationIntermediateBoundary, CancelIntermediateBoundary,
+    // Intermediate boundary non-interrupting
+    MessageIntermediateBoundaryNonInterrupting, TimerIntermediateBoundaryNonInterrupting,
+    ConditionalIntermediateBoundaryNonInterrupting, SignalIntermediateBoundaryNonInterrupting,
+    EscalationIntermediateBoundaryNonInterrupting,
+    // Intermediate throwing
+    IntermediateThrowing, MessageIntermediateThrowing, LinkIntermediateThrowing,
+    SignalIntermediateThrowing, EscalationIntermediateThrowing, CompensationIntermediateThrowing,
+    // End
+    End, MessageEnd, SignalEnd, ErrorEnd, EscalationEnd, TerminationEnd, CompensationEnd
+};

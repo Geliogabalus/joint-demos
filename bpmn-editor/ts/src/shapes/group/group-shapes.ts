@@ -8,7 +8,7 @@ import { handles } from '../../configs/halo-config';
 import type { dia } from '@joint/plus';
 import type { AppElement } from '../shapes-typing';
 
-class Group extends shapes.bpmn2.Group implements AppElement {
+export class Group extends shapes.bpmn2.Group implements AppElement {
 
     public readonly isResizable = true;
     public readonly labelPath = 'label/text';
@@ -116,18 +116,7 @@ class Group extends shapes.bpmn2.Group implements AppElement {
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace group {
-            export {
-                Group
-            };
-        }
-    }
-}
+export const group = {
+    Group
+};
 
-Object.assign(shapes, {
-    group: {
-        Group
-    }
-});
