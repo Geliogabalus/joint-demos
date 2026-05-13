@@ -798,19 +798,7 @@ export class HttpConnector extends Activity {
 HttpConnector.label = ActivityLabels['activity.HttpConnector'];
 HttpConnector.icon = activityIconClasses.HTTP_CONNECTOR;
 
-Object.assign(shapes, {
-    activity: {
-        Task,
-        Send,
-        BusinessRule,
-        Receive,
-        Service,
-        User,
-        Script,
-        Manual,
-        CallActivity,
-        SubProcess,
-        EventSubProcess,
-        HttpConnector
-    }
-});
+export const activity = {
+    Task, Send, BusinessRule, Receive, Service, User, Script, Manual,
+    CallActivity, SubProcess, EventSubProcess, HttpConnector
+};

@@ -1,5 +1,6 @@
 import Controller from '../controller';
 import { shapes } from '@joint/plus';
+import { IntermediateBoundary } from '../shapes/event/event-shapes';
 import { snapToParentPath, isBoundaryEvent, setStencilEvent } from '../utils';
 import { eventBus, EventBusEvents } from '../event-bus';
 import { onSwimlaneDragStart, onSwimlaneDrag, onSwimlaneDragEnd, onSwimlaneDrop } from '../events/swimlanes';
@@ -115,7 +116,7 @@ function onElementDrop(context, elementView, evt, x, y) {
         model = new ShapeClass({ id: model.id });
     } else {
         // Fallback to IntermediateBoundary if class not found
-        model = new shapes.event.IntermediateBoundary({ id: model.id });
+        model = new IntermediateBoundary({ id: model.id });
     }
     eventBus.trigger(EventBusEvents.GRAPH_REPLACE_CELL, elementView.model, model);
     

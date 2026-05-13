@@ -6,6 +6,8 @@ import KeyboardController from '../controllers/keyboard-controller';
 import { ShapeTypes } from '../shapes/shapes-typing';
 import { BPMNLinkView } from '../shapes/placeholder/placeholder-shapes';
 import { LabelElementView } from '../shapes/shape-view';
+import { cellNamespace } from '../shapes';
+import { IntermediateBoundary } from '../shapes/event/event-shapes';
 import { canElementExistOutsidePool, getBoundaryPoint } from '../utils';
 import { MAIN_COLOR } from '../configs/theme';
 
@@ -32,12 +34,12 @@ export default class MainService {
         this.secondaryServices = secondaryServices;
         
         this.graph = new dia.Graph({}, {
-            cellNamespace: shapes
+            cellNamespace: cellNamespace
         });
-        
+
         this.paper = new dia.Paper({
             model: this.graph,
-            cellViewNamespace: shapes,
+            cellViewNamespace: cellNamespace,
             gridSize: 10,
             sorting: dia.Paper.sorting.APPROX,
             width: 2000,
@@ -268,7 +270,7 @@ export default class MainService {
                 const model = elementView.model;
                 return !shapes.bpmn2.Swimlane.isSwimlane(model)
                     && !shapes.bpmn2.CompositePool.isPool(model)
-                    && !(model instanceof shapes.event.IntermediateBoundary);
+                    && !(model instanceof IntermediateBoundary);
             }
         });
         

@@ -395,12 +395,6 @@ export class DataAssociation extends shapes.bpmn2.DataAssociation {
     }
 }
 
-Object.assign(shapes, {
-    data: {
-        DataStore,
-        DataObject,
-        DataInput,
-        DataOutput,
-        DataAssociation
-    }
-});
+export const data = {
+    DataStore, DataObject, DataInput, DataOutput, DataAssociation
+};

@@ -242,12 +242,6 @@ export class Complex extends Gateway {
 Complex.label = GatewayLabels['gateway.Complex'];
 Complex.icon = gatewayIconClasses.COMPLEX;
 
-Object.assign(shapes, {
-    gateway: {
-        Exclusive,
-        Inclusive,
-        EventBased,
-        Parallel,
-        Complex
-    }
-});
+export const gateway = {
+    Exclusive, Inclusive, EventBased, Parallel, Complex
+};

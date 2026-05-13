@@ -113,8 +113,6 @@ class Group extends shapes.bpmn2.Group {
     }
 }
 
-Object.assign(shapes, {
-    group: {
-        Group
-    }
-});
+export const group = {
+    Group
+};

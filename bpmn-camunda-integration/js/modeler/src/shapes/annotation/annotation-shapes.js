@@ -155,9 +155,6 @@ export class AnnotationLink extends shapes.bpmn2.AnnotationLink {
     }
 }
 
-Object.assign(shapes, {
-    annotation: {
-        Annotation,
-        AnnotationLink
-    }
-});
+export const annotation = {
+    Annotation, AnnotationLink
+};
