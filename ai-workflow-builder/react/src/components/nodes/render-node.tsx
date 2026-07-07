@@ -12,34 +12,34 @@ import { NoteCard } from './note-card';
 type ConfigNodeData = Exclude<NodeData, { kind: 'note' }>;
 
 function NodeBody({ data }: { readonly data: ConfigNodeData }) {
-  switch (data.kind) {
-    case 'input':
-      return <TextInputBody data={data} />;
-    case 'skill':
-      return <SkillBody data={data} />;
-    case 'agent':
-      return <AgentBody data={data} />;
-    case 'tool':
-      return <ToolBody data={data} />;
-    case 'output':
-      return <OutputBody data={data} />;
-  }
+    switch (data.kind) {
+        case 'input':
+            return <TextInputBody data={data} />;
+        case 'skill':
+            return <SkillBody data={data} />;
+        case 'agent':
+            return <AgentBody data={data} />;
+        case 'tool':
+            return <ToolBody data={data} />;
+        case 'output':
+            return <OutputBody data={data} />;
+    }
 }
 
 export function RenderNode(data: NodeData) {
-  // isPreview is the stencil drag ghost only (not a node moving on the canvas).
-  const { isPreview } = useCellDrag();
-  if (data.kind === 'note') return <NoteCard data={data} />;
-  if (isPreview) return <NodePreview kind={data.kind} />;
-  return (
-    <NodeContainer
-      kind={data.kind}
-      status={data.status}
-      appearance={data.appearance}
-      name={data.name}
-      description={data.description}
-    >
-      <NodeBody data={data} />
-    </NodeContainer>
-  );
+    // isPreview is the stencil drag ghost only (not a node moving on the canvas).
+    const { isPreview } = useCellDrag();
+    if (data.kind === 'note') return <NoteCard data={data} />;
+    if (isPreview) return <NodePreview kind={data.kind} />;
+    return (
+        <NodeContainer
+            kind={data.kind}
+            status={data.status}
+            appearance={data.appearance}
+            name={data.name}
+            description={data.description}
+        >
+            <NodeBody data={data} />
+        </NodeContainer>
+    );
 }

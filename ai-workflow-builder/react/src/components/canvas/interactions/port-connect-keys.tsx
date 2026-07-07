@@ -1,7 +1,7 @@
-import { useOnKeyboardEvents, usePaper } from "@joint/react-plus";
-import type { dia } from "@joint/plus";
-import type { PortRef } from "../connection-menu-util";
-import { getFocusedElementPort } from "./focus";
+import { useOnKeyboardEvents, usePaper } from '@joint/react-plus';
+import type { dia } from '@joint/plus';
+import type { PortRef } from '../connection-menu-util';
+import { getFocusedElementPort } from './focus';
 
 /**
  * Keyboard parity with the port click (which the Paper handles via
@@ -10,17 +10,17 @@ import { getFocusedElementPort } from "./focus";
  * port node. Mount inside `<Paper>` so `usePaper` / `useOnKeyboardEvents` resolve.
  */
 export function PortConnectKeys({
-  onOpen,
+    onOpen,
 }: {
   readonly onOpen: (target: PortRef) => void;
 }): null {
-  const { paper } = usePaper();
-  const openFocusedPort = (event: dia.Event) => {
-    const port = paper && getFocusedElementPort(paper);
-    if (!port) return;
-    event.preventDefault();
-    onOpen(port);
-  };
-  useOnKeyboardEvents({ enter: openFocusedPort, space: openFocusedPort });
-  return null;
+    const { paper } = usePaper();
+    const openFocusedPort = (event: dia.Event) => {
+        const port = paper && getFocusedElementPort(paper);
+        if (!port) return;
+        event.preventDefault();
+        onOpen(port);
+    };
+    useOnKeyboardEvents({ enter: openFocusedPort, space: openFocusedPort });
+    return null;
 }

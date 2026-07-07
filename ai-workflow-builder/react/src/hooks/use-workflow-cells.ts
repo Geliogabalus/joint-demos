@@ -6,5 +6,5 @@ import type { WorkflowCell } from '@/workflow/workflow-types';
 export const WorkflowCellsContext = createContext<readonly WorkflowCell[]>([]);
 
 export function useWorkflowCells(): readonly WorkflowCell[] {
-  return useContext(WorkflowCellsContext);
+    return useContext(WorkflowCellsContext);
 }

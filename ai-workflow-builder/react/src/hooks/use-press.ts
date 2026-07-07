@@ -1,5 +1,5 @@
-import { useRef } from "react";
-import { isClick } from "@/utils/pointer";
+import { useRef } from 'react';
+import { isClick } from '@/utils/pointer';
 
 interface PointerPoint {
   readonly clientX: number;
@@ -12,7 +12,7 @@ interface PressOptions {
    *  re-render can swallow the synthetic click, so pointerup is the reliable
    *  pointer trigger and keyboard activates via its synthesized click
    *  (detail 0, no pointer press). @default 'click' */
-  readonly activateOn?: "click" | "pointerup";
+  readonly activateOn?: 'click' | 'pointerup';
 }
 
 interface PressHandlers {
@@ -32,42 +32,42 @@ interface PressHandlers {
  * click is not judged against a stale press.
  */
 export function usePress(
-  onPress: () => void,
-  { activateOn = "click" }: PressOptions = {},
+    onPress: () => void,
+    { activateOn = 'click' }: PressOptions = {},
 ): PressHandlers {
-  const downRef = useRef<{ x: number; y: number } | null>(null);
-  const draggedRef = useRef(false);
+    const downRef = useRef<{ x: number; y: number } | null>(null);
+    const draggedRef = useRef(false);
 
-  function wasClick(event: PointerPoint): boolean {
-    const start = downRef.current;
-    const dragged = draggedRef.current;
-    downRef.current = null;
-    draggedRef.current = false;
-    if (start === null) return !dragged;
-    return !dragged && isClick(start, event);
-  }
+    function wasClick(event: PointerPoint): boolean {
+        const start = downRef.current;
+        const dragged = draggedRef.current;
+        downRef.current = null;
+        draggedRef.current = false;
+        if (start === null) return !dragged;
+        return !dragged && isClick(start, event);
+    }
 
-  return {
-    onPointerDown(event) {
-      downRef.current = { x: event.clientX, y: event.clientY };
-      draggedRef.current = false;
-    },
-    onPointerMove(event) {
-      if (downRef.current && !isClick(downRef.current, event)) {
-        draggedRef.current = true;
-      }
-    },
-    onPointerUp(event) {
-      if (activateOn === "pointerup" && wasClick(event)) onPress();
-    },
-    onClick(event) {
-      if (activateOn === "pointerup") {
-        // The pointer path activated on pointerup; only the keyboard's
-        // synthesized click (detail 0) activates here.
-        if (event.detail === 0) onPress();
-      } else if (wasClick(event)) {
-        onPress();
-      }
-    },
-  };
+    return {
+        onPointerDown(event) {
+            downRef.current = { x: event.clientX, y: event.clientY };
+            draggedRef.current = false;
+        },
+        onPointerMove(event) {
+            if (downRef.current && !isClick(downRef.current, event)) {
+                draggedRef.current = true;
+            }
+        },
+        onPointerUp(event) {
+            if (activateOn === 'pointerup' && wasClick(event)) onPress();
+        },
+        onClick(event) {
+            if (activateOn === 'pointerup') {
+                // The pointer path activated on pointerup; only the keyboard's
+                // synthesized click (detail 0) activates here.
+                if (event.detail === 0) onPress();
+            } else if (wasClick(event)) {
+                onPress();
+            }
+        },
+    };
 }

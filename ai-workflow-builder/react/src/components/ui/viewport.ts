@@ -5,5 +5,5 @@ export const MOBILE_QUERY = '(max-width: 767px)';
 
 /** Whether the desktop (inline-column) layout is active right now. SSR-safe. */
 export function isDesktopViewport(): boolean {
-  return typeof window !== 'undefined' && !window.matchMedia(MOBILE_QUERY).matches;
+    return typeof window !== 'undefined' && !window.matchMedia(MOBILE_QUERY).matches;
 }

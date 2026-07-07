@@ -15,23 +15,23 @@ function ContextMenu(props: {
   readonly onAction: () => void;
   readonly onClose: () => void;
 }) {
-  const { x, y, icon, label, destructive, onAction, onClose } = props;
-  useDismiss(onClose);
-  return (
-    <Overlay x={x} y={y} origin="top-left">
-      <FloatingMenu className="w-40">
-        <MenuItem
-          icon={icon}
-          label={label}
-          destructive={destructive}
-          onClick={() => {
-            onAction();
-            onClose();
-          }}
-        />
-      </FloatingMenu>
-    </Overlay>
-  );
+    const { x, y, icon, label, destructive, onAction, onClose } = props;
+    useDismiss(onClose);
+    return (
+        <Overlay x={x} y={y} origin="top-left">
+            <FloatingMenu className="w-40">
+                <MenuItem
+                    icon={icon}
+                    label={label}
+                    destructive={destructive}
+                    onClick={() => {
+                        onAction();
+                        onClose();
+                    }}
+                />
+            </FloatingMenu>
+        </Overlay>
+    );
 }
 
 export interface CanvasMenuState {
@@ -40,33 +40,33 @@ export interface CanvasMenuState {
 }
 
 export function CanvasContextMenu({
-  menu,
-  onClose,
+    menu,
+    onClose,
 }: {
   readonly menu: CanvasMenuState;
   readonly onClose: () => void;
 }) {
-  const { setCell } = useGraph<WorkflowElement, WorkflowLink>();
-  const { selectCells } = useSelection();
-  return (
-    <ContextMenu
-      x={menu.x}
-      y={menu.y}
-      icon={<StickyNote className="size-3.5" />}
-      label="Add note"
-      onAction={() => {
-        const note = createNote({ x: menu.x, y: menu.y });
-        setCell(note);
-        // Select the new note (opens it editable). Drop DOM focus to the body so
-        // the canvas owns arrow-key nudging, not the just-clicked menu item.
-        selectCells([note.id]);
-        if (document.activeElement instanceof HTMLElement) {
-          document.activeElement.blur();
-        }
-      }}
-      onClose={onClose}
-    />
-  );
+    const { setCell } = useGraph<WorkflowElement, WorkflowLink>();
+    const { selectCells } = useSelection();
+    return (
+        <ContextMenu
+            x={menu.x}
+            y={menu.y}
+            icon={<StickyNote className="size-3.5" />}
+            label="Add note"
+            onAction={() => {
+                const note = createNote({ x: menu.x, y: menu.y });
+                setCell(note);
+                // Select the new note (opens it editable). Drop DOM focus to the body so
+                // the canvas owns arrow-key nudging, not the just-clicked menu item.
+                selectCells([note.id]);
+                if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                }
+            }}
+            onClose={onClose}
+        />
+    );
 }
 
 export interface LinkMenuState {
@@ -76,22 +76,22 @@ export interface LinkMenuState {
 }
 
 export function LinkContextMenu({
-  menu,
-  onClose,
+    menu,
+    onClose,
 }: {
   readonly menu: LinkMenuState;
   readonly onClose: () => void;
 }) {
-  const { removeCell } = useGraph<WorkflowElement, WorkflowLink>();
-  return (
-    <ContextMenu
-      x={menu.x}
-      y={menu.y}
-      destructive
-      icon={<Trash2 className="size-3.5" />}
-      label="Remove link"
-      onAction={() => removeCell(menu.id)}
-      onClose={onClose}
-    />
-  );
+    const { removeCell } = useGraph<WorkflowElement, WorkflowLink>();
+    return (
+        <ContextMenu
+            x={menu.x}
+            y={menu.y}
+            destructive
+            icon={<Trash2 className="size-3.5" />}
+            label="Remove link"
+            onAction={() => removeCell(menu.id)}
+            onClose={onClose}
+        />
+    );
 }

@@ -4,11 +4,11 @@ const CLICK_TRAVEL_PX = 4;
 
 /** True when the pointer barely moved from `from` — a click, not a drag. */
 export function isClick(
-  from: { x: number; y: number },
-  event: { clientX: number; clientY: number },
+    from: { x: number; y: number },
+    event: { clientX: number; clientY: number },
 ): boolean {
-  return (
-    Math.hypot(event.clientX - from.x, event.clientY - from.y) <=
+    return (
+        Math.hypot(event.clientX - from.x, event.clientY - from.y) <=
     CLICK_TRAVEL_PX
-  );
+    );
 }

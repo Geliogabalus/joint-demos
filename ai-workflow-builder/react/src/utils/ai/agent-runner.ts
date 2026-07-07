@@ -5,13 +5,13 @@ import { createProvider } from './providers/shared';
 import type { AgentRunInput, AgentRunResult } from './types';
 
 export function runAgent(input: AgentRunInput): Promise<AgentRunResult> {
-  switch (input.provider) {
-    case 'openai':
-    case 'anthropic':
-      return createProvider(input.provider, input);
-    case 'mock':
-      return runMock(input);
-  }
+    switch (input.provider) {
+        case 'openai':
+        case 'anthropic':
+            return createProvider(input.provider, input);
+        case 'mock':
+            return runMock(input);
+    }
 }
 
 export type { AgentRunInput, AgentRunResult } from './types';

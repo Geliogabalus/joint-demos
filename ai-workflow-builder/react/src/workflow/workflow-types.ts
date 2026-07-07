@@ -1,29 +1,29 @@
 // Pure domain types for the workflow graph (no React, no JointJS views).
-import type { ElementRecord, LinkRecord } from "@joint/react-plus";
+import type { ElementRecord, LinkRecord } from '@joint/react-plus';
 
 /** The data type that flows through a port. Connections require a type match. */
-export type PortType = "text" | "skill" | "tool" | "result";
+export type PortType = 'text' | 'skill' | 'tool' | 'result';
 
 /** A node header's accent: a data-type hue, or `brand` for the agent centrepiece. */
-export type AccentKey = PortType | "brand";
+export type AccentKey = PortType | 'brand';
 
-export type PortDirection = "in" | "out";
+export type PortDirection = 'in' | 'out';
 
-export type PortSide = "left" | "right" | "top" | "bottom";
+export type PortSide = 'left' | 'right' | 'top' | 'bottom';
 
 /** Lifecycle of a node during a run (drives the status dot + animation). */
-export type RunStatus = "idle" | "running" | "success" | "error";
+export type RunStatus = 'idle' | 'running' | 'success' | 'error';
 
 /** The kinds of node the builder understands. `note` is a canvas annotation. */
-export type NodeKind = "input" | "skill" | "agent" | "tool" | "output" | "note";
+export type NodeKind = 'input' | 'skill' | 'agent' | 'tool' | 'output' | 'note';
 
 /** Where the agent sends its request. `mock` runs fully offline. */
-export type AgentProvider = "mock" | "openai" | "anthropic";
+export type AgentProvider = 'mock' | 'openai' | 'anthropic';
 
-type ToolId = "reddit-search";
+type ToolId = 'reddit-search';
 
 /** Lucide icon names, resolved to components in `components/nodes/node-icon`. */
-export type NodeIconName = "type" | "file-code" | "bot" | "file-text" | "reddit";
+export type NodeIconName = 'type' | 'file-code' | 'bot' | 'file-text' | 'reddit';
 
 /** Declarative description of one port; the catalog lists these per kind. */
 export interface PortDescriptor {
@@ -47,15 +47,15 @@ export interface NodeAppearance {
 }
 
 export type SwatchKey =
-  | "default"
-  | "violet"
-  | "blue"
-  | "green"
-  | "amber"
-  | "rose"
-  | "slate";
+  | 'default'
+  | 'violet'
+  | 'blue'
+  | 'green'
+  | 'amber'
+  | 'rose'
+  | 'slate';
 
-export type FontKey = "sans" | "mono" | "serif";
+export type FontKey = 'sans' | 'mono' | 'serif';
 
 interface BaseNodeData {
   readonly status: RunStatus;
@@ -66,20 +66,20 @@ interface BaseNodeData {
 }
 
 export interface InputNodeData extends BaseNodeData {
-  readonly kind: "input";
+  readonly kind: 'input';
   /** The user prompt fed into the agent. */
   readonly prompt: string;
 }
 
 export interface SkillNodeData extends BaseNodeData {
-  readonly kind: "skill";
+  readonly kind: 'skill';
   readonly fileName: string;
   /** Markdown content appended to the agent's system instruction. */
   readonly content: string;
 }
 
 export interface AgentNodeData extends BaseNodeData {
-  readonly kind: "agent";
+  readonly kind: 'agent';
   readonly provider: AgentProvider;
   readonly model: string;
   /** Soft cap on output tokens. */
@@ -91,20 +91,20 @@ export interface AgentNodeData extends BaseNodeData {
 }
 
 export interface ToolNodeData extends BaseNodeData {
-  readonly kind: "tool";
+  readonly kind: 'tool';
   readonly tool: ToolId;
   readonly subreddit: string;
   readonly limit: number;
 }
 
 export interface OutputNodeData extends BaseNodeData {
-  readonly kind: "output";
+  readonly kind: 'output';
   /** Markdown result rendered in the node + inspector. */
   readonly markdown: string;
 }
 
 export interface NoteNodeData {
-  readonly kind: "note";
+  readonly kind: 'note';
   readonly text: string;
   readonly color: SwatchKey;
 }
@@ -128,5 +128,5 @@ export type WorkflowLink = LinkRecord<LinkData>;
 export type WorkflowCell = WorkflowElement | WorkflowLink;
 
 /** A cell id, as JointJS types it (no stringifying). */
-export type CellId = NonNullable<WorkflowCell["id"]>;
+export type CellId = NonNullable<WorkflowCell['id']>;
 

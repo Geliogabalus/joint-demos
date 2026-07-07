@@ -21,13 +21,13 @@ export interface ApiKeysContextValue {
 
 /** The "key is set" rule — a key counts once it's non-blank. */
 export function isKeyConnected(key: string): boolean {
-  return key.trim() !== '';
+    return key.trim() !== '';
 }
 
 export const ApiKeysContext = createContext<ApiKeysContextValue | null>(null);
 
 export function useApiKeys(): ApiKeysContextValue {
-  const context = useContext(ApiKeysContext);
-  if (!context) throw new Error('useApiKeys must be used within <ApiKeysProvider>');
-  return context;
+    const context = useContext(ApiKeysContext);
+    if (!context) throw new Error('useApiKeys must be used within <ApiKeysProvider>');
+    return context;
 }

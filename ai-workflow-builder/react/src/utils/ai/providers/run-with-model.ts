@@ -21,39 +21,39 @@ type ChatModel = Parameters<typeof streamText>[0]['model'];
 const MAX_STEPS = 5;
 
 export async function runWithModel(
-  model: ChatModel,
-  input: AgentRunInput,
-  provider: string
+    model: ChatModel,
+    input: AgentRunInput,
+    provider: string
 ): Promise<AgentRunResult> {
-  const tools = input.tool ? { redditSearch: createRedditSearchTool(input.tool) } : undefined;
+    const tools = input.tool ? { redditSearch: createRedditSearchTool(input.tool) } : undefined;
 
-  try {
-    const result = streamText({
-      model,
-      system: buildSystemPrompt({ skill: input.skill, hasTool: Boolean(input.tool) }),
-      prompt: input.prompt,
-      tools,
-      // Multi-step: let the model call the tool, read it, then answer. Without
-      // this the model would emit a tool call and stop, never producing text.
-      stopWhen: stepCountIs(MAX_STEPS),
-      maxOutputTokens: input.maxOutputTokens,
-      abortSignal: input.signal,
-    });
+    try {
+        const result = streamText({
+            model,
+            system: buildSystemPrompt({ skill: input.skill, hasTool: Boolean(input.tool) }),
+            prompt: input.prompt,
+            tools,
+            // Multi-step: let the model call the tool, read it, then answer. Without
+            // this the model would emit a tool call and stop, never producing text.
+            stopWhen: stepCountIs(MAX_STEPS),
+            maxOutputTokens: input.maxOutputTokens,
+            abortSignal: input.signal,
+        });
 
-    // Stream the answer as it arrives so the Output node fills in progressively.
-    let markdown = '';
-    for await (const delta of result.textStream) {
-      markdown += delta;
-      input.onPartial?.(markdown);
-    }
+        // Stream the answer as it arrives so the Output node fills in progressively.
+        let markdown = '';
+        for await (const delta of result.textStream) {
+            markdown += delta;
+            input.onPartial?.(markdown);
+        }
 
-    // Report OUTPUT tokens — that's what the Token budget caps (maxOutputTokens),
-    // so "Tokens used" stays comparable to the budget instead of dwarfing it with
-    // the prompt + tool round-trip tokens (totalTokens).
-    const usage = await result.totalUsage;
-    return { markdown, tokensUsed: usage?.outputTokens ?? usage?.totalTokens ?? 0 };
-  } catch (caught) {
+        // Report OUTPUT tokens — that's what the Token budget caps (maxOutputTokens),
+        // so "Tokens used" stays comparable to the budget instead of dwarfing it with
+        // the prompt + tool round-trip tokens (totalTokens).
+        const usage = await result.totalUsage;
+        return { markdown, tokensUsed: usage?.outputTokens ?? usage?.totalTokens ?? 0 };
+    } catch (caught) {
     // Re-throw with a message the user can act on (bad key, model, CORS, …).
-    throw new Error(describeRunError(caught, provider), { cause: caught });
-  }
+        throw new Error(describeRunError(caught, provider), { cause: caught });
+    }
 }

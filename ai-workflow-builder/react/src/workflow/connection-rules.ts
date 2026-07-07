@@ -14,39 +14,39 @@ import { getNodeKind } from './node-model';
  * `validate` adds the typed-port constraints on top.
  */
 export const connectionRules: CanConnectOptions = {
-  // 'one-per-pair' (not 'one-per-direction'): a link drawn the wrong way is
-  // auto-flipped to output→input, so A→B and B→A are the same connection here.
-  // Blocking both directions prevents a duplicate once the reverse gets flipped.
-  linkLimit: 'one-per-pair',
-  allowSelfLoops: false,
-  validate: ({ source, target, graph }) => {
+    // 'one-per-pair' (not 'one-per-direction'): a link drawn the wrong way is
+    // auto-flipped to output→input, so A→B and B→A are the same connection here.
+    // Blocking both directions prevents a duplicate once the reverse gets flipped.
+    linkLimit: 'one-per-pair',
+    allowSelfLoops: false,
+    validate: ({ source, target, graph }) => {
     // Port-to-port only — a `null` port is an end dropped on the cell body.
-    if (source.port == null || target.port == null) return false;
+        if (source.port == null || target.port == null) return false;
 
-    const sourceDescriptor = getPortConfig(getNodeKind(source.model), source.port);
-    const targetDescriptor = getPortConfig(getNodeKind(target.model), target.port);
-    if (!sourceDescriptor || !targetDescriptor) return false;
+        const sourceDescriptor = getPortConfig(getNodeKind(source.model), source.port);
+        const targetDescriptor = getPortConfig(getNodeKind(target.model), target.port);
+        if (!sourceDescriptor || !targetDescriptor) return false;
 
-    // Ends must carry the same data type (text→text, tool→tool, …).
-    if (sourceDescriptor.type !== targetDescriptor.type) return false;
+        // Ends must carry the same data type (text→text, tool→tool, …).
+        if (sourceDescriptor.type !== targetDescriptor.type) return false;
 
-    // Exactly one output and one input — a link may be dragged from either end.
-    const oriented = orientEnds(
-      { ...sourceDescriptor, end: source },
-      { ...targetDescriptor, end: target },
-    );
-    if (!oriented) return false;
+        // Exactly one output and one input — a link may be dragged from either end.
+        const oriented = orientEnds(
+            { ...sourceDescriptor, end: source },
+            { ...targetDescriptor, end: target },
+        );
+        if (!oriented) return false;
 
-    // One source per input port, except `tool` inputs: a single tool can be
-    // wired to (reused by) any number of agents, so its input accepts many.
-    const [, input] = oriented;
-    if (
-      input.type !== 'tool' &&
+        // One source per input port, except `tool` inputs: a single tool can be
+        // wired to (reused by) any number of agents, so its input accepts many.
+        const [, input] = oriented;
+        if (
+            input.type !== 'tool' &&
       graph.getConnectedLinks(input.end.model, { inbound: true, port: input.id }).length > 0
-    ) {
-      return false;
-    }
+        ) {
+            return false;
+        }
 
-    return true;
-  },
+        return true;
+    },
 };
