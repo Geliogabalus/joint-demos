@@ -1,0 +1,4 @@
+/** A `setTimeout` you can `await`. */
+export function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
