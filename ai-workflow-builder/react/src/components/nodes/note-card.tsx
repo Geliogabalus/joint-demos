@@ -98,6 +98,11 @@ export function NoteCard({ data }: { readonly data: NoteNodeData }) {
           // Tab-reachable so keyboard users can select the note (focus → select,
           // co-located with pointer selection below) and edit it with Enter.
           tabIndex={0}
+          // `application` (same as a node): note keystrokes (arrow-key nudging,
+          // Enter-to-edit) reach the app, not the SR virtual cursor. It also
+          // gives `aria-label` a valid role to sit on (bare div = prohibited).
+          role="application"
+          aria-roledescription="diagram note"
           aria-label="Note"
           onFocus={() => selectCells([id])}
           onPointerDownCapture={selectCell}
