@@ -1,6 +1,6 @@
-# JointJS+: AI Agent Builder (React) <a href="https://www.jointjs.com/jointjs-plus"><img src="../../jointjs-plus-badge.svg" alt="JointJS+" width="123" align="right" /></a>
+# JointJS+: AI Workflow Builder (React) <a href="https://www.jointjs.com/jointjs-plus"><img src="../../jointjs-plus-badge.svg" alt="JointJS+" width="123" align="right" /></a>
 
-AI Agent Builder is a JointJS+ demo application that lets you visually design an autonomous agent’s behavior by wiring together triggers, conditions, and actions.
+AI Workflow Builder is a JointJS+ demo application that lets you visually design an autonomous agent’s behavior by wiring together triggers, conditions, and actions.
 
 This demo is also available online at [jointjs.com](https://jointjs.com/demos/ai-workflow-editor).
 
