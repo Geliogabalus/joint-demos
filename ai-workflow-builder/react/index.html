@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Primary meta -->
+  <title>AI Workflow Builder — Visual AI Agents, Tools & Skills | JointJS React</title>
+  <meta name="description"
+    content="AI Workflow Builder is a node-based demo built with @joint/react-plus (JointJS). Visually design, connect, and run AI agents, tools, and skills on an interactive drag-and-drop canvas." />
+  <meta name="keywords"
+    content="AI workflow builder, node-based editor, AI automation, JointJS, @joint/react-plus, visual workflow, diagramming, AI agents, drag and drop canvas" />
+  <meta name="author" content="JointJS" />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://www.jointjs.com/" />
+
+  <!-- Theme color -->
+  <meta name="theme-color" content="#1a1416" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1416" />
+  <meta name="color-scheme" content="dark light" />
+
+  <!-- Apply the OS colour scheme before first paint. Without this, useTheme adds
+       `.dark` in an effect (post-paint) → a flash of light theme AND Chrome leaves
+       `transition-colors` elements stuck on the stale light colour (fails contrast).
+       Mirrors useTheme's systemTheme(); useTheme keeps it live after mount. -->
+  <script>
+    try {
+      if (matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.classList.add("dark");
+      }
+    } catch (_) {}
+  </script>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="JointJS React" />
+  <meta property="og:title" content="AI Workflow Builder · JointJS+ React" />
+  <meta property="og:description"
+    content="A node-based AI workflow builder demo built with @joint/react-plus (JointJS). Visually design, connect, and run AI agents, tools, and skills on an interactive canvas." />
+  <meta property="og:url" content="https://www.jointjs.com/" />
+  <meta property="og:image" content="https://www.jointjs.com/og-image.png" />
+  <meta property="og:image:alt" content="AI Workflow Builder — a node-based AI editor built with JointJS" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI Workflow Builder · JointJS+ React" />
+  <meta name="twitter:description"
+    content="A node-based AI workflow builder demo built with @joint/react-plus (JointJS). Design, connect, and run AI agents, tools, and skills on an interactive canvas." />
+  <meta name="twitter:image" content="https://www.jointjs.com/og-image.png" />
+  <meta name="twitter:image:alt" content="AI Workflow Builder — a node-based AI editor built with JointJS" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "AI Workflow Builder",
+        "description": "A node-based AI workflow builder demo built with @joint/react-plus (JointJS). Visually design, connect, and run AI agents, tools, and skills on an interactive drag-and-drop canvas.",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Web",
+        "url": "https://www.jointjs.com/",
+        "image": "https://www.jointjs.com/og-image.png",
+        "author": {
+          "@type": "Organization",
+          "name": "JointJS",
+          "url": "https://www.jointjs.com/"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

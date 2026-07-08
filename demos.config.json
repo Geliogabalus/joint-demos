@@ -19,6 +19,9 @@
     },
     "diagram-index": {
       "variant": "react"
+    },
+    "ai-workflow-builder": {
+      "variant": "react"
     }
   }
 }
