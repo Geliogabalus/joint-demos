@@ -21,8 +21,8 @@
     "./webpack.config.js"
   ],
   "dependencies": {
-    "@joint/core": "4.2.4",
-    "@joint/layout-msagl": "4.2.3"
+    "@joint/core": "4.3.0",
+    "@joint/layout-msagl": "4.3.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "9.0.1",

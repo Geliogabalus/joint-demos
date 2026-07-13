@@ -14,7 +14,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@joint/core": "4.2.4"
+    "@joint/core": "4.3.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "9.0.1",

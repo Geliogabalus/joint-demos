@@ -11,8 +11,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@joint/plus": "4.2.3",
-    "@joint/format-visio": "4.2.2"
+    "@joint/plus": "4.3.0",
+    "@joint/format-visio": "4.3.0"
   },
   "devDependencies": {
     "vite": "^7.3.1"

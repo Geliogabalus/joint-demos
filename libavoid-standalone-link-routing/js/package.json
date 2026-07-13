@@ -18,7 +18,7 @@
     "build-web-worker-perf": "VARIANT=web-worker-perf webpack"
   },
   "dependencies": {
-    "@joint/core": "4.2.4",
+    "@joint/core": "4.3.0",
     "libavoid-js": "0.4.5"
   },
   "devDependencies": {

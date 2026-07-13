@@ -27,7 +27,7 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
-    "@joint/plus": "4.2.3",
+    "@joint/plus": "4.3.0",
     "sirv-cli": "^2.0.0"
   }
 }

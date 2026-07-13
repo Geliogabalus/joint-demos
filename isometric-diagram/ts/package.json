@@ -13,7 +13,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@joint/core": "4.2.4",
+    "@joint/core": "4.3.0",
     "@joint/decorators": "0.4.0"
   },
   "devDependencies": {

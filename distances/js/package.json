@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@joint/plus": "4.2.3"
+    "@joint/plus": "4.3.0"
   },
   "devDependencies": {
     "vite": "^5.3.1"
