@@ -16,7 +16,8 @@ const namespace = {
 
 const graph = new dia.Graph({}, { cellNamespace: namespace });
 
-graph.fromJSON(ERDGraph);
+// Link cells omit `id`; JointJS auto-generates one, but `dia.Graph.JSON` requires it explicitly.
+graph.fromJSON(ERDGraph as dia.Graph.JSON);
 
 // Create paper and populate the graph.
 // ------------------------------------
