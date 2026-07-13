@@ -5,8 +5,9 @@ import { IDEA_LABEL_DEFAULT } from '../theme';
 
 import type { App } from '../classes/App';
 import type { Idea } from '../shapes/idea';
+import type { TreeNode } from '../shapes';
 
-export function importTreeNode(app: App, data: graphUtils.ConstructTreeNode) {
+export function importTreeNode(app: App, data: TreeNode) {
     const { graph, scroller } = app;
     const cells = graphUtils.constructTree(data, { makeElement, makeLink });
     if (cells.length === 0) return;

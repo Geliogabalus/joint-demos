@@ -1,8 +1,8 @@
 import { IDEA_USER_COLORS } from './theme';
 
-import type { graphUtils } from '@joint/plus';
+import type { TreeNode } from './shapes';
 
-const example: graphUtils.ConstructTreeNode = {
+const example: TreeNode = {
     label: 'Business Plan\nwww.example.com\n\n2022',
     annotations: [
         {

@@ -7,9 +7,15 @@ import presets from './presets';
 
 import type { Range } from '@codemirror/state';
 import type { DecorationSet } from '@codemirror/view';
-import type { graphUtils } from '@joint/plus';
 
-export function getChildren(node: graphUtils.ConstructTreeNode) {
+// Mirrors the shape of `AstTreeNode`, which `@joint/plus`
+// no longer exports as a public type.
+interface AstTreeNode {
+    children?: AstTreeNode[];
+    [property: string]: any;
+}
+
+export function getChildren(node: AstTreeNode) {
 
     switch (node.type) {
 
@@ -75,7 +81,7 @@ export function getChildren(node: graphUtils.ConstructTreeNode) {
     }
 }
 
-export function getLabel(node: graphUtils.ConstructTreeNode) {
+export function getLabel(node: AstTreeNode) {
 
     switch (node.type) {
 
@@ -96,7 +102,7 @@ export function getLabel(node: graphUtils.ConstructTreeNode) {
 
         case 'FunctionDeclaration':
         case 'FunctionExpression': {
-            const params = node.params.map((param: graphUtils.ConstructTreeNode) => param.name).join(',');
+            const params = node.params.map((param: AstTreeNode) => param.name).join(',');
             return 'function ' + (node.id && node.id.name || '') + '(' + params + ')';
         }
         default:
@@ -104,7 +110,7 @@ export function getLabel(node: graphUtils.ConstructTreeNode) {
     }
 }
 
-export function getElementColor(node: graphUtils.ConstructTreeNode) {
+export function getElementColor(node: AstTreeNode) {
 
     const color = ({
         'Program': 'black',
