@@ -47,7 +47,7 @@ function updateGraph(graph: dia.Graph, json: SystemDiagramJSON, buildNode: Build
         let node: dia.Graph.CellInit;
         if (!nodeType) {
             // The node type is not defined in the data, so we create a placeholder
-            const defaults = util.result(graph.layerCollection.cellNamespace[SystemPlaceholder.type].prototype, 'defaults', {});
+            const defaults = util.result(graph.getCellNamespace()[SystemPlaceholder.type].prototype, 'defaults', {});
             node = {
                 type: SystemPlaceholder.type,
                 id: sourceId,
@@ -71,7 +71,7 @@ function updateGraph(graph: dia.Graph, json: SystemDiagramJSON, buildNode: Build
                     // Temporary workaround for a JointJS z-index behavior.
                     // When creating a cell from JSON without a 'z' property,
                     // JointJS assigns one automatically, overriding the model's default 'z' value.
-                    const defaults = util.result(graph.layerCollection.cellNamespace[nodeType].prototype, 'defaults', {});
+                    const defaults = util.result(graph.getCellNamespace()[nodeType].prototype, 'defaults', {});
                     node.z = defaults.z ?? ZIndex.Node;
                 }
             }

@@ -8,7 +8,7 @@ import type { TreeData } from './types';
 export function generateTree(graph: dia.Graph, data: TreeData) {
 
     const layoutGraph = new dia.Graph({}, {
-        cellNamespace: graph.layerCollection.cellNamespace
+        cellNamespace: graph.getCellNamespace()
     });
 
     const treeLayout = new layout.TreeLayout({
