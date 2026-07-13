@@ -140,8 +140,8 @@ function updateGraph(graph: dia.Graph, json: SystemDiagramJSON, buildNode: Build
     const buttons = makeButtons(nodeIds, json, growthLimits);
     // Track which buttons will be new
     buttons.forEach(button => {
-        if (!graph.getCell(button.id)) {
-            addedButtonIds.add(button.id);
+        if (!graph.getCell(button.id!)) {
+            addedButtonIds.add(button.id!);
         }
     });
 
