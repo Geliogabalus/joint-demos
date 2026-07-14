@@ -1,8 +1,9 @@
 import { IDEA_USER_COLORS } from './theme';
 
-import type { TreeNode } from './shapes';
+import type { graphUtils } from '@joint/plus';
 
-const example: TreeNode = {
+// @ts-expect-error missed types in @joint/plus
+const example: graphUtils.ConstructTreeNode = {
     label: 'Business Plan\nwww.example.com\n\n2022',
     annotations: [
         {

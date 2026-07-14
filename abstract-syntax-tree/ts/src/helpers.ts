@@ -7,15 +7,10 @@ import presets from './presets';
 
 import type { Range } from '@codemirror/state';
 import type { DecorationSet } from '@codemirror/view';
+import { type graphUtils } from '@joint/plus';
 
-// Mirrors the shape of `AstTreeNode`, which `@joint/plus`
-// no longer exports as a public type.
-interface AstTreeNode {
-    children?: AstTreeNode[];
-    [property: string]: any;
-}
-
-export function getChildren(node: AstTreeNode) {
+// @ts-expect-error missed types in @joint/plus
+export function getChildren(node: graphUtils.ConstructTreeNode) {
 
     switch (node.type) {
 
@@ -81,7 +76,8 @@ export function getChildren(node: AstTreeNode) {
     }
 }
 
-export function getLabel(node: AstTreeNode) {
+// @ts-expect-error missed types in @joint/plus
+export function getLabel(node: graphUtils.ConstructTreeNode) {
 
     switch (node.type) {
 
@@ -102,7 +98,8 @@ export function getLabel(node: AstTreeNode) {
 
         case 'FunctionDeclaration':
         case 'FunctionExpression': {
-            const params = node.params.map((param: AstTreeNode) => param.name).join(',');
+            // @ts-expect-error missed types in @joint/plus
+            const params = node.params.map((param: graphUtils.ConstructTreeNode) => param.name).join(',');
             return 'function ' + (node.id && node.id.name || '') + '(' + params + ')';
         }
         default:
@@ -110,7 +107,8 @@ export function getLabel(node: AstTreeNode) {
     }
 }
 
-export function getElementColor(node: AstTreeNode) {
+// @ts-expect-error missed types in @joint/plus
+export function getElementColor(node: graphUtils.ConstructTreeNode) {
 
     const color = ({
         'Program': 'black',

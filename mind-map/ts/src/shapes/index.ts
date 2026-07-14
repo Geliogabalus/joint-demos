@@ -1,14 +1,10 @@
 import { Idea, IdeaView } from './idea';
 import { Connection } from './connection';
 
-// Mirrors the shape of `graphUtils.ConstructTreeNode`, which `@joint/plus`
-// no longer exports as a public type.
-export interface TreeNode {
-    children?: TreeNode[];
-    [property: string]: any;
-}
+import type { graphUtils } from '@joint/plus';
 
-export function makeElement(node: TreeNode): Idea {
+// @ts-expect-error missed types in @joint/plus
+export function makeElement(node: graphUtils.ConstructTreeNode): Idea {
     const { children, ...attributes } = node;
     return new Idea({
         ...attributes,
