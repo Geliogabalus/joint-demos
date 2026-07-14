@@ -1,4 +1,3 @@
-import { util } from '@joint/plus';
 import { layoutCells } from './layouts/elk-layout';
 import { extractGraphCells, setNodeAttribute, isNodeJSON } from './utils';
 import { setCustomPosition } from '../custom-positions';
@@ -15,7 +14,7 @@ const ZIndex = {
 };
 
 export async function buildDiagram(data, graph, options = {}) {
-    const { 
+    const {
     // By default the data node is used as-is to create the model.
         buildNode = (node) => node, disableOptimalOrderHeuristic = true, } = options;
     updateGraph(graph, data, buildNode);
@@ -23,17 +22,17 @@ export async function buildDiagram(data, graph, options = {}) {
 }
 
 function updateGraph(graph, json, buildNode) {
-    
+
     const nodes = [];
     const edges = [];
-    
+
     const nodeIds = extractNodesIds(json);
-    
+
     nodeIds.forEach(sourceId => {
         // node should always exist in the JSON
         const nodeJSON = json[sourceId];
         const nodeType = nodeJSON.type;
-        
+
         const node = buildNode(nodeJSON, sourceId.toString());
         // Ensure the node has the ID attribute set
         setNodeAttribute(node, 'id', sourceId);
@@ -48,14 +47,14 @@ function updateGraph(graph, json, buildNode) {
                 // Temporary workaround for a JointJS z-index behavior.
                 // When creating a cell from JSON without a 'z' property,
                 // JointJS assigns one automatically, overriding the model's default 'z' value.
-                const defaults = util.result(graph.getCellNamespace()[nodeType].prototype, 'defaults', {});
+                const defaults = graph.getTypeDefaults(nodeType);
                 node.z = defaults.z ?? ZIndex.Node;
             }
         }
-        
+
         nodes.push(node);
     });
-    
+
     nodeIds.forEach(sourceId => {
         const nodeJSON = json[sourceId];
         const targets = nodeJSON.to || [];
@@ -63,7 +62,7 @@ function updateGraph(graph, json, buildNode) {
             const targetId = target.id;
             if (!targetId)
                 return;
-            
+
             const edgeJSON = {
                 ...target,
                 z: ZIndex.Edge,
@@ -79,11 +78,11 @@ function updateGraph(graph, json, buildNode) {
                     port: target.targetPortId
                 }
             };
-            
+
             edges.push(edgeJSON);
         });
     });
-    
+
     graph.syncCells([
         ...nodes,
         ...edges,
@@ -94,20 +93,20 @@ function updateGraph(graph, json, buildNode) {
  * Asynchronously layouts the graph using the ELK layout engine.
  */
 async function layoutGraph(graph, disableOptimalOrderHeuristic) {
-    
+
     const { fixedNodes, ...cells } = extractGraphCells(graph);
-    
+
     const setFixedPositions = () => {
         fixedNodes.forEach(node => setCustomPosition(graph, node));
     };
-    
+
     // Set fixed node positions to ensure they
     // have the correct position set synchronously
     setFixedPositions();
-    
+
     // Set the fixed positions after the layout is completed,
     // and reference nodes have been positioned.
     runAfterLayout(graph, setFixedPositions);
-    
+
     await layoutCells(graph, cells, { disableOptimalOrderHeuristic });
 }

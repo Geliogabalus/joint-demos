@@ -1,4 +1,3 @@
-import { util } from '@joint/plus';
 import { layoutCells } from './layouts/dagre-layout';
 import { Attribute } from '../const';
 import { extractGraphCells, setNodeAttribute, isNodeJSON } from './utils';
@@ -17,9 +16,9 @@ const ZIndex = {
 };
 
 export function buildDiagram(data, graph, options = {}) {
-    const { 
+    const {
     // By default the data node is used as-is to create the model.
-        buildNode = (node) => node, 
+        buildNode = (node) => node,
         // By default, nodes have no growth limit.
         growthLimit = () => Infinity, disableOptimalOrderHeuristic = true, } = options;
     updateGraph(graph, data, buildNode, growthLimit);
@@ -27,21 +26,21 @@ export function buildDiagram(data, graph, options = {}) {
 }
 
 function updateGraph(graph, json, buildNode, growthLimit) {
-    
+
     const nodes = [];
     const edges = [];
-    
+
     const growthLimits = new Map();
     const nodeIds = extractNodesIds(json);
-    
+
     nodeIds.forEach(sourceId => {
         const nodeJSON = json[sourceId] ?? { /* placeholder */};
         const nodeType = nodeJSON.type;
-        
+
         let node;
         if (!nodeType) {
             // The node type is not defined in the data, so we create a placeholder
-            const defaults = util.result(graph.getCellNamespace()[SystemPlaceholder.type].prototype, 'defaults', {});
+            const defaults = graph.getTypeDefaults(SystemPlaceholder.type);
             node = {
                 type: SystemPlaceholder.type,
                 id: sourceId,
@@ -66,31 +65,31 @@ function updateGraph(graph, json, buildNode, growthLimit) {
                     // Temporary workaround for a JointJS z-index behavior.
                     // When creating a cell from JSON without a 'z' property,
                     // JointJS assigns one automatically, overriding the model's default 'z' value.
-                    const defaults = util.result(graph.getCellNamespace()[nodeType].prototype, 'defaults', {});
+                    const defaults = graph.getTypeDefaults(nodeType);
                     node.z = defaults.z ?? ZIndex.Node;
                 }
             }
             // Evaluate the growth limit for the node and store it
             growthLimits.set(sourceId, growthLimit(nodeJSON));
         }
-        
+
         nodes.push(node);
     });
-    
+
     nodeIds.forEach(sourceId => {
-        
+
         const nodeJSON = json[sourceId];
         if (!nodeJSON) {
             // Placeholder has no links
             return;
         }
-        
+
         const targets = nodeJSON.to || [];
         targets.forEach((target, sourceIndex) => {
             const targetId = target.id;
             if (!targetId)
                 return;
-            
+
             const edgeJSON = {
                 ...target,
                 z: ZIndex.Edge,
@@ -100,11 +99,11 @@ function updateGraph(graph, json, buildNode, growthLimit) {
                 source: { id: sourceId },
                 target: { id: targetId }
             };
-            
+
             edges.push(edgeJSON);
         });
     });
-    
+
     graph.syncCells([
         ...nodes,
         ...edges,
@@ -113,21 +112,21 @@ function updateGraph(graph, json, buildNode, growthLimit) {
 }
 
 function layoutGraph(graph, disableOptimalOrderHeuristic) {
-    
+
     const { fixedNodes, ...cells } = extractGraphCells(graph);
-    
+
     layoutCells(graph, cells, {
         disableOptimalOrderHeuristic,
     });
-    
+
     // Set the position of the nodes with fixed positions
     fixedNodes.forEach(node => setCustomPosition(graph, node));
 }
 
 function makeButtons(nodeIds, data, growthLimits) {
-    
+
     const cells = [];
-    
+
     nodeIds.forEach(nodeId => {
         const nodeJSON = data[nodeId];
         if (!nodeJSON || !nodeJSON.type)
@@ -138,7 +137,7 @@ function makeButtons(nodeIds, data, growthLimits) {
             cells.push(...makeButton(nodeId));
         }
     });
-    
+
     return cells;
 }
 
