@@ -34,7 +34,7 @@ JointJS+ for React is a UI library for exactly this kind of diagramming — not 
 You can download this demo using our [`@joint/cli` tool](https://www.npmjs.com/package/@joint/cli):
 
 ```bash
-npx @joint/cli download ai-workflow-editor/react
+npx @joint/cli download ai-workflow-builder/react
 ```
 
 Alternatively, you can get the [copy of the repository](https://github.com/clientIO/joint-demos/archive/refs/heads/main.zip) from GitHub as usual.
