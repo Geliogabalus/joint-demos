@@ -3,7 +3,7 @@ import { useBaseInspector } from './useBaseInspector';
 import Input from '../Input/Input';
 
 import type { ChangeEvent, ReactElement } from 'react';
-import { app } from 'src/joint-plus/shapes';
+import type { app } from 'src/joint-plus/shapes';
 
 interface Props {
     cell: app.Link;

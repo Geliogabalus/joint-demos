@@ -1,4 +1,4 @@
-import { dia, ui, shapes, util, mvc } from '@joint/plus';
+import { dia, ui, shapes, util } from '@joint/plus';
 import './styles.scss';
 
 // Asset imports
@@ -106,16 +106,6 @@ const NavigatorElementView = dia.ElementView.extend({
         }
         body.setAttribute('d', d);
     }
-});
-
-const NavigatorLinkView = dia.LinkView.extend({
-    defaultTheme: null,
-    initialize: function() {
-        mvc.View.prototype.initialize.apply(this, arguments);
-    },
-    onMount: function() { },
-    render: function() { },
-    update: function() { }
 });
 
 // Paper

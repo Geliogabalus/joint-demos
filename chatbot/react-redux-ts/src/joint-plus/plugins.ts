@@ -23,7 +23,7 @@ export function createPlugins(
 ) {
     // Graph
     // https://resources.jointjs.com/docs/jointjs/v3.1/joint.html#dia.Graph
-    const graph = new dia.Graph({}, { cellNamespace: { app } });
+    const graph = new dia.Graph({}, { cellNamespace: { app }});
 
     // Paper
     // https://resources.jointjs.com/docs/jointjs/v3.1/joint.html#dia.Paper

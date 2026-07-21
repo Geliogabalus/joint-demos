@@ -11,7 +11,7 @@ distributed by client IO. See the LICENSE file.
 
 import { dia, elementTools, linkTools } from '@joint/plus';
 import { RemoveTool } from './remove.tool';
-import { app } from '../shapes';
+import type { app } from '../shapes';
 
 export function addCellTools(cellView: dia.CellView): void {
     if (cellView.model.isLink()) {

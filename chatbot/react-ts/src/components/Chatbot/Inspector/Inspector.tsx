@@ -10,7 +10,7 @@ import { ShapeTypesEnum } from '../../../joint-plus/shapes/app.shapes';
 
 import type { ReactElement } from 'react';
 import type { dia, shapes } from '@joint/plus';
-import { app } from 'src/joint-plus/shapes';
+import type { app } from 'src/joint-plus/shapes';
 
 const Inspector = (): ReactElement => {
     const [cell, setCell] = useState<dia.Cell>(null);
