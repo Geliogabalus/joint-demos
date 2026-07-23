@@ -1,4 +1,4 @@
-import { g } from '@joint/core';
+import { g } from '@joint/plus';
 import { Attribute } from './const';
 
 /**
@@ -40,6 +40,6 @@ export function setCustomPosition(graph, element) {
     if (!refPoint) {
         refPoint = new g.Point(0, 0);
     }
-    
+
     element.position(refPoint.x + x, refPoint.y + y);
 }

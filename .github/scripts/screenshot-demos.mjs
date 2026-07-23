@@ -36,6 +36,14 @@ const DEFAULT_VIEWPORT = { width: 800, height: 600 };
 const SERVER_TIMEOUT_MS = 60_000;
 const SETTLE_MS = 3000;
 const BASE_PORT = 9100;
+const IS_WINDOWS = process.platform === 'win32';
+
+// On Windows, npm/npx are npm.cmd/npx.cmd; spawn() without shell:true won't
+// resolve the bare name (and PATHEXT lookup is unreliable across Node versions).
+function resolveCommand(command) {
+    if (IS_WINDOWS && (command === 'npm' || command === 'npx')) return `${command}.cmd`;
+    return command;
+}
 
 // ---------------------------------------------------------------------------
 // Config helpers
@@ -149,6 +157,14 @@ async function waitForPortFree(port, timeoutMs = 10_000) {
 
 async function killProcessTree(proc) {
     if (!proc.pid) return;
+
+    if (IS_WINDOWS) {
+        // process.kill(-pid) process-group signalling doesn't exist on Windows;
+        // taskkill /T walks the tree (npm.cmd -> node) and kills it outright.
+        try { execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'pipe' }); } catch { /* already dead */ }
+        return;
+    }
+
     try {
         // Kill the entire process group (npm + child server)
         process.kill(-proc.pid, 'SIGTERM');
@@ -229,12 +245,14 @@ async function main() {
             ensureDeps(buildDir);
 
             // Start dev server in its own process group so we can kill the tree
-            proc = spawn(server.command, server.args, {
-                cwd: buildDir,
-                stdio: 'pipe',
-                detached: true,
-                env: { ...process.env, BROWSER: 'none', ...server.env },
-            });
+            // .cmd files (npm/npx on Windows) aren't real executables — spawn()
+            // needs a shell to invoke them, otherwise it throws EINVAL. All args
+            // here are fixed internal literals/port numbers, so string-joining
+            // them for the shell is safe (avoids Node's shell+argv-array warning).
+            const command = resolveCommand(server.command);
+            proc = IS_WINDOWS
+                ? spawn([command, ...server.args].join(' '), { cwd: buildDir, stdio: 'pipe', detached: true, shell: true, env: { ...process.env, BROWSER: 'none', ...server.env } })
+                : spawn(command, server.args, { cwd: buildDir, stdio: 'pipe', detached: true, env: { ...process.env, BROWSER: 'none', ...server.env } });
 
             const url = `http://localhost:${port}`;
             console.log(`  Waiting for ${url}...`);

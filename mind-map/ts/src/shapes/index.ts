@@ -3,7 +3,6 @@ import { Connection } from './connection';
 
 import type { graphUtils } from '@joint/plus';
 
-// @ts-expect-error missed types in @joint/plus
 export function makeElement(node: graphUtils.ConstructTreeNode): Idea {
     const { children, ...attributes } = node;
     return new Idea({

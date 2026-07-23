@@ -1,13 +1,13 @@
-import { shapes, util, g } from '@joint/core';
+import { shapes, util, g } from '@joint/plus';
 
 const fontFamily = 'Arial';
 const rootStyles = getComputedStyle(document.documentElement);
 
 export function generateFishboneCells(data) {
-    
+
     const elements = [];
     const links = [];
-    
+
     function iterate(obj, pathArray = [], direction = null) {
         const { name = '', children = [] } = obj;
         const level = pathArray.length / 2;
@@ -19,12 +19,12 @@ export function generateFishboneCells(data) {
             path: pathArray,
             direction,
         });
-        
+
         elements.push(node);
-        
+
         if (!children)
             return node;
-        
+
         // Distribute children to top and bottom automatically
         // Some of the directions may be explicitly set
         // in the data, so we need to count them first
@@ -38,9 +38,9 @@ export function generateFishboneCells(data) {
                 bottomCount++;
             }
         });
-        
+
         children.forEach((childObj, index) => {
-            
+
             let nextDirection;
             let isExplicitDirection = false;
             if (level === 1) {
@@ -55,7 +55,7 @@ export function generateFishboneCells(data) {
             else {
                 nextDirection = direction;
             }
-            
+
             if (!isExplicitDirection) {
                 // If it is explicitly set, we already counted it
                 if (nextDirection === 'top') {
@@ -65,7 +65,7 @@ export function generateFishboneCells(data) {
                     bottomCount++;
                 }
             }
-            
+
             const childNode = iterate(childObj, pathArray.concat(['children', index]), nextDirection);
             childNode.set('order', index);
             links.push(new shapes.standard.Link({
@@ -85,12 +85,12 @@ export function generateFishboneCells(data) {
                 }
             }));
         });
-        
+
         return node;
     }
-    
+
     iterate(data);
-    
+
     const cells = [...elements, ...links];
     return cells;
 }
@@ -129,7 +129,7 @@ export function createNode(name, level, direction = 'bottom') {
         // ignore the grand-children height
         node.set('compact', true);
     }
-    
+
     return node;
 }
 
@@ -248,7 +248,7 @@ function createCauseNode(name) {
 function createEffectNode(name) {
     const textSize = measureTextSize(name, 14, fontFamily);
     const textMargin = Number.parseFloat(rootStyles.getPropertyValue('--text-margin'));
-    
+
     return new shapes.standard.Rectangle({
         size: {
             width: textSize.width + 2 * textMargin,
@@ -295,7 +295,7 @@ function createHorizontalSubCauseNode(name, _level, _direction) {
     const fontSize = 10;
     const textSize = measureTextSize(name, fontSize, fontFamily);
     const textMargin = Number.parseFloat(rootStyles.getPropertyValue('--text-margin'));
-    
+
     return new shapes.standard.Rectangle({
         size: {
             width: textSize.width + 2 * textMargin,
@@ -327,12 +327,12 @@ function createDiagonalSubCauseNode(name, _level, direction) {
     const fontSize = 12;
     const textSize = measureTextSize(name, fontSize, fontFamily);
     const textOffset = 15;
-    
+
     const width = textSize.height + 2 * textMargin;
     const height = Math.cos(g.toRad(slope)) * (textSize.width + 2 * textMargin) + 2 * textOffset;
-    
+
     const groupClass = direction === 'top' ? 'label-shift-top' : 'label-shift-bottom';
-    
+
     return new shapes.standard.Rectangle({
         size: {
             width,

@@ -1,6 +1,6 @@
-import { g, util } from '@joint/core';
+import { g, util } from '@joint/plus';
 
-import type { dia } from '@joint/core';
+import type { dia } from '@joint/plus';
 
 const sin45 = Math.sin(Math.PI / 4);
 

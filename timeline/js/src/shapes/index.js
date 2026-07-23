@@ -1,4 +1,4 @@
-import { shapes } from '@joint/core';
+import { shapes } from '@joint/plus';
 import { Event } from './Event';
 import { Milestone } from './Milestone';
 import { Category } from './Category';

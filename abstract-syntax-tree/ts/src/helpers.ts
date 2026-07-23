@@ -9,7 +9,6 @@ import type { Range } from '@codemirror/state';
 import type { DecorationSet } from '@codemirror/view';
 import { type graphUtils } from '@joint/plus';
 
-// @ts-expect-error missed types in @joint/plus
 export function getChildren(node: graphUtils.ConstructTreeNode) {
 
     switch (node.type) {
@@ -76,7 +75,6 @@ export function getChildren(node: graphUtils.ConstructTreeNode) {
     }
 }
 
-// @ts-expect-error missed types in @joint/plus
 export function getLabel(node: graphUtils.ConstructTreeNode) {
 
     switch (node.type) {
@@ -98,7 +96,6 @@ export function getLabel(node: graphUtils.ConstructTreeNode) {
 
         case 'FunctionDeclaration':
         case 'FunctionExpression': {
-            // @ts-expect-error missed types in @joint/plus
             const params = node.params.map((param: graphUtils.ConstructTreeNode) => param.name).join(',');
             return 'function ' + (node.id && node.id.name || '') + '(' + params + ')';
         }
@@ -107,7 +104,6 @@ export function getLabel(node: graphUtils.ConstructTreeNode) {
     }
 }
 
-// @ts-expect-error missed types in @joint/plus
 export function getElementColor(node: graphUtils.ConstructTreeNode) {
 
     const color = ({

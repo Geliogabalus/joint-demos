@@ -1,4 +1,4 @@
-import { type dia, shapes } from '@joint/core';
+import { type dia, shapes } from '@joint/plus';
 import { Event } from './Event';
 import { Milestone } from './Milestone';
 import { Category } from './Category';
@@ -20,7 +20,7 @@ Object.assign(shapes, {
     }
 });
 
-declare module '@joint/core' {
+declare module '@joint/plus' {
     namespace shapes {
         namespace timeline {
             export {

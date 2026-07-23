@@ -1,4 +1,4 @@
-import { dia, util } from '@joint/core';
+import { dia, util } from '@joint/plus';
 
 const DATE_BODY_WIDTH = 15;
 const MARKER_RADIUS = 4.5;
