@@ -6,11 +6,12 @@ import { StencilPlaceholder } from './StencilPlaceholder';
 
 export { Event, Milestone, Category, StencilPlaceholder };
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     timeline: {
         Event,
         Milestone,
         Category,
         StencilPlaceholder
     }
-});
+};

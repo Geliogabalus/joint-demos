@@ -11,24 +11,12 @@ export interface ITimelineShape extends dia.Element {
     getEditableFields: () => { property: string, inputType: 'text' | 'textarea', attrPath: string }[];
 }
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     timeline: {
         Event,
         Milestone,
         Category,
         StencilPlaceholder
     }
-});
-
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace timeline {
-            export {
-                Event,
-                Milestone,
-                Category,
-                StencilPlaceholder
-            };
-        }
-    }
-}
+};

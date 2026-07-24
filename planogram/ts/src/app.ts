@@ -1,5 +1,5 @@
-import { dia, layout, shapes, ui } from '@joint/plus';
-import { ShelfElement, ProductElement, getAllProducts, getAllShelves, ProductCategories, storeItemsConfig } from './shapes';
+import { dia, layout, ui } from '@joint/plus';
+import { ShelfElement, ProductElement, getAllProducts, getAllShelves, ProductCategories, storeItemsConfig, cellNamespace } from './shapes';
 import { addElementTools, removeElementTools } from './tools';
 import { validateChangePosition, validateChangeSize, isSizeValid, isPositionValid } from './validators';
 import exampleGraph from '../assets/example.json';
@@ -14,7 +14,7 @@ export const init = (): void => {
     const stencilElement = document.getElementById('products-stencil') as HTMLDivElement;
     const shelvesStencilElement = document.getElementById('shelves-stencil') as HTMLDivElement;
 
-    const graph = new dia.Graph({}, { cellNamespace: shapes });
+    const graph = new dia.Graph({}, { cellNamespace });
 
     const paper = new dia.Paper({
         width: 25 * grid,
@@ -47,7 +47,7 @@ export const init = (): void => {
         },
         async: true,
         sorting: dia.Paper.sorting.APPROX,
-        cellViewNamespace: shapes,
+        cellViewNamespace: cellNamespace,
         highlighting: {
             embedding: {
                 name: 'stroke',
@@ -123,9 +123,9 @@ export const init = (): void => {
 
     const getStencilPaperOptions = () => {
         return {
-            model: new dia.Graph({}, { cellNamespace: shapes }),
+            model: new dia.Graph({}, { cellNamespace }),
             sorting: dia.Paper.sorting.NONE,
-            cellViewNamespace: shapes
+            cellViewNamespace: cellNamespace
         };
     };
 

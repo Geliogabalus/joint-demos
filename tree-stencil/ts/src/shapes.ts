@@ -231,9 +231,10 @@ export class StencilLink extends dia.Link {
     }
 }
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     app: {
         StencilNode,
         StencilLink
     }
-});
+};

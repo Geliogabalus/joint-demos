@@ -5,9 +5,10 @@ import { shapes } from '@joint/plus';
 import { Member } from './member';
 import { Link } from './link';
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     teamOrder: {
         Member,
         Link
     }
-});
+};

@@ -522,7 +522,8 @@ const ConcatView = shapes.standard.RecordView;
 const GetDateView = shapes.standard.RecordView;
 const RecordView = shapes.standard.RecordView;
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     mapping: {
         Link,
         Constant,
@@ -534,4 +535,4 @@ Object.assign(shapes, {
         Record,
         RecordView
     }
-});
+};

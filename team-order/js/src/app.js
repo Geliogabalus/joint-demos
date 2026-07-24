@@ -1,6 +1,6 @@
 import { dia, ui, layout } from '@joint/plus';
 import { members } from './data';
-import { Member, Link } from './shapes';
+import { Member, Link, cellNamespace } from './shapes';
 
 const COLUMNS = 3;
 const MEMBER_WIDTH = 250;
@@ -11,14 +11,15 @@ const STACK_GAP = 0;
 const PADDING = 20;
 
 export const init = () => {
-    const graph = new dia.Graph;
+    const graph = new dia.Graph({}, { cellNamespace });
     const el = document.getElementById('canvas');
-    
+
     const paper = new dia.Paper({
         el,
         width: COLUMNS * MEMBER_WIDTH + PADDING * 2 + STACK_GAP * (COLUMNS - 1),
         height: members.length * (MEMBER_HEIGHT + STACK_ELEMENT_GAP) - STACK_ELEMENT_GAP + PADDING * 2,
         model: graph,
+        cellViewNamespace: cellNamespace,
         interactive: false,
         async: true,
         frozen: true,

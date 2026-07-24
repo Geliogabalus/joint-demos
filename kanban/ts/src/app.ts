@@ -1,14 +1,14 @@
-import { dia, shapes, ui } from '@joint/plus';
+import { dia, ui } from '@joint/plus';
 import { columns, tasks as defaultTasks, dependencies as defaultDependencies } from './kanban/data';
 import { Kanban } from './kanban/kanban';
-import { Task as TaskShape, Header as HeaderShape, Dependency as DependencyShape, AnimatedElementView } from './shapes';
+import { Task as TaskShape, Header as HeaderShape, Dependency as DependencyShape, AnimatedElementView, cellNamespace } from './shapes';
 import type { Dependency, Task } from './kanban/models';
 
 const STORAGE_KEY = 'joint.kanban.board';
 
 export const init = () => {
 
-    const graph = new dia.Graph({}, { cellNamespace: shapes });
+    const graph = new dia.Graph({}, { cellNamespace });
 
     const paper = new dia.Paper({
         el: document.getElementById('paper'),
@@ -25,7 +25,7 @@ export const init = () => {
             disposeHidden: true,
         },
         sorting: dia.Paper.sorting.APPROX,
-        cellViewNamespace: shapes,
+        cellViewNamespace: cellNamespace,
         elementView: (element) => {
             if (TaskShape.isTask(element)) {
                 return AnimatedElementView as typeof dia.ElementView;

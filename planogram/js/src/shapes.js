@@ -391,9 +391,10 @@ export class ProductElement extends dia.Element {
     }
 }
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     app: {
         Shelf: ShelfElement,
         Product: ProductElement
     }
-});
+};

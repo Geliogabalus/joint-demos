@@ -1,24 +1,24 @@
-import { dia, ui, shapes, highlighters, layout } from '@joint/plus';
+import { dia, ui, highlighters, layout } from '@joint/plus';
 import { previewAttrs, stencilShapes } from './config';
 import { artificialIntelligenceTimeline } from './data';
 import { getPath, makeLink, removeElement, layoutDiagram } from './utils';
-import { Category, Event } from './shapes';
+import { Category, Event, cellNamespace } from './shapes';
 import { setupNavigator } from './navigator';
 
 export const init = () => {
-    
+
     // Populate Graph
     // --------------
-    
-    const graph = new dia.Graph({}, { cellNamespace: shapes });
+
+    const graph = new dia.Graph({}, { cellNamespace });
     const cells = artificialIntelligenceTimeline.toGraphShapes();
     graph.resetCells(cells);
-    
+
     // Create Paper and Stencil
     // ------------------------
-    
+
     const paper = new dia.Paper({
-        cellViewNamespace: shapes,
+        cellViewNamespace: cellNamespace,
         model: graph,
         interactive: false,
         async: true,

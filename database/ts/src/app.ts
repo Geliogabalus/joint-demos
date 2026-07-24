@@ -1,5 +1,5 @@
-import { dia, setTheme, shapes, ui, linkTools } from '@joint/plus';
-import { Table, Link } from './shapes';
+import { dia, setTheme, ui, linkTools } from '@joint/plus';
+import { Table, Link, cellNamespace } from './shapes';
 import { anchorNamespace } from './anchors';
 import { routerNamespace } from './routers';
 import { TableHighlighter } from './highlighters';
@@ -11,7 +11,7 @@ export const init = () => {
 
     setTheme('my-theme');
 
-    const graph = new dia.Graph({}, { cellNamespace: shapes });
+    const graph = new dia.Graph({}, { cellNamespace });
 
     const paper = new dia.Paper({
         model: graph,
@@ -23,7 +23,7 @@ export const init = () => {
         async: true,
         frozen: true,
         sorting: dia.Paper.sorting.APPROX,
-        cellViewNamespace: shapes,
+        cellViewNamespace: cellNamespace,
         routerNamespace: routerNamespace,
         defaultRouter: { name: 'customRouter' },
         anchorNamespace: anchorNamespace,

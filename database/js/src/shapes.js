@@ -203,12 +203,13 @@ export class Link extends dia.Link {
 
 const TableView = shapes.standard.RecordView;
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     app: {
         Table,
         TableView,
         Link
     }
-});
+};
 
 

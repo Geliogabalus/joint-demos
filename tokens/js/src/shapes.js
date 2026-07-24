@@ -132,10 +132,11 @@ export class Token extends dia.Element {
     }
 }
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     app: {
         Node,
         Link,
         Token
     }
-});
+};

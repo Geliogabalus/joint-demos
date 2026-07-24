@@ -413,9 +413,10 @@ export class ProductElement extends dia.Element implements PlanogramElement {
     }
 }
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     app: {
         Shelf: ShelfElement,
         Product: ProductElement
     }
-});
+};
