@@ -288,7 +288,7 @@ async function killProcessTree(proc) {
     if (IS_WINDOWS) {
         // process.kill(-pid) process-group signalling doesn't exist on Windows;
         // taskkill /T walks the tree (npm.cmd -> node) and kills it outright.
-        try { execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'pipe' }); } catch { /* already dead */ }
+        try { execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'pipe', windowsHide: true }); } catch { /* already dead */ }
         return;
     }
 
@@ -351,7 +351,7 @@ function patchLocalPackages(buildDir, { explicitOverrides, localDir }) {
 function installDeps(buildDir, forceReinstall) {
     if (forceReinstall || !existsSync(join(buildDir, 'node_modules'))) {
         console.log('  Installing dependencies...');
-        execSync('npm install', { cwd: buildDir, stdio: 'pipe' });
+        execSync('npm install', { cwd: buildDir, stdio: 'pipe', windowsHide: true });
     }
 }
 
@@ -485,9 +485,16 @@ async function main() {
             // needs a shell to invoke them, otherwise it throws EINVAL. All args
             // here are fixed internal literals/port numbers, so string-joining
             // them for the shell is safe (avoids Node's shell+argv-array warning).
+            // windowsHide suppresses the console window Node otherwise pops up
+            // per spawned process on Windows (default: false). detached is
+            // omitted on Windows: it maps to the DETACHED_PROCESS creation
+            // flag, which conflicts with windowsHide's CREATE_NO_WINDOW and
+            // can make the window reappear anyway — and it's not needed here
+            // since killProcessTree() kills the Windows tree via `taskkill /T`
+            // on the PID, not via a POSIX process group.
             const command = resolveCommand(server.command);
             proc = IS_WINDOWS
-                ? spawn([command, ...server.args].join(' '), { cwd: buildDir, stdio: 'pipe', detached: true, shell: true, env: { ...process.env, BROWSER: 'none', ...server.env } })
+                ? spawn([command, ...server.args].join(' '), { cwd: buildDir, stdio: 'pipe', shell: true, windowsHide: true, env: { ...process.env, BROWSER: 'none', ...server.env } })
                 : spawn(command, server.args, { cwd: buildDir, stdio: 'pipe', detached: true, env: { ...process.env, BROWSER: 'none', ...server.env } });
 
             const url = `http://localhost:${port}`;
