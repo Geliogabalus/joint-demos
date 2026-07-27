@@ -2,7 +2,7 @@
 
 /**
  * Captures a fresh screenshot of each demo and compares it against its test
- * baseline in .tests/screenshots/, flagging any demo whose rendered
+ * baseline in .github/tests/screenshots/, flagging any demo whose rendered
  * output has visibly changed.
  *
  * Baselines are kept separately from each demo's own screenshot.png at the
@@ -42,7 +42,7 @@
  *                               or to create a baseline for the first time)
  *   --baseline-dir=<dir>        Directory holding baseline screenshots, one
  *                               <demo-name>.png per demo
- *                               (default: .tests/screenshots/)
+ *                               (default: .github/tests/screenshots/)
  *   --out=<dir>                 Directory to write diff artifacts to
  *                               (default: screenshot-diff-results/)
  *
@@ -79,7 +79,7 @@ import { resolveLocalSpec, findLocalPackageInDir, toFileSpec } from './lib/local
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CONFIG_FILE = join(ROOT, 'demos.config.json');
-const DEFAULT_BASELINE_DIR = join(ROOT, '.tests', 'screenshots');
+const DEFAULT_BASELINE_DIR = join(ROOT, '.github', 'tests', 'screenshots');
 
 const DEFAULT_VIEWPORT = { width: 800, height: 600 };
 const SERVER_TIMEOUT_MS = 60_000;
@@ -131,7 +131,7 @@ const HELP_OPTIONS = [
     ['--local-package=<name>=<path>', 'Same idea for any other @joint/* package, e.g. --local-package=@joint/format-visio=../joint-visio.tgz. Repeatable for multiple packages.'],
     ['--local-dir=<path>', 'A directory holding several local packages at once (e.g. from running npm pack for each). Each demo\'s @joint/* deps are matched against joint-<name>*.tgz / <name>*.tgz files or folders in it; unmatched deps install from npm. Explicit --local-* flags win over this.'],
     ['--update-baseline', 'Write the newly captured screenshot as the baseline when a demo differs or has no baseline yet'],
-    ['--baseline-dir=<dir>', 'Directory holding baseline screenshots, one <demo-name>.png per demo (default: .tests/screenshots/)'],
+    ['--baseline-dir=<dir>', 'Directory holding baseline screenshots, one <demo-name>.png per demo (default: .github/tests/screenshots/)'],
     ['--out=<dir>', 'Directory for diff artifacts (default: screenshot-diff-results/)'],
 ];
 
