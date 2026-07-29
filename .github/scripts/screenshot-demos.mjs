@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Captures a screenshot of each demo and saves it to the demo's root directory.
+ * Captures a screenshot of each demo and saves it to .github/screenshots/
+ * (untracked by git), keyed by demo name.
  *
  * Usage:
  *   node .github/scripts/screenshot-demos.mjs [--update] [demo-name]
  *
- * By default, only demos missing a screenshot.png are processed.
+ * By default, only demos missing a screenshot in .github/screenshots/ are
+ * processed.
  * --update    Regenerate screenshots for all demos (including existing ones).
  *
  * Prerequisites:
@@ -18,12 +20,13 @@
  */
 
 import { chromium } from 'playwright';
-import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { execSync, spawn } from 'child_process';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CONFIG_FILE = join(ROOT, 'demos.config.json');
+const SCREENSHOTS_DIR = join(ROOT, '.github', 'screenshots');
 
 let FILTER = '';
 let UPDATE = false;
@@ -197,6 +200,7 @@ function ensureDeps(buildDir) {
 
 async function main() {
     const config = loadConfig();
+    mkdirSync(SCREENSHOTS_DIR, { recursive: true });
     const browser = await chromium.launch();
 
     const entries = readdirSync(ROOT)
@@ -218,7 +222,7 @@ async function main() {
             continue;
         }
 
-        if (!UPDATE && !FILTER && existsSync(join(ROOT, demoName, 'screenshot.png'))) {
+        if (!UPDATE && !FILTER && existsSync(join(SCREENSHOTS_DIR, `${demoName}.png`))) {
             results.skipped.push(demoName);
             continue;
         }
@@ -286,8 +290,7 @@ async function main() {
             await page.goto(url, { waitUntil: 'networkidle' });
             await page.waitForTimeout(SETTLE_MS);
 
-            const screenshotFile = 'screenshot.png';
-            const screenshotPath = join(ROOT, demoName, screenshotFile);
+            const screenshotPath = join(SCREENSHOTS_DIR, `${demoName}.png`);
 
             // Clip to the bounding box of <body> children to avoid excess whitespace
             const clip = await page.evaluate(() => {

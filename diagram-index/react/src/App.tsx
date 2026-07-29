@@ -9,9 +9,7 @@ import './App.scss';
 
 function App() {
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const canvasEl: any = useRef(null);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const treeEl: any = useRef(null);
 
     const [initialDiagram = { id: '', cells: [] }] = TreeData;

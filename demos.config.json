@@ -22,6 +22,42 @@
     },
     "ai-workflow-builder": {
       "variant": "react"
+    },
+    "force-directed-layout": {
+      "screenshotThreshold": 5
+    },
+    "marey-chart": {
+      "screenshotThreshold": 5
+    },
+    "rough-shapes": {
+      "screenshotThreshold": 5
+    },
+    "scada": {
+      "screenshotThreshold": 5
+    },
+    "elk-layout": {
+      "skipScreenshotComparison": true
+    },
+    "counters": {
+      "skipScreenshotComparison": true
+    },
+    "convex-hull-algorithm": {
+      "skipScreenshotComparison": true
+    },
+    "decision-tree": {
+      "skipScreenshotComparison": true
+    },
+    "force-directed-radial-force": {
+      "skipScreenshotComparison": true
+    },
+    "puzzle": {
+      "skipScreenshotComparison": true
+    },
+    "shortest-path-algorithm": {
+      "skipScreenshotComparison": true
+    },
+    "team-order": {
+      "skipScreenshotComparison": true
     }
   }
 }

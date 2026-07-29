@@ -28,6 +28,8 @@ Demos not listed in the config use default behavior. All fields are optional.
 | `buildFlags` | `string` | build script | Overrides the default flags passed to `npm run build`. When not set, defaults to `--base=./ --mode=production` for Vite projects or `--mode=production` for others. Use this for frameworks that need different flags (e.g. `"--configuration production"` for Angular). |
 | `viewport` | `object` | screenshot script | Custom viewport size `{ "width": N, "height": N }` for screenshots. Defaults to 1024x768. |
 | `unlisted` | `boolean` | CLI tooling | Hides the demo from `@joint/cli list`. Still builds and deploys normally. |
+| `skipScreenshotComparison` | `boolean` | compare-screenshots script | Excludes the demo from screenshot regression comparison only. Unlike `skip`, it has no effect on build-demos.sh or screenshot-demos.mjs — the demo still builds and deploys normally. |
+| `screenshotThreshold` | `number` | compare-screenshots script | Per-demo max allowed % of differing pixels before the demo is flagged as mismatched. Overrides the script's `--threshold` value (default: 1). |
 
 ## Default behavior
 
@@ -71,6 +73,21 @@ Override build flags (e.g. for Angular projects that don't accept `--mode`):
     "data-pipeline": {
       "variant": "angular",
       "buildFlags": "--configuration production"
+    }
+  }
+}
+```
+
+Exclude a demo from screenshot regression comparison, while still building/deploying it normally, and raise its diff threshold to tolerate a noisier render:
+
+```json
+{
+  "demos": {
+    "bpmn-editor": {
+      "skipScreenshotComparison": true
+    },
+    "marey-chart": {
+      "screenshotThreshold": 3
     }
   }
 }

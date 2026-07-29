@@ -4,6 +4,7 @@ dist
 build
 _site
 screenshot-diff-results
+.github/screenshots
 *.tgz
 .packages
 .angular

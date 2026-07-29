@@ -58,7 +58,11 @@
  *
  * The script reuses the same variant-resolution and dev-server logic as
  * screenshot-demos.mjs / build-demos.sh, reading demos.config.json for
- * per-demo overrides.
+ * per-demo overrides. Two fields there are specific to this script:
+ *   - skipScreenshotComparison: excludes a demo from comparison without
+ *     affecting build-demos.sh / screenshot-demos.mjs (unlike `skip`, which
+ *     is shared and also removes the demo from build/deploy).
+ *   - screenshotThreshold: per-demo override of --threshold.
  */
 
 import { chromium } from 'playwright';
@@ -442,7 +446,7 @@ async function main() {
     for (const demoName of entries) {
         if (FILTER && demoName !== FILTER) continue;
 
-        if (demoConfig(config, demoName, 'skip') === true) {
+        if (demoConfig(config, demoName, 'skip') === true || demoConfig(config, demoName, 'skipScreenshotComparison') === true) {
             results.skipped.push(demoName);
             continue;
         }
