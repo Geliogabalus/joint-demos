@@ -10,8 +10,8 @@
   "license": "http://jointjs.com/license",
   "private": true,
   "dependencies": {
-    "@joint/layout-directed-graph": "4.3.0",
-    "@joint/plus": "4.3.0"
+    "@joint/layout-directed-graph": "4.3.1",
+    "@joint/plus": "4.3.1"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

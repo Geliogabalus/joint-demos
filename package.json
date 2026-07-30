@@ -8,7 +8,7 @@
 		"lint": "eslint .",
 		"build": "bash .github/scripts/build-demos.sh",
 		"screenshot": "node .github/scripts/screenshot-demos.mjs",
-		"screenshot:compare": "node .github/scripts/compare-screenshots.mjs",
+		"screenshot:compare": "node .github/scripts/compare-screenshots.mjs --force-reinstall",
 		"link-local-packages": "node .github/scripts/link-local-packages.mjs"
 	},
 	"devDependencies": {

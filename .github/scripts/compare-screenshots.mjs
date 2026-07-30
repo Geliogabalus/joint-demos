@@ -40,6 +40,9 @@
  *                               baseline instead of reporting a mismatch
  *                               (use to accept an intentional visual change,
  *                               or to create a baseline for the first time)
+ *   --force-reinstall           Run `npm install` for every demo even when
+ *                               node_modules/ already exists (e.g. to pick up
+ *                               a version bump in an already-installed demo)
  *   --baseline-dir=<dir>        Directory holding baseline screenshots, one
  *                               <demo-name>.png per demo
  *                               (default: .github/tests/screenshots/)
@@ -103,6 +106,7 @@ let LOCAL_PLUS_PATH = null;
 const LOCAL_PACKAGE_PATHS = {}; // package name -> local path, from repeatable --local-package
 let LOCAL_DIR = null;
 let UPDATE_BASELINE = false;
+let FORCE_REINSTALL = false;
 let BASELINE_DIR = DEFAULT_BASELINE_DIR;
 let OUT_DIR = join(ROOT, 'screenshot-diff-results');
 let SHOW_HELP = false;
@@ -110,6 +114,7 @@ let SHOW_HELP = false;
 for (const arg of process.argv.slice(2)) {
     if (arg === '--help' || arg === '-h') SHOW_HELP = true;
     else if (arg === '--update-baseline') UPDATE_BASELINE = true;
+    else if (arg === '--force-reinstall') FORCE_REINSTALL = true;
     else if (arg.startsWith('--threshold=')) THRESHOLD_PERCENT = Number(arg.slice('--threshold='.length));
     else if (arg.startsWith('--local-core=')) LOCAL_CORE_PATH = arg.slice('--local-core='.length);
     else if (arg.startsWith('--local-plus=')) LOCAL_PLUS_PATH = arg.slice('--local-plus='.length);
@@ -135,6 +140,7 @@ const HELP_OPTIONS = [
     ['--local-package=<name>=<path>', 'Same idea for any other @joint/* package, e.g. --local-package=@joint/format-visio=../joint-visio.tgz. Repeatable for multiple packages.'],
     ['--local-dir=<path>', 'A directory holding several local packages at once (e.g. from running npm pack for each). Each demo\'s @joint/* deps are matched against joint-<name>*.tgz / <name>*.tgz files or folders in it; unmatched deps install from npm. Explicit --local-* flags win over this.'],
     ['--update-baseline', 'Write the newly captured screenshot as the baseline when a demo differs or has no baseline yet'],
+    ['--force-reinstall', 'Run npm install for every demo even when node_modules/ already exists'],
     ['--baseline-dir=<dir>', 'Directory holding baseline screenshots, one <demo-name>.png per demo (default: .github/tests/screenshots/)'],
     ['--out=<dir>', 'Directory for diff artifacts (default: screenshot-diff-results/)'],
 ];
@@ -482,7 +488,7 @@ async function main() {
             if (patch.applied.length > 0) {
                 console.log(`  Using local packages: ${patch.applied.join(', ')}`);
             }
-            installDeps(buildDir, patch.changed);
+            installDeps(buildDir, patch.changed || FORCE_REINSTALL);
 
             // Start dev server in its own process group so we can kill the tree
             // .cmd files (npm/npx on Windows) aren't real executables — spawn()
