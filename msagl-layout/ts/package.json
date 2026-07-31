@@ -22,7 +22,7 @@
   ],
   "dependencies": {
     "@joint/core": "4.3.1",
-    "@joint/layout-msagl": "4.3.1"
+    "@joint/layout-msagl": "4.3.0"
   },
   "devDependencies": {
     "copy-webpack-plugin": "9.0.1",

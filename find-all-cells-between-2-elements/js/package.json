@@ -14,6 +14,6 @@
     },
     "dependencies": {
         "@joint/core": "4.3.1",
-        "@joint/layout-directed-graph": "4.3.1"
+        "@joint/layout-directed-graph": "4.3.0"
     }
 }
