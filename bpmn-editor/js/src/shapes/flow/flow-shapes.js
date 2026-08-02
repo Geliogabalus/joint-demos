@@ -177,11 +177,6 @@ export class Message extends Flow {
     }
 }
 
-Object.assign(shapes, {
-    flow: {
-        Sequence,
-        Default,
-        Conditional,
-        Message
-    }
-});
+export const flow = {
+    Sequence, Default, Conditional, Message
+};

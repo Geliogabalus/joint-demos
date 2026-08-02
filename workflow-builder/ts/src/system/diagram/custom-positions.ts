@@ -1,7 +1,7 @@
-import { g } from '@joint/core';
+import { g } from '@joint/plus';
 import { Attribute } from './const';
 
-import type { dia } from '@joint/core';
+import type { dia } from '@joint/plus';
 import type { NodeCustomPosition } from './types';
 
 /**

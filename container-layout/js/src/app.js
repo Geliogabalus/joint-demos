@@ -1,13 +1,22 @@
-import { dia, ui, util, shapes, layout } from '@joint/plus';
+import { dia, ui, util, layout } from '@joint/plus';
 import { DirectedGraph } from '@joint/layout-directed-graph';
 import './shapes';
+import { Child, Container, Link } from './shapes';
+
+const cellNamespace = {
+    app: {
+        Container,
+        Child,
+        Link
+    }
+};
 
 export const init = () => {
-    
+
     const canvas = document.getElementById('canvas');
-    
-    const graph = new dia.Graph();
-    
+
+    const graph = new dia.Graph({}, { cellNamespace });
+
     const paper = new dia.Paper({
         model: graph,
         width: 1,
@@ -19,7 +28,7 @@ export const init = () => {
         sorting: dia.Paper.sorting.APPROX,
         background: { color: '#F3F7F6' }
     });
-    
+
     const scroller = new ui.PaperScroller({
         paper,
         cursor: 'grab',
@@ -30,19 +39,19 @@ export const init = () => {
             padding: 1000
         }
     });
-    
+
     canvas.appendChild(scroller.el);
     scroller.render().center();
     scroller.lock();
-    
+
     createCells(structure, graph);
     layoutCells(graph);
     rescale(scroller);
     paper.unfreeze();
-    
+
     // register events
     window.addEventListener('resize', util.debounce(() => rescale(scroller)), false);
-    
+
     paper.on('element:pointermove', (view, evt, x, y) => {
         const model = view.model;
         if (!model.isEmbedded()) {
@@ -54,7 +63,7 @@ export const init = () => {
             const position = model.position();
             ghost = view.vel.clone();
             ghost.node.style.transition = '0.2s opacity';
-            ghost.appendTo(paper.viewport);
+            ghost.appendTo(paper.getLayerView(dia.Paper.Layers.FRONT).el);
             evt.data.ghost = ghost;
             evt.data.dx = x - position.x;
             evt.data.dy = y - position.y;
@@ -62,7 +71,7 @@ export const init = () => {
         ghost.attr('opacity', findContainerFromPoint(paper.model, x, y) ? 0.9 : 0.2);
         ghost.attr('transform', `translate(${[x - data.dx, y - data.dy]})`);
     });
-    
+
     paper.on('element:pointerup', (view, evt, x, y) => {
         const data = evt.data;
         if (!data.ghost) {
@@ -126,16 +135,16 @@ const structure = {
 };
 
 const findContainerFromPoint = (graph, x, y) => {
-    const modelsFromPoint = graph.findModelsFromPoint({ x: x, y: y });
-    return modelsFromPoint.filter(shapes.app.Container.isContainer)[0];
+    const modelsFromPoint = graph.findElementsAtPoint({ x: x, y: y });
+    return modelsFromPoint.filter(Container.isContainer)[0];
 };
 
 const createCells = (struct, graph) => {
-    
+
     const label = struct.label;
     const children = struct.children || [];
     const embeds = struct.embeds || [];
-    const root = new shapes.app.Container({
+    const root = new Container({
         attrs: {
             label: {
                 text: label
@@ -147,10 +156,10 @@ const createCells = (struct, graph) => {
         childFill: struct.childFill
     });
     root.addTo(graph);
-    
+
     if (embeds.length > 0) {
         embeds.forEach((text) => {
-            const embed = new shapes.app.Child({
+            const embed = new Child({
                 attrs: {
                     label: {
                         text: text
@@ -164,22 +173,21 @@ const createCells = (struct, graph) => {
             embed.addTo(graph);
             root.embed(embed);
         });
-        
-    }
-    else {
+
+    } else {
         root.resize(60, 60);
     }
-    
+
     if (children.length > 0) {
         children.forEach((childStruct) => {
             const child = createCells(childStruct, graph);
-            const link = new shapes.app.Link();
+            const link = new Link();
             link.source(root, { anchor: { name: 'bottom', args: { dy: -20 }}});
             link.target(child, { anchor: { name: 'top' }});
             link.addTo(graph);
         });
     }
-    
+
     return root;
 };
 
@@ -216,16 +224,16 @@ const gridPathData = (metrics, offset, padding) => {
 };
 
 const layoutCells = (graph) => {
-    
+
     const directedGraphCells = graph.getLinks();
-    
+
     graph.getElements().forEach((container) => {
-        
-        if (!shapes.app.Container.isContainer(container)) {
+
+        if (!Container.isContainer(container)) {
             return;
         }
         directedGraphCells.push(container);
-        
+
         const embeds = container.getEmbeddedCells();
         const embedsCount = embeds.length;
         if (embedsCount === 0) {
@@ -233,7 +241,7 @@ const layoutCells = (graph) => {
             container.resize(50, 50);
             return;
         }
-        
+
         const padding = { horizontal: 10, bottom: 10, top: 40 };
         const metrics = layout.GridLayout.layout(embeds, {
             columns: Math.ceil(embedsCount / 2),
@@ -243,7 +251,7 @@ const layoutCells = (graph) => {
         container.fitEmbeds({ padding });
         container.attr(['grid', 'd'], gridPathData(metrics, util.normalizeSides(padding), 5));
     });
-    
+
     DirectedGraph.layout(directedGraphCells, {
         setPosition: (el, center) => {
             const size = el.size();

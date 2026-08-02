@@ -1,4 +1,3 @@
-import { util } from '@joint/plus';
 import { layoutCells } from './layouts/elk-layout';
 import { extractGraphCells, setNodeAttribute, isNodeJSON } from './utils';
 import { setCustomPosition } from '../custom-positions';
@@ -54,7 +53,7 @@ function updateGraph(graph: dia.Graph, json: SystemDiagramJSON, buildNode: Build
                 // Temporary workaround for a JointJS z-index behavior.
                 // When creating a cell from JSON without a 'z' property,
                 // JointJS assigns one automatically, overriding the model's default 'z' value.
-                const defaults = util.result(graph.layerCollection.cellNamespace[nodeType!].prototype, 'defaults', {});
+                const defaults = graph.getTypeDefaults(nodeType!);
                 node.z = defaults.z ?? ZIndex.Node;
             }
         }

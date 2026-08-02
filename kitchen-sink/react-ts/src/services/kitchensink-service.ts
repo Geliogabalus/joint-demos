@@ -1,5 +1,5 @@
 import * as joint from '@joint/plus';
-import * as appShapes from '../shapes/app-shapes';
+import { Link, cellNamespace } from '../shapes/app-shapes';
 import { ZOOM_SETTINGS } from './navigator-service';
 
 import type { StencilService } from './stencil-service';
@@ -86,7 +86,7 @@ class KitchenSinkService {
     initializePaper() {
 
         const graph = this.graph = new joint.dia.Graph({}, {
-            cellNamespace: appShapes
+            cellNamespace: cellNamespace
         });
 
         this.commandManager = new joint.dia.CommandManager({
@@ -104,9 +104,11 @@ class KitchenSinkService {
             gridSize: 10,
             drawGrid: true,
             model: graph,
-            cellViewNamespace: appShapes,
-            defaultLink: <joint.dia.Link>new appShapes.app.Link(),
-            defaultConnectionPoint: appShapes.app.Link.connectionPoint,
+            cellViewNamespace: cellNamespace,
+            defaultLink: () => {
+                return new Link();
+            },
+            defaultConnectionPoint: Link.connectionPoint,
             routerNamespace: {
                 'normal': joint.routers.normal,
                 'orthogonal': joint.routers.orthogonal,

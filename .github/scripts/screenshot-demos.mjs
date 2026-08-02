@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * Captures a screenshot of each demo and saves it to the demo's root directory.
+ * Captures a screenshot of each demo and saves it to .github/screenshots/
+ * (untracked by git), keyed by demo name.
  *
  * Usage:
  *   node .github/scripts/screenshot-demos.mjs [--update] [demo-name]
  *
- * By default, only demos missing a screenshot.png are processed.
+ * By default, only demos missing a screenshot in .github/screenshots/ are
+ * processed.
  * --update    Regenerate screenshots for all demos (including existing ones).
  *
  * Prerequisites:
@@ -18,12 +20,13 @@
  */
 
 import { chromium } from 'playwright';
-import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
+import { readFileSync, existsSync, readdirSync, statSync, mkdirSync } from 'fs';
 import { join, resolve } from 'path';
 import { execSync, spawn } from 'child_process';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CONFIG_FILE = join(ROOT, 'demos.config.json');
+const SCREENSHOTS_DIR = join(ROOT, '.github', 'screenshots');
 
 let FILTER = '';
 let UPDATE = false;
@@ -36,6 +39,14 @@ const DEFAULT_VIEWPORT = { width: 800, height: 600 };
 const SERVER_TIMEOUT_MS = 60_000;
 const SETTLE_MS = 3000;
 const BASE_PORT = 9100;
+const IS_WINDOWS = process.platform === 'win32';
+
+// On Windows, npm/npx are npm.cmd/npx.cmd; spawn() without shell:true won't
+// resolve the bare name (and PATHEXT lookup is unreliable across Node versions).
+function resolveCommand(command) {
+    if (IS_WINDOWS && (command === 'npm' || command === 'npx')) return `${command}.cmd`;
+    return command;
+}
 
 // ---------------------------------------------------------------------------
 // Config helpers
@@ -149,6 +160,14 @@ async function waitForPortFree(port, timeoutMs = 10_000) {
 
 async function killProcessTree(proc) {
     if (!proc.pid) return;
+
+    if (IS_WINDOWS) {
+        // process.kill(-pid) process-group signalling doesn't exist on Windows;
+        // taskkill /T walks the tree (npm.cmd -> node) and kills it outright.
+        try { execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'pipe', windowsHide: true }); } catch { /* already dead */ }
+        return;
+    }
+
     try {
         // Kill the entire process group (npm + child server)
         process.kill(-proc.pid, 'SIGTERM');
@@ -171,7 +190,7 @@ async function killProcessTree(proc) {
 function ensureDeps(buildDir) {
     if (!existsSync(join(buildDir, 'node_modules'))) {
         console.log('  Installing dependencies...');
-        execSync('npm install', { cwd: buildDir, stdio: 'pipe' });
+        execSync('npm install', { cwd: buildDir, stdio: 'pipe', windowsHide: true });
     }
 }
 
@@ -181,6 +200,7 @@ function ensureDeps(buildDir) {
 
 async function main() {
     const config = loadConfig();
+    mkdirSync(SCREENSHOTS_DIR, { recursive: true });
     const browser = await chromium.launch();
 
     const entries = readdirSync(ROOT)
@@ -202,7 +222,7 @@ async function main() {
             continue;
         }
 
-        if (!UPDATE && !FILTER && existsSync(join(ROOT, demoName, 'screenshot.png'))) {
+        if (!UPDATE && !FILTER && existsSync(join(SCREENSHOTS_DIR, `${demoName}.png`))) {
             results.skipped.push(demoName);
             continue;
         }
@@ -229,12 +249,21 @@ async function main() {
             ensureDeps(buildDir);
 
             // Start dev server in its own process group so we can kill the tree
-            proc = spawn(server.command, server.args, {
-                cwd: buildDir,
-                stdio: 'pipe',
-                detached: true,
-                env: { ...process.env, BROWSER: 'none', ...server.env },
-            });
+            // .cmd files (npm/npx on Windows) aren't real executables — spawn()
+            // needs a shell to invoke them, otherwise it throws EINVAL. All args
+            // here are fixed internal literals/port numbers, so string-joining
+            // them for the shell is safe (avoids Node's shell+argv-array warning).
+            // windowsHide suppresses the console window Node otherwise pops up
+            // per spawned process on Windows (default: false). detached is
+            // omitted on Windows: it maps to the DETACHED_PROCESS creation
+            // flag, which conflicts with windowsHide's CREATE_NO_WINDOW and
+            // can make the window reappear anyway — and it's not needed here
+            // since killProcessTree() kills the Windows tree via `taskkill /T`
+            // on the PID, not via a POSIX process group.
+            const command = resolveCommand(server.command);
+            proc = IS_WINDOWS
+                ? spawn([command, ...server.args].join(' '), { cwd: buildDir, stdio: 'pipe', shell: true, windowsHide: true, env: { ...process.env, BROWSER: 'none', ...server.env } })
+                : spawn(command, server.args, { cwd: buildDir, stdio: 'pipe', detached: true, env: { ...process.env, BROWSER: 'none', ...server.env } });
 
             const url = `http://localhost:${port}`;
             console.log(`  Waiting for ${url}...`);
@@ -261,8 +290,7 @@ async function main() {
             await page.goto(url, { waitUntil: 'networkidle' });
             await page.waitForTimeout(SETTLE_MS);
 
-            const screenshotFile = 'screenshot.png';
-            const screenshotPath = join(ROOT, demoName, screenshotFile);
+            const screenshotPath = join(SCREENSHOTS_DIR, `${demoName}.png`);
 
             // Clip to the bounding box of <body> children to avoid excess whitespace
             const clip = await page.evaluate(() => {

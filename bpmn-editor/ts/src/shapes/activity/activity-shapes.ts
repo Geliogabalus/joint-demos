@@ -543,38 +543,8 @@ export class EventSubProcess extends Activity {
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace activity {
-            export {
-                Task,
-                Send,
-                BusinessRule,
-                Receive,
-                Service,
-                User,
-                Manual,
-                Script,
-                CallActivity,
-                SubProcess,
-                EventSubProcess
-            };
-        }
-    }
-}
+export const activity = {
+    Task, Send, BusinessRule, Receive, Service, User, Script, Manual,
+    CallActivity, SubProcess, EventSubProcess
+};
 
-Object.assign(shapes, {
-    activity: {
-        Task,
-        Send,
-        BusinessRule,
-        Receive,
-        Service,
-        User,
-        Script,
-        Manual,
-        CallActivity,
-        SubProcess,
-        EventSubProcess
-    }
-});

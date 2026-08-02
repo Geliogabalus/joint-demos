@@ -108,14 +108,77 @@ The following scripts are then available from the repository root:
 | `lint` | `npm run lint` | Lint all JS/TS files using the root ESLint config |
 | `build` | `npm run build` | Build all demos into `_site/` (stops on first failure) |
 | `screenshot` | `npm run screenshot` | Capture screenshots for demos that don't have one yet |
+| `screenshot:compare` | `npm run screenshot:compare` | Capture a fresh screenshot per demo and compare it against the committed baseline |
+| `link-local-packages` | `npm run link-local-packages` | Repoint every demo's `@joint/*` dependencies at local packages from `.packages/` |
 
 > [!NOTE]
 > `build` require Bash. On Windows, run them from Git Bash or WSL.
 >
-> `screenshot` require Playwright's Chromium browser. Install it once with:
+> `screenshot` and `screenshot:compare` require Playwright's Chromium browser. Install it once with:
 > ```bash
 > npx playwright install chromium
 > ```
+
+### Visual regression testing (`screenshot:compare`)
+
+`node .github/scripts/compare-screenshots.mjs [demo-name] [options]` re-renders every demo and diffs the result against its test baseline in `.tests/screenshots/<demo-name>.png`, using [pixelmatch](https://github.com/mapbox/pixelmatch) to flag any demo where more than 1% of pixels differ (configurable). Baselines are kept separate from each demo's own `screenshot.png` (at the demo's root), since that file is sometimes hand-curated for presentation (README/site thumbnails) rather than a reliable rendering snapshot.
+
+A demo with no baseline yet is reported separately and not treated as a failure — run with `--update-baseline` to create one.
+
+For every mismatched demo, `baseline.png`, `actual.png` and `diff.png` are written to `screenshot-diff-results/<demo-name>/` for manual review. The script exits non-zero if any demo mismatches or errors.
+
+Options:
+- `--threshold=<percent>` — max allowed % of differing pixels (default `1`)
+- `--local-core=<path>` / `--local-plus=<path>` — point `@joint/core` / `@joint/plus` at a local tarball or unpacked package directory instead of installing from npm, useful for testing an unreleased build without needing `JOINTJS_NPM_TOKEN`
+- `--local-package=<name>=<path>` — same idea for any other `@joint/*` package (e.g. `@joint/format-visio` for the visio demos, `@joint/layout-directed-graph`, `@joint/format-bpmn-export`). Repeatable to override several packages at once.
+- `--local-dir=<path>` — point at a single directory holding several local packages at once (e.g. the output of running `npm pack` for each of them in a JointJS+ checkout). For each demo, every `@joint/*` dependency it declares is matched against a file or folder in this directory named `joint-<name>*.tgz`, `<name>*.tgz`, `joint-<name>/` or `<name>/` (`<name>` is the part after `@joint/`, e.g. `core`, `plus`, `format-visio`). Dependencies with no match install from npm as usual. `--local-core` / `--local-plus` / `--local-package` take precedence over a `--local-dir` match for the same package.
+- `--update-baseline` — write the newly captured screenshot as the baseline when a demo differs, or to create a baseline for the first time
+- `--baseline-dir=<dir>` — where baselines live (default `.tests/screenshots/`)
+- `--out=<dir>` — where to write diff artifacts (default `screenshot-diff-results/`)
+
+```bash
+# First-time setup: create a baseline for every demo
+npm run screenshot:compare -- --update-baseline
+
+# Compare every demo against its baseline
+npm run screenshot:compare
+
+# Compare a single demo
+npm run screenshot:compare -- kanban
+
+# Test all demos against a local @joint/plus build instead of npm
+npm run screenshot:compare -- --local-plus=../joint-plus/joint-plus-4.4.0.tgz
+
+# Test the visio demos against a local @joint/format-visio build
+npm run screenshot:compare -- visio-default-import --local-package=@joint/format-visio=../joint-visio.tgz
+
+# Test everything against a folder containing joint-core-*.tgz, joint-plus-*.tgz,
+# joint-format-visio-*.tgz, etc. — only the packages each demo actually uses are swapped in
+npm run screenshot:compare -- --local-dir=../joint-packages
+```
+
+### Linking local packages repo-wide (`link-local-packages`)
+
+`node .github/scripts/link-local-packages.mjs [options]` permanently repoints every demo's `@joint/*` dependencies at local packages from a `.packages/` folder at the repo root, instead of the temporary per-run overrides `screenshot:compare` uses. Useful for building/running any demo (or `npm run build`) against an unreleased JointJS/JointJS+ build without needing `JOINTJS_NPM_TOKEN`.
+
+It walks every `package.json` in the repo and, for each `@joint/*` dependency, looks for a match in `.packages/` using the same naming convention as `--local-dir` above (`joint-<name>*.tgz`, `<name>*.tgz`, `joint-<name>/` or `<name>/`). Dependencies with no match are left untouched. Matched `package.json` files are rewritten in place and `npm install` is run in each affected demo so the change actually takes effect. A manifest of every file it touched is kept at `.packages/.link-manifest.json` so the change can be undone later with `--restore`, independent of git state.
+
+Options:
+- `--packages-dir=<path>` — directory holding the local packages (default `.packages/`)
+- `--dry-run` — print what would change without writing anything or installing
+- `--skip-install` — rewrite `package.json` files but don't run `npm install`
+- `--restore` — undo a previous run using its manifest
+
+```bash
+# Preview what would be linked
+npm run link-local-packages -- --dry-run
+
+# Link and install for real
+npm run link-local-packages
+
+# Revert back to the npm-registry versions
+npm run link-local-packages -- --restore
+```
 
 ## 🤝 Resources
 

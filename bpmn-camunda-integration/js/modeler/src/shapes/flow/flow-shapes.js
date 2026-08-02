@@ -218,11 +218,6 @@ export class Message extends Flow {
 
 Message.label = FlowLabels['flow.Message'];
 
-Object.assign(shapes, {
-    flow: {
-        Sequence,
-        Default,
-        Conditional,
-        Message
-    }
-});
+export const flow = {
+    Sequence, Default, Conditional, Message
+};

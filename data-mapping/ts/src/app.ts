@@ -1,5 +1,5 @@
-import { dia, ui, setTheme, shapes, util, elementTools, format } from '@joint/plus';
-import { Link } from './shapes';
+import { dia, ui, setTheme, util, elementTools, format } from '@joint/plus';
+import { Link, cellNamespace } from './shapes';
 import { Decorator } from './highlighters';
 import { SourceArrowhead, TargetArrowhead, Button } from './link-tools';
 import { routerNamespace } from './routers';
@@ -18,7 +18,7 @@ export const init = () => {
 
     const canvas = document.getElementById('canvas') as HTMLDivElement;
 
-    const graph = new dia.Graph({}, { cellNamespace: shapes });
+    const graph = new dia.Graph({}, { cellNamespace });
 
     const paper = new dia.Paper({
         model: graph,
@@ -28,7 +28,7 @@ export const init = () => {
         async: true,
         frozen: true,
         sorting: dia.Paper.sorting.APPROX,
-        cellViewNamespace: shapes,
+        cellViewNamespace: cellNamespace,
         background: { color:  '#F3F7F6' },
         magnetThreshold: 'onleave',
         moveThreshold: 5,

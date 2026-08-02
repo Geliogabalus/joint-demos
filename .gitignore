@@ -3,5 +3,9 @@ package-lock.json
 dist
 build
 _site
+screenshot-diff-results
+.github/screenshots
+*.tgz
+.packages
 .angular
 .claude/settings.local.json

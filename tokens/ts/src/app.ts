@@ -1,8 +1,8 @@
-import { g, dia, ui, shapes, util, V } from '@joint/plus';
+import { g, dia, ui, util, V } from '@joint/plus';
 import { DirectedGraph } from '@joint/layout-directed-graph';
 import { data } from './gdata';
 import { tokensData } from './gtoken';
-import { Node, Link, Token } from './shapes';
+import { Node, Link, Token, cellNamespace } from './shapes';
 import WebGLHeatmap from '@nbxx/webgl-heatmap';
 
 import type { IData, IArc, IToken } from './interfaces/interfaces';
@@ -89,7 +89,7 @@ export const init = () => {
 
     const WIDTH = 2000;
     const HEIGHT = 2000;
-    const graph = new dia.Graph({}, { cellNamespace: shapes });
+    const graph = new dia.Graph({}, { cellNamespace });
     const paper = new dia.Paper({
         model: graph,
         width: WIDTH,
@@ -105,7 +105,7 @@ export const init = () => {
         frozen: true,
         sorting: dia.Paper.sorting.APPROX,
         background: { color: '#F3F7F6' },
-        cellViewNamespace: shapes,
+        cellViewNamespace: cellNamespace,
         cellVisibility: (cell) => !cell.attributes.hidden,
     });
 

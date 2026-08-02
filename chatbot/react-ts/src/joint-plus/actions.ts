@@ -131,8 +131,7 @@ export function importGraphFromJSON(service: JointPlusService, json: dia.Graph.J
 
 export function loadStencilShapes(service: JointPlusService): void {
     const { stencil } = service;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const stencilShapes = stencilConfig.shapes.map(shape => new (shapes.stencil as any)[shape.name](shape));
+    const stencilShapes = stencilConfig.shapes.map(shapeData => new (shapeData.shape)(shapeData));
     stencil.load(stencilShapes);
 }
 

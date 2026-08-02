@@ -1,6 +1,6 @@
 # screenshot-demos.mjs
 
-Captures a browser screenshot of each demo and saves it as `screenshot.png` in the demo's root directory. Also inserts the image reference into each demo's `README.md`.
+Captures a browser screenshot of each demo and saves it to `.github/screenshots/<demo-name>.png` (untracked by git — this directory is not the same as each demo's own `screenshot.png`, which is hand-curated for README/site thumbnails and is never touched by this script).
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ npx playwright install chromium
 ## Usage
 
 ```bash
-# Screenshot only demos missing a screenshot.png
+# Screenshot only demos missing a screenshot in .github/screenshots/
 node .github/scripts/screenshot-demos.mjs
 
 # Regenerate screenshots for all demos
@@ -33,14 +33,13 @@ node .github/scripts/screenshot-demos.mjs data-pipeline
 4. Starts the dev server and waits for it to respond (up to 60s)
 5. Opens a headless Chromium browser (1280x800 viewport) via Playwright
 6. Waits for `networkidle` + a settle delay for animations to complete
-7. Saves `screenshot.png` in the demo's root directory
-8. Inserts `![screenshot](./screenshot.png)` into the demo's `README.md` (after the first heading)
-9. Kills the dev server and moves to the next demo
+7. Saves `.github/screenshots/<demo-name>.png`
+8. Kills the dev server and moves to the next demo
 
 ## Notes
 
-- Screenshots are saved in the demo root (e.g. `data-pipeline/screenshot.png`), not the variant subdirectory, so they appear alongside the top-level `README.md`.
-- By default, demos that already have a `screenshot.png` are skipped. Use `--update` to regenerate all screenshots.
+- Screenshots are saved to `.github/screenshots/`, keyed by demo name (e.g. `.github/screenshots/data-pipeline.png`), not into the demo's own directory. That folder is gitignored.
+- By default, demos that already have a screenshot in `.github/screenshots/` are skipped. Use `--update` to regenerate all screenshots.
 - When a specific demo name is provided, it always runs regardless of whether a screenshot exists.
 - The script skips demos marked with `skip: true` in `demos.config.json`.
 

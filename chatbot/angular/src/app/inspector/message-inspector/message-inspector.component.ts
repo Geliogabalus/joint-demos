@@ -12,7 +12,7 @@ distributed by client IO. See the LICENSE file.
 import { Component, Input } from '@angular/core';
 import { BaseInspectorComponent } from '../base-inspector/base-inspector.component';
 
-import type { shapes } from '@joint/plus';
+import type { app } from '../../../joint-plus/shapes';
 
 interface InspectorPort {
     id: string;
@@ -26,7 +26,7 @@ interface InspectorPort {
 })
 export class MessageInspectorComponent extends BaseInspectorComponent {
 
-    @Input() cell: shapes.app.Message = null;
+    @Input() cell: app.Message = null;
 
     public label: string;
     public description: string;

@@ -1,4 +1,4 @@
-import { type dia, shapes } from '@joint/core';
+import { type dia, shapes } from '@joint/plus';
 import { Event } from './Event';
 import { Milestone } from './Milestone';
 import { Category } from './Category';
@@ -11,24 +11,12 @@ export interface ITimelineShape extends dia.Element {
     getEditableFields: () => { property: string, inputType: 'text' | 'textarea', attrPath: string }[];
 }
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     timeline: {
         Event,
         Milestone,
         Category,
         StencilPlaceholder
     }
-});
-
-declare module '@joint/core' {
-    namespace shapes {
-        namespace timeline {
-            export {
-                Event,
-                Milestone,
-                Category,
-                StencilPlaceholder
-            };
-        }
-    }
-}
+};

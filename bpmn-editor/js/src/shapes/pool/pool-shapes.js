@@ -373,11 +373,6 @@ export class VerticalSwimlane extends shapes.bpmn2.VerticalSwimlane {
     }
 }
 
-Object.assign(shapes, {
-    pool: {
-        HorizontalPool,
-        VerticalPool,
-        HorizontalSwimlane,
-        VerticalSwimlane
-    }
-});
+export const pool = {
+    HorizontalPool, VerticalPool, HorizontalSwimlane, VerticalSwimlane
+};

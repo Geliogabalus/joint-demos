@@ -104,7 +104,7 @@ export const init = () => {
     const highlightOverlapsDebounced = util.debounce(highlightOverlaps, 10);
 
     graph.on('change:angle change:position', (element) => {
-        highlightOverlapsDebounced(element.findView(paper), paper);
+        highlightOverlapsDebounced(element.findView(paper) as dia.ElementView, paper);
     });
 
     // History

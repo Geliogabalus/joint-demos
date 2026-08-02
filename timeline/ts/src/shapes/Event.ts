@@ -1,4 +1,4 @@
-import { dia, util } from '@joint/core';
+import { dia, util } from '@joint/plus';
 import { TOP_COLOR, BOTTOM_COLOR, TOP_TEXT_COLOR, BOTTOM_TEXT_COLOR } from '../config';
 import type { ITimelineShape } from './index';
 

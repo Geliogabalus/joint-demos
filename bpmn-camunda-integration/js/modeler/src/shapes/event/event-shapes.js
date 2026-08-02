@@ -1089,51 +1089,24 @@ export class CompensationEnd extends End {
 CompensationEnd.label = EventLabels['event.CompensationEnd'];
 CompensationEnd.icon = eventIconClasses.COMPENSATION_END;
 
-Object.assign(shapes, {
-    event: {
-        // Start
-        Start,
-        MessageStart,
-        TimerStart,
-        ConditionalStart,
-        SignalStart,
-        // Intermediate Catching
-        IntermediateCatching,
-        MessageIntermediateCatching,
-        TimerIntermediateCatching,
-        ConditionalIntermediateCatching,
-        LinkIntermediateCatching,
-        SignalIntermediateCatching,
-        // Intermediate boundary
-        IntermediateBoundary,
-        MessageIntermediateBoundary,
-        TimerIntermediateBoundary,
-        ConditionalIntermediateBoundary,
-        SignalIntermediateBoundary,
-        ErrorIntermediateBoundary,
-        EscalationIntermediateBoundary,
-        CompensationIntermediateBoundary,
-        CancelIntermediateBoundary,
-        // Intermediate boundary non-interrupting
-        MessageIntermediateBoundaryNonInterrupting,
-        TimerIntermediateBoundaryNonInterrupting,
-        ConditionalIntermediateBoundaryNonInterrupting,
-        SignalIntermediateBoundaryNonInterrupting,
-        EscalationIntermediateBoundaryNonInterrupting,
-        // Intermediate throwing
-        IntermediateThrowing,
-        MessageIntermediateThrowing,
-        LinkIntermediateThrowing,
-        SignalIntermediateThrowing,
-        EscalationIntermediateThrowing,
-        CompensationIntermediateThrowing,
-        // End
-        End,
-        MessageEnd,
-        SignalEnd,
-        ErrorEnd,
-        EscalationEnd,
-        TerminationEnd,
-        CompensationEnd
-    }
-});
+export const event = {
+    // Start
+    Start, MessageStart, TimerStart, ConditionalStart, SignalStart,
+    // Intermediate Catching
+    IntermediateCatching,
+    MessageIntermediateCatching, TimerIntermediateCatching, ConditionalIntermediateCatching,
+    LinkIntermediateCatching, SignalIntermediateCatching,
+    // Intermediate boundary
+    IntermediateBoundary, MessageIntermediateBoundary, TimerIntermediateBoundary,
+    ConditionalIntermediateBoundary, SignalIntermediateBoundary, ErrorIntermediateBoundary,
+    EscalationIntermediateBoundary, CompensationIntermediateBoundary, CancelIntermediateBoundary,
+    // Intermediate boundary non-interrupting
+    MessageIntermediateBoundaryNonInterrupting, TimerIntermediateBoundaryNonInterrupting,
+    ConditionalIntermediateBoundaryNonInterrupting, SignalIntermediateBoundaryNonInterrupting,
+    EscalationIntermediateBoundaryNonInterrupting,
+    // Intermediate throwing
+    IntermediateThrowing, MessageIntermediateThrowing, LinkIntermediateThrowing,
+    SignalIntermediateThrowing, EscalationIntermediateThrowing, CompensationIntermediateThrowing,
+    // End
+    End, MessageEnd, SignalEnd, ErrorEnd, EscalationEnd, TerminationEnd, CompensationEnd
+};

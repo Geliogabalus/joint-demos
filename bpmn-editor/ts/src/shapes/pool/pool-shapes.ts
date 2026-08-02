@@ -372,24 +372,7 @@ export class VerticalSwimlane extends shapes.bpmn2.VerticalSwimlane implements A
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace pool {
-            export {
-                HorizontalPool,
-                VerticalPool,
-                HorizontalSwimlane,
-                VerticalSwimlane
-            };
-        }
-    }
-}
 
-Object.assign(shapes, {
-    pool: {
-        HorizontalPool,
-        VerticalPool,
-        HorizontalSwimlane,
-        VerticalSwimlane
-    }
-});
+export const pool = {
+    HorizontalPool, VerticalPool, HorizontalSwimlane, VerticalSwimlane
+};

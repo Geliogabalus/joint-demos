@@ -1,8 +1,8 @@
-import { shapes, util } from '@joint/core';
+import { shapes, util } from '@joint/plus';
 import { TOP_COLOR, BOTTOM_COLOR, TOP_TEXT_COLOR, BOTTOM_TEXT_COLOR } from '../config';
 import { measureTextSize } from '../utils';
 
-import type { dia } from '@joint/core';
+import type { dia } from '@joint/plus';
 import type { ITimelineShape } from './index';
 
 const HORIZONTAL_PADDING = 20;

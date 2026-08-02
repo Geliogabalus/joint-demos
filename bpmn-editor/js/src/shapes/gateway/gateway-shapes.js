@@ -249,12 +249,6 @@ export class Complex extends Gateway {
     }
 }
 
-Object.assign(shapes, {
-    gateway: {
-        Exclusive,
-        Inclusive,
-        EventBased,
-        Parallel,
-        Complex
-    }
-});
+export const gateway = {
+    Exclusive, Inclusive, EventBased, Parallel, Complex
+};

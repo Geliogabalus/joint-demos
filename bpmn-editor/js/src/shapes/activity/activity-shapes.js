@@ -526,18 +526,7 @@ export class EventSubProcess extends Activity {
     }
 }
 
-Object.assign(shapes, {
-    activity: {
-        Task,
-        Send,
-        BusinessRule,
-        Receive,
-        Service,
-        User,
-        Script,
-        Manual,
-        CallActivity,
-        SubProcess,
-        EventSubProcess
-    }
-});
+export const activity = {
+    Task, Send, BusinessRule, Receive, Service, User, Script, Manual,
+    CallActivity, SubProcess, EventSubProcess
+};

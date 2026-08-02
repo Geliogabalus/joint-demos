@@ -12,7 +12,7 @@ distributed by client IO. See the LICENSE file.
 import { Component, Input } from '@angular/core';
 import { BaseInspectorComponent } from '../base-inspector/base-inspector.component';
 
-import type { shapes } from '@joint/plus';
+import type { app } from '../../../joint-plus/shapes';
 
 @Component({
     selector: 'app-link-inspector',
@@ -21,7 +21,7 @@ import type { shapes } from '@joint/plus';
 })
 export class LinkInspectorComponent extends BaseInspectorComponent {
 
-    @Input() cell: shapes.app.Link = null;
+    @Input() cell: app.Link = null;
 
     public label: string;
 

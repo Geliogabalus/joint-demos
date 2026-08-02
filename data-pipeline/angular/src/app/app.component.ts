@@ -482,7 +482,7 @@ export class AppComponent implements AfterViewInit, OnDestroy {
                 linkView.model.router('rightAngle', {}, { skipHistory: true });
             },
             'link:snap:disconnect': (linkView: dia.LinkView) => {
-                linkView.model.set({ vertices: [], router: null }, { skipHistory: true });
+                linkView.model.set({ vertices: [], router: undefined }, { skipHistory: true });
             },
         });
     }

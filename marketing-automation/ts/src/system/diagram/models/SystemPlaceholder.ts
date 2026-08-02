@@ -1,4 +1,4 @@
-import { dia } from '@joint/core';
+import { dia } from '@joint/plus';
 import type { SystemModel } from '../types';
 
 const TYPE = 'Placeholder';

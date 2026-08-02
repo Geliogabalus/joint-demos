@@ -7,7 +7,7 @@ import presets from './presets';
 
 import type { Range } from '@codemirror/state';
 import type { DecorationSet } from '@codemirror/view';
-import type { graphUtils } from '@joint/plus';
+import { type graphUtils } from '@joint/plus';
 
 export function getChildren(node: graphUtils.ConstructTreeNode) {
 

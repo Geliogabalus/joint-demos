@@ -252,26 +252,7 @@ export class Complex extends Gateway {
     }
 }
 
-declare module '@joint/plus' {
-    namespace shapes {
-        namespace gateway {
-            export {
-                Exclusive,
-                Inclusive,
-                EventBased,
-                Parallel,
-                Complex
-            };
-        }
-    }
-}
+export const gateway = {
+    Exclusive, Inclusive, EventBased, Parallel, Complex
+};
 
-Object.assign(shapes, {
-    gateway: {
-        Exclusive,
-        Inclusive,
-        EventBased,
-        Parallel,
-        Complex
-    }
-});

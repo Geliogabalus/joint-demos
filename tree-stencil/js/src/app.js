@@ -1,12 +1,13 @@
 import { dia, shapes, setTheme } from '@joint/plus';
 import { createStencil } from './stencil';
+import { cellNamespace } from './shapes';
 
 export const init = () => {
-    
+
     setTheme('my-theme');
-    
-    const graph = new dia.Graph({}, { cellNamespace: shapes });
-    
+
+    const graph = new dia.Graph({}, { cellNamespace });
+
     const paper = new dia.Paper({
         el: document.getElementById('paper'),
         model: graph,
@@ -18,7 +19,7 @@ export const init = () => {
         frozen: false,
         sorting: dia.Paper.sorting.APPROX,
         background: { color: '#F3F7F6' },
-        cellViewNamespace: shapes
+        cellViewNamespace: cellNamespace
     });
     
     const stencil = createStencil(paper, 280, stencilNodes, (node) => {

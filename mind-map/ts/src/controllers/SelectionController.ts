@@ -5,7 +5,7 @@ import {
 } from '../actions';
 
 import type { App } from '../classes/App';
-import type { dia } from '@joint/core';
+import type { dia } from '@joint/plus';
 
 export default class SelectionController extends Controller<App> {
 

@@ -10,11 +10,12 @@ import { Task } from './task';
 import { Dependency } from './dependency';
 import { AddButton } from './add-button';
 
-Object.assign(shapes, {
+export const cellNamespace = {
+    ...shapes,
     kanban: {
         Dependency,
         Header,
         Task,
         AddButton
     }
-});
+};

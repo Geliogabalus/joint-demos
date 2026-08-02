@@ -1,19 +1,20 @@
-import { shapes, util, g } from '@joint/plus';
+import { util, g } from '@joint/plus';
+import { cellNamespace } from '../shapes';
 
 export function getShapeConstructorByType(type) {
-    return util.getByPath(shapes, type, '.');
+    return util.getByPath(cellNamespace, type, '.');
 }
 
 export function constructMarkerContent(marker) {
-    
+
     // Create a span with the bpmn class
     const markerIcon = document.createElement('span');
     markerIcon.classList.add(marker.cssClass);
-    
+
     // Create a span with the marker name
     const content = document.createElement('span');
     content.innerText = marker.name;
-    
+
     return [markerIcon, content];
 }
 
@@ -23,9 +24,9 @@ export function getBoundaryPoint(element, coords, snapRadius = 20) {
     const angle = element.angle();
     // Relative to the element's position
     const relPoint = point.clone().rotate(bbox.center(), angle).difference(bbox.topLeft());
-    
+
     const relBBox = new g.Rect(0, 0, bbox.width, bbox.height);
-    
+
     if (!relBBox.containsPoint(relPoint)) {
         const relCenter = relBBox.center();
         const relTop = relBBox.topMiddle();
@@ -37,7 +38,7 @@ export function getBoundaryPoint(element, coords, snapRadius = 20) {
             return (relCenter.x > relPoint.x) ? relLeft : relBBox.rightMiddle();
         }
     }
-    
+
     return element.getClosestBoundaryPoint(relBBox, relPoint);
 }
 
@@ -60,7 +61,7 @@ export function setStencilEvent(evt, isStencilEvent) {
 
 export function getMidSideAnchor(element, point) {
     const closestSide = element.getBBox().sideNearestToPoint(point);
-    
+
     let anchorPoint;
     switch (closestSide) {
         case 'top':
@@ -76,9 +77,9 @@ export function getMidSideAnchor(element, point) {
             anchorPoint = element.getBBox().leftMiddle();
             break;
     }
-    
+
     const position = element.position();
-    
+
     return {
         name: 'topLeft',
         args: {

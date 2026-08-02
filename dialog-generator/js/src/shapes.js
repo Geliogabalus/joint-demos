@@ -1,4 +1,4 @@
-import { dia, util, V } from '@joint/plus';
+import { dia, V } from '@joint/plus';
 
 export const Answer = dia.Element.define('qad.Answer', {
     padding: 50,
@@ -45,7 +45,7 @@ export const Answer = dia.Element.define('qad.Answer', {
 
         const answer = this.get('answer');
         const padding = this.get('padding');
-        const size = util.measureText(answer, { fontSize: this.attr(['label', 'fontSize']) });
+        const size = measureText(answer, { fontSize: this.attr(['label', 'fontSize']) });
 
         this.prop({
             attrs: { label: { text: answer }},
@@ -252,7 +252,7 @@ export const Question = dia.Element.define('qad.Question', {
         const options = this.get('options') || [];
         const gap = this.get('paddingBottom') || 20;
         const height = options.length * this.get('optionHeight') + this.get('questionHeight') + gap;
-        const width = util.measureText(this.get('question'), {
+        const width = measureText(this.get('question'), {
             fontSize: this.attr('.question-text/fontSize')
         }).width;
         this.resize(Math.max(this.get('minWidth') || 150, width), height);
@@ -338,7 +338,7 @@ export const QuestionView = dia.ElementView.extend({
 
 // Utils
 
-util.measureText = function(text, attrs) {
+export function measureText(text, attrs) {
 
     const fontSize = parseInt(attrs.fontSize, 10) || 10;
 

@@ -6,7 +6,7 @@ import { Connections } from './enums';
 export function generateTree(graph, data) {
     
     const layoutGraph = new dia.Graph({}, {
-        cellNamespace: graph.layerCollection.cellNamespace
+        cellNamespace: graph.getCellNamespace()
     });
     
     const treeLayout = new layout.TreeLayout({

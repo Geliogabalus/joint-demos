@@ -10,7 +10,7 @@ const UpdateFlags = {
 };
 
 export function setupNavigator(graph, paperScroller, tree) {
-    
+
     const NavigatorElementView = dia.ElementView.extend({
         body: null,
         markup: util.svg /* xml */ `
@@ -40,12 +40,12 @@ export function setupNavigator(graph, paperScroller, tree) {
         },
         update: function() {
             const { model, body } = this;
-            
+
             const layoutArea = tree.getLayoutArea(this.model);
             const { x, width } = layoutArea;
-            
+
             body.textContent = model.attr('label/text').toString().slice(2, 4);
-            
+
             body.setAttribute('x', x + width / 2);
             body.setAttribute('y', HEIGHT - PADDING * 2);
             body.setAttribute('fill', '#F0F5FF');
@@ -55,7 +55,7 @@ export function setupNavigator(graph, paperScroller, tree) {
             body.setAttribute('font-family', 'Nunito Sans');
         }
     });
-    
+
     const navigator = new ui.Navigator({
         paperScroller,
         height: HEIGHT,
@@ -65,20 +65,20 @@ export function setupNavigator(graph, paperScroller, tree) {
         paperOptions: {
             async: true,
             overflow: true,
-            viewport: (view) => {
-                if (view.model.get('type') !== 'timeline.Milestone')
-                    return false;
+            viewManagement: true,
+            cellVisibility: (cell) => {
+                if (cell.get('type') !== 'timeline.Milestone') return false;
                 return true;
             },
             elementView: NavigatorElementView,
         }
     });
-    
+
     navigator.render();
     navigator.el.style.backgroundColor = '#30608F';
     navigator.el.style.borderRadius = '8px';
     navigator.el.style.border = '1px solid #D3D3D3';
-    
+
     navigator.listenTo(tree, 'layout:done', () => {
         graph.getElements().forEach((element) => {
             if (element.get('type') !== 'timeline.Milestone')
@@ -87,6 +87,6 @@ export function setupNavigator(graph, paperScroller, tree) {
             navigator.targetPaper.requestViewUpdate(elementView, elementView.getFlag(UpdateFlags.Update), elementView.UPDATE_PRIORITY);
         });
     });
-    
+
     document.getElementById('navigator-container').appendChild(navigator.el);
 }

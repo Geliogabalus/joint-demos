@@ -12,7 +12,7 @@ distributed by client IO. See the LICENSE file.
 import { dia, elementTools, linkTools } from '@joint/plus';
 import { RemoveTool } from './remove.tool';
 
-import type { shapes } from '@joint/plus';
+import type { app } from '../shapes';
 
 export function addCellTools(cellView: dia.CellView): void {
     if (cellView.model.isLink()) {
@@ -23,7 +23,7 @@ export function addCellTools(cellView: dia.CellView): void {
 }
 
 export function addElementTools(elementView: dia.ElementView): void {
-    const element = elementView.model as shapes.app.Base;
+    const element = elementView.model as app.Base;
     const padding = element.getBoundaryPadding();
     const toolsView = new dia.ToolsView({
         tools: [

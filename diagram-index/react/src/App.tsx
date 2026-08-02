@@ -9,10 +9,8 @@ import './App.scss';
 
 function App() {
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const canvasEl: any = useRef(null);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const treeEl: any = useRef(null);
+    const canvasEl = useRef<(HTMLDivElement | null)>(null);
+    const treeEl = useRef<(HTMLUListElement | null)>(null);
 
     const [initialDiagram = { id: '', cells: [] }] = TreeData;
     const [expandedTreeNodes, setExpandedTreeNodes] = useState<string[]>([initialDiagram.id]);
@@ -114,7 +112,9 @@ function App() {
             }
         });
 
-        canvasEl.current.appendChild(scroller.el);
+        if (canvasEl.current) {
+            canvasEl.current.appendChild(scroller.el);
+        }
         scroller.render().centerContent({ useModelGeometry: true });
         paper.unfreeze();
 
@@ -125,7 +125,9 @@ function App() {
             const nodeId = `${graph.id}-${cell.id}`;
             graph.set('selectedCell', cell.id);
             selectTreeNode(nodeId);
-            treeEl.current.querySelector(`.node-${nodeId}`)?.focus();
+            if (treeEl.current) {
+                (treeEl.current.querySelector(`.node-${nodeId}`) as HTMLLIElement)?.focus();
+            }
         });
 
         paper.on('blank:pointerclick', () => {

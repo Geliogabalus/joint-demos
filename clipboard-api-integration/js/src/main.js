@@ -226,7 +226,7 @@ async function pasteFromClipboard(point, contextMenu) {
             const cellsJson = JSON.parse(text);
             const graphJson = { cells: cellsJson };
 
-            const cellNamespace = graph.get('cells').cellNamespace;
+            const cellNamespace = graph.getCellNamespace();
             const tmpGraph = new dia.Graph([], { cellNamespace }).fromJSON(graphJson, { sort: false, dry: true });
             const cells = tmpGraph.getCells();
 
@@ -258,7 +258,7 @@ async function pasteFromClipboard(point, contextMenu) {
                 const cellsJson = JSON.parse(text);
                 const graphJson = { cells: cellsJson };
 
-                const cellNamespace = graph.get('cells').cellNamespace;
+                const cellNamespace = graph.getCellNamespace();
                 const tmpGraph = new dia.Graph([], { cellNamespace }).fromJSON(graphJson, { sort: false, dry: true });
                 const cells = tmpGraph.getCells();
 
