@@ -231,14 +231,17 @@ class UMLClass extends shapes.standard.HeaderedRecord {
     }
 }
 
-shapes.UMLClass = UMLClass;
-shapes.UMLClassView = shapes.standard.HeaderedRecordView;
+const namespace = {
+    ...shapes,
+    UMLClass,
+    UMLClassView: shapes.standard.HeaderedRecordView
+};
 
-const graph = new dia.Graph({}, { cellNamespace: shapes });
+const graph = new dia.Graph({}, { cellNamespace: namespace });
 const paper = new dia.Paper({
     el: document.getElementById('paper'),
     model: graph,
-    cellViewNamespace: shapes,
+    cellViewNamespace: namespace,
     width: '50%',
     height: '100%',
     background: {
@@ -360,16 +363,20 @@ const inspectorAttributes = new ui.Inspector({
                         index: 1
                     },
                     visibility: {
-                        type: 'select',
+                        type: 'select-box',
                         options: visibilityOptions,
                         label: 'Visibility',
-                        index: 2
+                        index: 2,
+                        target: '#inspector',
+                        width: '100%'
                     },
                     returnType: {
-                        type: 'select',
+                        type: 'select-box',
                         options: 'typeOptions',
                         label: 'Return type',
-                        index: 3
+                        index: 3,
+                        target: '#inspector',
+                        width: '100%'
                     },
                     isStatic: {
                         type: 'toggle',
@@ -402,16 +409,20 @@ const inspectorOperations = new ui.Inspector({
                         index: 1
                     },
                     visibility: {
-                        type: 'select',
+                        type: 'select-box',
                         options: visibilityOptions,
                         label: 'Visibility',
-                        index: 2
+                        index: 2,
+                        target: '#inspector',
+                        width: '100%'
                     },
                     returnType: {
-                        type: 'select',
+                        type: 'select-box',
                         options: 'typeOptions',
                         label: 'Return type',
-                        index: 3
+                        index: 3,
+                        target: '#inspector',
+                        width: '100%'
                     },
                     isStatic: {
                         type: 'toggle',
@@ -429,10 +440,12 @@ const inspectorOperations = new ui.Inspector({
                                     label: 'Parameter name'
                                 },
                                 type: {
-                                    type: 'select',
+                                    type: 'select-box',
                                     options: 'typeOptions',
                                     index: 2,
-                                    label: 'Parameter type'
+                                    label: 'Parameter type',
+                                    target: '#inspector',
+                                    width: '100%'
                                 }
                             }
                         },
