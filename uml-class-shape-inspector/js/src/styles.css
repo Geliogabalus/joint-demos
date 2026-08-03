@@ -58,3 +58,7 @@ body {
     width: 100px;
     background: white;
 }
+
+.joint-select-box-options {
+    width: calc(100% - 55px) !important;
+}
