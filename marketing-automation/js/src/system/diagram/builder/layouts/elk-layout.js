@@ -1,14 +1,7 @@
 import { dia } from '@joint/plus';
-import ELK from 'elkjs/lib/elk-api';
+import { layout } from '@joint/layout-elk';
 import { SystemButton } from '../../models';
 import { LAYOUT_BATCH_NAME } from '../../../../diagram/const';
-
-/**
- * Initialized ELK layout engine with the worker URL.
- */
-const elk = new ELK({
-    workerUrl: './elk-worker.min.js',
-});
 
 /**
  * Layout configuration values.
@@ -23,13 +16,25 @@ const LayoutConfig = {
 export async function layoutCells(graph, cells, options) {
     const { nodes, edges, buttons, buttonLines, } = cells;
 
-    // Construct ELK Graph
-    const elkGraph = getElkGraph([...nodes, ...edges, ...buttonLines, ...buttons], options);
+    // Construct a graph with the cells in the order ELK should consider
+    const layoutGraph = createLayoutGraph([...nodes, ...buttons, ...edges, ...buttonLines]);
 
     try {
         graph.startBatch(LAYOUT_BATCH_NAME);
-        const laidOutGraph = await elk.layout(elkGraph);
-        applyLayout(graph, laidOutGraph);
+        await layout(layoutGraph, {
+            elkLayoutOptions: getElkLayoutOptions(options),
+            // The edge labels are not taken into account
+            exportLinkLabel: () => false,
+            // Apply the layout to the original cells
+            setElementAttributes: ({ element, attributes }) => {
+                updateElement(graph.getCell(element.id), attributes.position, graph);
+            },
+            setLinkAttributes: ({ link, attributes }) => {
+                // Note: use only the bend points to update the link vertices
+                // anchor is by default set to perpendicular on paper
+                graph.getCell(link.id).vertices(attributes.vertices);
+            }
+        });
     }
     catch (error) {
         console.warn('ELK layout error:', error);
@@ -39,7 +44,18 @@ export async function layoutCells(graph, cells, options) {
     }
 }
 
-function getElkGraph(cells, options) {
+/**
+ * ELK takes the order of the nodes and edges into account (see the layout options),
+ * while the layout reads them from the graph (sorted by z-index, the new cells last).
+ * Copies of the cells are therefore laid out in a separate graph, which keeps the given order.
+ */
+function createLayoutGraph(cells) {
+    const layoutGraph = new dia.Graph();
+    layoutGraph.resetCells(cells.map(cell => cell.clone().set({ id: cell.id, z: 0 })));
+    return layoutGraph;
+}
+
+function getElkLayoutOptions(options) {
 
     const layoutOptions = {
         // Use layered layout algorithm
@@ -89,100 +105,30 @@ function getElkGraph(cells, options) {
         });
     }
 
-    const elkGraph = {
-        id: 'root',
-        layoutOptions,
-        children: [],
-        edges: []
-    };
-
-    const buildElement = (element) => {
-        const size = element.size();
-        const elkNode = {
-            id: `${element.id}`,
-            width: size.width,
-            height: size.height,
-            ports: [],
-            children: []
-        };
-
-        elkGraph.children.push(elkNode);
-    };
-
-    const buildLink = (link) => {
-        const sourceId = `${link.source().id}`;
-        const targetId = `${link.target().id}`;
-        if (!sourceId || !targetId) {
-            return; // Skip if source or target is not defined
-        }
-        elkGraph.edges.push({
-            id: `${link.id}`,
-            sources: [sourceId],
-            targets: [targetId]
-        });
-    };
-
-    cells.forEach(cell => {
-        if (cell instanceof dia.Element) {
-            buildElement(cell);
-        }
-        else if (cell instanceof dia.Link) {
-            buildLink(cell);
-        }
-    });
-
-    return elkGraph;
+    return layoutOptions;
 }
 
-function applyLayout(graph, elkGraph) {
-    // Update Elements
-    updateElements(elkGraph.children || [], graph);
+function updateElement(element, position, graph) {
+    let { y } = position;
 
-    // Update Edges
-    updateLinks(elkGraph.edges || [], graph);
-}
-
-function updateElements(nodes, graph) {
-    nodes.forEach(node => {
-        const element = graph.getCell(node.id);
-        if (!element)
-            return;
-
-        let y = node.y || 0;
-
-        // Apply custom logic for SystemButton
-        if (SystemButton.isButton(element)) {
-            const [parent] = graph.getNeighbors(element, { inbound: true });
-            if (parent) {
-                const { height } = element.size();
-                const siblings = graph.getNeighbors(parent, { outbound: true });
-                if (siblings.length === 1) {
-                    // There are no other siblings, position the button below the parent
-                    y -= (LayoutConfig.NodeNodeBetweenLayers + height) / 2;
-                }
-                else {
-                    // Align the button vertically to another sibling
-                    const sibling = siblings.find(sib => sib.id !== element.id);
-                    const { height: siblingHeight } = sibling.size();
-                    y += (siblingHeight - height) / 2;
-                }
+    // Apply custom logic for SystemButton
+    if (SystemButton.isButton(element)) {
+        const [parent] = graph.getNeighbors(element, { inbound: true });
+        if (parent) {
+            const { height } = element.size();
+            const siblings = graph.getNeighbors(parent, { outbound: true });
+            if (siblings.length === 1) {
+                // There are no other siblings, position the button below the parent
+                y -= (LayoutConfig.NodeNodeBetweenLayers + height) / 2;
+            }
+            else {
+                // Align the button vertically to another sibling
+                const sibling = siblings.find(sib => sib.id !== element.id);
+                const { height: siblingHeight } = sibling.size();
+                y += (siblingHeight - height) / 2;
             }
         }
-
-        element.position(node.x || 0, y);
-    });
-}
-
-function updateLinks(edges, graph) {
-    for (const edge of edges) {
-        const { sections } = edge;
-        if (!sections)
-            continue;
-
-        // Note: use only the bend points to update the link vertices
-        // anchor is by default set to perpendicular on paper
-        const [{ bendPoints = [] }] = sections;
-        const link = graph.getCell(edge.id);
-        link.vertices(bendPoints);
     }
+
+    element.position(position.x, y);
 }

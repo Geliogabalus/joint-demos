@@ -1,6 +1,6 @@
 # JointJS+: ELK Layout with Collapsible Clusters (TypeScript) <a href="https://www.jointjs.com/jointjs-plus"><img src="../../jointjs-plus-badge.svg" alt="JointJS+" width="123" align="right" /></a>
 
-A diagram of about a thousand cells, arranged into nested clusters by the Eclipse Layout Kernel (ELK) via the [elkjs](https://github.com/kieler/elkjs) library. Every cluster collapses to its header, and only the cells within the visible area of the paper scroller are rendered.
+A diagram of about a thousand cells, arranged into nested clusters by the Eclipse Layout Kernel (ELK) via the [@joint/layout-elk](https://www.npmjs.com/package/@joint/layout-elk) package. Every cluster collapses to its header, and only the cells within the visible area of the paper scroller are rendered.
 
 This demo is also available online at [jointjs.com](https://jointjs.com/demos/elk-layout-collapsible-clusters).
 
@@ -28,15 +28,15 @@ This demo is also available online at [jointjs.com](https://jointjs.com/demos/el
 | `src/main.ts` | App entry point -- styles and the application start |
 | `src/app.ts` | The paper, the paper scroller, the virtual rendering setup, the collapsing and the toolbar |
 | `src/dataset.ts` | Generates the diagram description (clusters, children, links). Deterministic -- the same diagram on every run |
-| `src/layout.ts` | Creates the JointJS cells once, converts the description into an ELK graph (skipping the collapsed clusters) and applies the layout result back to the graph |
+| `src/layout.ts` | Creates the JointJS cells once and lays them out with `layout()` from `@joint/layout-elk` (skipping the content of the collapsed clusters) |
 | `src/shapes.ts` | The `Cluster`, `Leaf` and `Edge` cell types. The collapse button is a part of the cluster markup and triggers a custom paper event |
 | `src/styles.css` | Layout, toolbar and collapse button styles |
 
 ## How it works
 
-**The cells are created once.** `createCells()` builds the whole graph, including the content of the clusters which are collapsed later on. A layout only changes the geometry of the cells: `element.set()` is used instead of `element.position()` and `element.resize()`, because ELK positions the children of an element as well and they must not be moved along with their parent.
+**The cells are created once.** `createCells()` builds the whole graph, including the content of the clusters which are collapsed later on. A layout only changes the geometry of the cells: `layout()` turns the embedded elements into the children of their cluster in the ELK graph, and the `setElementAttributes` callback applies the result with `element.set()` instead of `element.position()` and `element.resize()`, because ELK positions the children of an element as well and they must not be moved along with their parent.
 
-**Collapsing** sets the `collapsed` attribute of the cluster, which schedules a layout. `createElkGraph()` then leaves the content of the collapsed clusters out and gives the cluster the size of its header. The cells which are left out keep the geometry of the previous layout - they are not rendered, and they are not measured either:
+**Collapsing** sets the `collapsed` attribute of the cluster, which schedules a layout. The `exportElement` callback then leaves the content of the collapsed clusters out (by returning `false`) and gives the cluster the size of its header. The cells which are left out keep the geometry of the previous layout - they are not rendered, and they are not measured either:
 
 ```ts
 function isCellVisible(cell: dia.Cell): boolean {

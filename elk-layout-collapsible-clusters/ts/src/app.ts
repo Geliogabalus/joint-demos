@@ -87,7 +87,7 @@ export async function init(): Promise<void> {
             : null;
         paper.freeze();
         try {
-            await layoutDiagram(graph, clusters);
+            await layoutDiagram(graph);
         } catch (error) {
             console.warn('ELK layout error:', error);
         } finally {
