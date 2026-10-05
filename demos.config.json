@@ -83,12 +83,5 @@
     "team-order": {
       "skipScreenshotComparison": true
     }
-  },
-  "playbook-collaboration": {
-    "variant": "react",
-    "viewport": {
-      "width": 1280,
-      "height": 800
-    }
   }
 }
