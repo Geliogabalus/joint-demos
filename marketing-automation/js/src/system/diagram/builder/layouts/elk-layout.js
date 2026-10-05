@@ -1,4 +1,3 @@
-import { dia } from '@joint/plus';
 import { layout } from '@joint/layout-elk';
 import { SystemButton } from '../../models';
 import { LAYOUT_BATCH_NAME } from '../../../../diagram/const';
@@ -16,23 +15,24 @@ const LayoutConfig = {
 export async function layoutCells(graph, cells, options) {
     const { nodes, edges, buttons, buttonLines, } = cells;
 
-    // Construct a graph with the cells in the order ELK should consider
-    const layoutGraph = createLayoutGraph([...nodes, ...buttons, ...edges, ...buttonLines]);
-
     try {
         graph.startBatch(LAYOUT_BATCH_NAME);
-        await layout(layoutGraph, {
+        // Lay out the given cells only (e.g. not the notes), in the order ELK should consider
+        await layout({
+            graph,
+            elements: [...nodes, ...buttons],
+            links: [...edges, ...buttonLines]
+        }, {
             elkLayoutOptions: getElkLayoutOptions(options),
             // The edge labels are not taken into account
             exportLinkLabel: () => false,
-            // Apply the layout to the original cells
             setElementAttributes: ({ element, attributes }) => {
-                updateElement(graph.getCell(element.id), attributes.position, graph);
+                updateElement(element, attributes.position, graph);
             },
             setLinkAttributes: ({ link, attributes }) => {
                 // Note: use only the bend points to update the link vertices
                 // anchor is by default set to perpendicular on paper
-                graph.getCell(link.id).vertices(attributes.vertices);
+                link.vertices(attributes.vertices);
             }
         });
     }
@@ -42,17 +42,6 @@ export async function layoutCells(graph, cells, options) {
     finally {
         graph.stopBatch(LAYOUT_BATCH_NAME);
     }
-}
-
-/**
- * ELK takes the order of the nodes and edges into account (see the layout options),
- * while the layout reads them from the graph (sorted by z-index, the new cells last).
- * Copies of the cells are therefore laid out in a separate graph, which keeps the given order.
- */
-function createLayoutGraph(cells) {
-    const layoutGraph = new dia.Graph();
-    layoutGraph.resetCells(cells.map(cell => cell.clone().set({ id: cell.id, z: 0 })));
-    return layoutGraph;
 }
 
 function getElkLayoutOptions(options) {

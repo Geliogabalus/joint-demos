@@ -174,7 +174,7 @@ export const init = () => {
     addChildren(elkGraph.children || []);
     addEdges(elkGraph.edges || []);
 
-    layout(graph, {
+    layout({ graph }, {
         exportElement:({ element, elkNode }) => {
             // The labels are not laid out as nodes, but as labels of their node
             if (element instanceof Label) return false;

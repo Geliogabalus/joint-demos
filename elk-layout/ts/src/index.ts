@@ -102,7 +102,7 @@ const init = () => {
     generateCells(dependenciesJSON, graph);
 
     // Perform ELK layout
-    layout(graph, {
+    layout({ graph }, {
         elkLayoutOptions: ELK_LAYOUT_OPTIONS
     }).then(() => {
         paper.unfreeze();

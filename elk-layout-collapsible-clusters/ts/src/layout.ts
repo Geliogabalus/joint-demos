@@ -96,7 +96,7 @@ function embedCluster(graph: dia.Graph, cluster: ClusterSpec): void {
  * The embedded elements become the children of their cluster in the ELK graph.
  */
 export async function layoutDiagram(graph: dia.Graph): Promise<void> {
-    await layout(graph, {
+    await layout({ graph }, {
         elkLayoutOptions: ROOT_LAYOUT_OPTIONS,
         exportElement: ({ element, elkNode }) => {
             // The content of a collapsed cluster is left out.
