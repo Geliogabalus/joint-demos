@@ -44,14 +44,6 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
                     layoutOptions: {}
                 }));
             },
-            setElementAttributes: ({ element, attributes }) => {
-                const { x, y } = attributes.position;
-                element.position(x, y);
-            },
-            setLinkAttributes: ({ link, attributes }) => {
-                // Update link vertices (bend points)
-                link.vertices(attributes.vertices);
-            }
         });
     } catch (error) {
         console.warn('ELK layout error:', error);
