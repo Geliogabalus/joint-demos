@@ -1,5 +1,4 @@
 import { layout } from '@joint/layout-elk';
-import { SystemNode } from '../../models';
 import { Attribute, LAYOUT_BATCH_NAME } from '../../const';
 
 export async function layoutCells(graph, cells, options) {
@@ -11,8 +10,6 @@ export async function layoutCells(graph, cells, options) {
         await layout({ graph, elements: nodes, links: edges }, {
             elkLayoutOptions: getElkLayoutOptions(options),
             exportElement: ({ element, elkNode }) => {
-                if (!(element instanceof SystemNode))
-                    return;
                 const partitionIndex = element.get(Attribute.PartitionIndex) == null ? '1000' : element.get(Attribute.PartitionIndex).toString();
                 Object.assign(elkNode.layoutOptions, {
                     'elk.portConstraints': 'FIXED_POS',
@@ -29,14 +26,6 @@ export async function layoutCells(graph, cells, options) {
                     y: rect.y,
                     layoutOptions: {}
                 }));
-            },
-            setElementAttributes: ({ element, attributes }) => {
-                const { x, y } = attributes.position;
-                element.position(x, y);
-            },
-            setLinkAttributes: ({ link, attributes }) => {
-                // Update link vertices (bend points)
-                link.vertices(attributes.vertices);
             }
         });
     }
@@ -69,10 +58,7 @@ function getElkLayoutOptions(options) {
         'elk.layered.crossingMinimization.forceNodeModelOrder': 'true',
 
         // Center layers as a whole (optional)
-        'elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
-
-        // Ports
-        'elk.layered.considerModelOrder.portModelOrder': 'true'
+        'elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED'
     };
 
     if (options?.disableOptimalOrderHeuristic) {

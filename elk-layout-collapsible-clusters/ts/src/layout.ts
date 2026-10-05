@@ -4,7 +4,7 @@ import type { dia } from '@joint/plus';
 
 import type { ElkLayoutOptions, NodeElkLayoutOptions } from '@joint/layout-elk';
 import { isClusterSpec, type ClusterSpec, type NodeSpec } from './dataset';
-import { Cluster, Edge, Leaf, CLUSTER_PADDING, COLLAPSED_SIZE, HEADER_HEIGHT, LEAF_SIZE } from './shapes';
+import { Cluster, Edge, Leaf, isCellVisible, CLUSTER_PADDING, COLLAPSED_SIZE, HEADER_HEIGHT, LEAF_SIZE } from './shapes';
 
 const ROOT_LAYOUT_OPTIONS: ElkLayoutOptions = {
     /**
@@ -93,36 +93,20 @@ function embedCluster(graph: dia.Graph, cluster: ClusterSpec): void {
 
 /**
  * Lay the diagram out with ELK and apply the result to the JointJS graph.
- * The embedded elements become the children of their cluster in the ELK graph.
+ * The embedded elements become the children of their cluster in the ELK graph,
+ * the content of the collapsed clusters is left out (a collapsed cluster
+ * is laid out as a plain node).
  */
 export async function layoutDiagram(graph: dia.Graph): Promise<void> {
-    await layout({ graph }, {
+    await layout({
+        graph,
+        elements: graph.getElements().filter(isCellVisible)
+    }, {
         elkLayoutOptions: ROOT_LAYOUT_OPTIONS,
         exportElement: ({ element, elkNode }) => {
-            // The content of a collapsed cluster is left out.
-            const parent = element.getParentCell();
-            if (parent instanceof Cluster && parent.isCollapsed()) return false;
-            if (element instanceof Cluster) {
-                if (element.isCollapsed()) {
-                    // The cluster becomes a plain node of the size of its header.
-                    elkNode.width = COLLAPSED_SIZE.width;
-                    elkNode.height = COLLAPSED_SIZE.height;
-                } else {
-                    Object.assign(elkNode.layoutOptions, CLUSTER_LAYOUT_OPTIONS);
-                }
+            if (element instanceof Cluster && !element.isCollapsed()) {
+                Object.assign(elkNode.layoutOptions, CLUSTER_LAYOUT_OPTIONS);
             }
-            return undefined;
-        },
-        setElementAttributes: ({ element, attributes, elkNode }) => {
-            // Note: `element.set()` is used instead of `element.position()` and
-            // `element.resize()` - the children of the element are positioned by
-            // ELK too and must not be moved along with their parent.
-            // `attributes` carries the size of the expanded clusters only - the
-            // size is taken from ELK for the collapsed clusters too.
-            element.set({
-                position: attributes.position,
-                size: { width: elkNode.width!, height: elkNode.height! }
-            });
         }
     });
 }

@@ -1,8 +1,8 @@
 import { layout } from '@joint/layout-elk';
-import { SystemNode } from '../../models';
 import { Attribute, LAYOUT_BATCH_NAME } from '../../const';
 
 import type { dia } from '@joint/plus';
+import type { SystemNode } from '../../models';
 import type { AutoLayoutDiagramCells } from '../types';
 import type { ElkLayoutOptions } from '@joint/layout-elk';
 
@@ -26,16 +26,16 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
         await layout({ graph, elements: nodes, links: edges }, {
             elkLayoutOptions: getElkLayoutOptions(options),
             exportElement: ({ element, elkNode }) => {
-                if (!(element instanceof SystemNode)) return;
-                const partitionIndex = element.get(Attribute.PartitionIndex) == null ? '1000' : (element.get(Attribute.PartitionIndex) as number).toString();
+                const node = element as SystemNode;
+                const partitionIndex = node.get(Attribute.PartitionIndex) == null ? '1000' : (node.get(Attribute.PartitionIndex) as number).toString();
                 Object.assign(elkNode.layoutOptions, {
                     'elk.portConstraints': 'FIXED_POS',
                     'elk.partitioning.partition': partitionIndex,
                 });
-                if (element.get('type') === 'trigger') {
+                if (node.get('type') === 'trigger') {
                     elkNode.layoutOptions['elk.layered.layering.layerChoiceConstraint'] = '0';
                 }
-                elkNode.labels = element.getLabelsRelativeRects().map(rect => ({
+                elkNode.labels = node.getLabelsRelativeRects().map(rect => ({
                     text: '-', // some text is required (ELK ignores empty labels)
                     width: rect.width,
                     height: rect.height,
@@ -43,7 +43,7 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
                     y: rect.y,
                     layoutOptions: {}
                 }));
-            },
+            }
         });
     } catch (error) {
         console.warn('ELK layout error:', error);
@@ -73,10 +73,7 @@ function getElkLayoutOptions(options?: LayoutCellsOptions): ElkLayoutOptions {
         'elk.layered.crossingMinimization.forceNodeModelOrder': 'true',
 
         // Center layers as a whole (optional)
-        'elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
-
-        // Ports
-        'elk.layered.considerModelOrder.portModelOrder': 'true'
+        'elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED'
     };
 
     if (options?.disableOptimalOrderHeuristic) {
