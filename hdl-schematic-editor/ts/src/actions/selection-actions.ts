@@ -1,5 +1,4 @@
 import { Attribute } from '../diagram/const';
-import { runAfterLayout } from '../diagram/utils';
 
 import type { App } from '../app';
 import type { Model } from '../diagram/types';
@@ -13,7 +12,7 @@ export function selectModel(app: App, model: Model, {
     scrollIntoView = false,
     cherryPick = false,
 } = {}) {
-    const { selection, scroller, graph } = app;
+    const { selection, scroller } = app;
 
     // Add/remove/replace selection
     if (cherryPick) {
@@ -29,14 +28,10 @@ export function selectModel(app: App, model: Model, {
     // Scroll is disabled, so we can return early.
     if (!scrollIntoView) return;
 
-    const scrollToView = () => {
-        // Scroll to the selected node if it's not visible
-        if (model.isElement() && !scroller.isElementVisible(model, { strict: true })) {
-            scroller.scrollToElement(model, { animation: true });
-        }
-    };
-
-    runAfterLayout(graph, scrollToView);
+    // Scroll to the selected node if it's not visible
+    if (model.isElement() && !scroller.isElementVisible(model, { strict: true })) {
+        scroller.scrollToElement(model, { animation: true });
+    }
 }
 
 /**

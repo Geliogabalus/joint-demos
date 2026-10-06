@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@joint/layout-elk": "file:../../.packages/joint-layout-elk.tgz",
-    "@joint/plus": "4.3.1"
+    "@joint/plus": "4.3.1",
+    "@joint/router-avoid": "4.3.3"
   },
   "devDependencies": {
     "concurrently": "4.1.0",

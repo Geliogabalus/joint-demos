@@ -29,3 +29,30 @@ export function isToolElement(target: EventTarget | null | undefined): boolean {
     return target instanceof Element && Boolean(target.closest('.joint-tools'));
 }
 
+
+/**
+ * Pending (delayed) removals of the hover tools, by cell view.
+ */
+const pendingRemovals = new WeakMap<dia.CellView, number>();
+
+/**
+ * Run the removal of the hover tools after a short delay. It gives the pointer
+ * time to get from the cell to its tools across a gap (e.g. moving diagonally to a button).
+ */
+export function scheduleToolsRemoval(cellView: dia.CellView, remove: () => void, delay = 300) {
+    cancelToolsRemoval(cellView);
+    pendingRemovals.set(cellView, window.setTimeout(() => {
+        pendingRemovals.delete(cellView);
+        remove();
+    }, delay));
+}
+
+/**
+ * Cancel the delayed removal of the hover tools (e.g. the pointer reached the tools).
+ */
+export function cancelToolsRemoval(cellView: dia.CellView) {
+    const timeout = pendingRemovals.get(cellView);
+    if (timeout === undefined) return;
+    window.clearTimeout(timeout);
+    pendingRemovals.delete(cellView);
+}

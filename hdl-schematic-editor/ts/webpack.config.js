@@ -50,6 +50,8 @@ module.exports = {
                 { from: './styles/joint-light-theme/icons', to: './assets/icons', noErrorOnMissing: true },
                 { from: './styles/joint-light-theme/fonts', to: './assets/fonts', noErrorOnMissing: true },
                 { from: './styles/navigator/icons', to: './assets/icons/navigator', noErrorOnMissing: true },
+                // The libavoid WebAssembly module used by the avoid router (@joint/router-avoid)
+                { from: './node_modules/libavoid-js/dist/libavoid.wasm', to: './' },
             ]
         })
     ]

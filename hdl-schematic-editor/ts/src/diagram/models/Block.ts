@@ -1,5 +1,5 @@
 import { util } from '@joint/plus';
-import HdlNode, { measureText } from './HdlNode';
+import HdlNode, { alignToGrid, measureText } from './HdlNode';
 import { Attribute, NodeTypes } from '../const';
 import { symbolBodyAttributes, symbolTextAttributes } from '../theme';
 
@@ -75,11 +75,12 @@ export default class Block extends HdlNode<BlockAttributes> {
     protected updateSymbol() {
         const { inputs, outputs } = this.getSidePorts();
         const maxLength = (ports: BlockPort[]) => Math.max(0, ...ports.map(port => measureText(port.id, 9)));
-        const bodyWidth = Math.max(
+        // The output pins (on the right edge) are on the grid
+        const bodyWidth = alignToGrid(Math.max(
             MIN_WIDTH,
             measureText(this.getCellType()) + 20,
             maxLength(inputs) + maxLength(outputs) + 30
-        );
+        ));
         const bodyHeight = HEADER_HEIGHT + Math.max(1, inputs.length, outputs.length) * STEP;
         this.resize(bodyWidth + PIN_LENGTH * 2, bodyHeight);
         this.attr({

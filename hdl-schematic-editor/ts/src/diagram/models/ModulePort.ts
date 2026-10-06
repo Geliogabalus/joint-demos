@@ -1,5 +1,5 @@
 import { util } from '@joint/plus';
-import HdlNode, { measureText } from './HdlNode';
+import HdlNode, { alignToGrid, measureText } from './HdlNode';
 import { Attribute, NodeTypes } from '../const';
 import Theme, { symbolTextAttributes } from '../theme';
 
@@ -59,7 +59,9 @@ abstract class ModulePort extends HdlNode {
     }
 
     getBodyWidth(): number {
-        return measureText(this.getText()) + PADDING * 2 + ARROW;
+        // The whole shape (including the pin) is as wide as whole grid cells,
+        // so the pin end of an input is on the grid
+        return alignToGrid(measureText(this.getText()) + PADDING * 2 + ARROW + PIN_LENGTH) - PIN_LENGTH;
     }
 
     getInspectorConfig(): InspectorConfig {

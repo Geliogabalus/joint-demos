@@ -18,8 +18,9 @@ export default class SystemController extends Controller<[App]> {
         // System build controller
         this.buildController = new BuildController(app, {
             buildNode: (node: TypedNodeData, id: dia.Cell.ID) => buildNodeFromData(node, id),
-            // Circuits are laid out with the full crossing minimization
-            disableOptimalOrderHeuristic: false,
+            // The nodes are positioned freely by the user (the positions are stored in the data).
+            // The layout is run on demand (see `layoutDiagram()`).
+            autoLayout: false,
         });
         // System UI controller
         this.uiController = new UIController(app);

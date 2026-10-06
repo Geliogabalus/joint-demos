@@ -27,13 +27,18 @@ const pinNames: Record<string, string> = {
 };
 
 /**
- * Vertical positions of the west side pins.
+ * Vertical positions of the west side pins (on the grid).
  */
 const westPinY: Record<string, number> = {
-    D: 15,
+    D: 20,
     EN: 30,
-    CLK: 45,
+    CLK: 40,
 };
+
+/**
+ * Vertical position of the output pin (on the grid).
+ */
+const OUTPUT_PIN_Y = 20;
 
 /**
  * A register (flip-flop). The clock input is marked with a triangle,
@@ -73,9 +78,9 @@ export default class Register extends HdlCell {
         const resets = this.getSidePorts('SOUTH');
         const outputs = this.getSidePorts('EAST');
         return [
-            ...inputs.map((port, index) => this.createPort(port, 0, westPinY[port.id] ?? 15 + index * 15, { name: pinNames[port.id] })),
+            ...inputs.map((port, index) => this.createPort(port, 0, westPinY[port.id] ?? 20 + index * 10, { name: pinNames[port.id] })),
             ...resets.map(port => this.createPort(port, WIDTH / 2, BODY_HEIGHT + PIN_LENGTH, { name: pinNames[port.id] })),
-            ...outputs.map(port => this.createPort(port, WIDTH, 15, { name: pinNames[port.id] })),
+            ...outputs.map(port => this.createPort(port, WIDTH, OUTPUT_PIN_Y, { name: pinNames[port.id] })),
         ];
     }
 }

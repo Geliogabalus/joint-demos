@@ -9,8 +9,8 @@ body {
     position: absolute;
     overflow: hidden;
     box-sizing: border-box;
-    left: var(--app-json-width);
-    width: calc(100% - var(--app-inspector-width) - var(--app-json-width));
+    left: var(--app-stencil-width);
+    width: calc(100% - var(--app-inspector-width) - var(--app-stencil-width));
     height: calc(100% - var(--app-toolbar-height));
     top: var(--app-toolbar-height);
 
@@ -21,6 +21,16 @@ body {
     .joint-paper-scroller {
         overflow: hidden;
         background-color: var(--app-paper);
+    }
+
+    // The diagram is hidden while it's being laid out (e.g. after loading a file)
+    .joint-paper-scroller {
+        transition: opacity 200ms ease-in-out;
+    }
+
+    &.loading .joint-paper-scroller {
+        opacity: 0;
+        transition: none;
     }
 
     &.drop-zone::after {
@@ -36,5 +46,88 @@ body {
         color: var(--app-text-secondary);
         font-family: 'Inter', sans-serif;
         font-size: 1.5em;
+    }
+}
+
+// Left sidebar with the shapes
+
+.stencil-container {
+    position: absolute;
+    left: 0;
+    top: var(--app-toolbar-height);
+    width: var(--app-stencil-width);
+    height: calc(100vh - var(--app-toolbar-height));
+    box-sizing: border-box;
+    border-top: 1px solid var(--app-border-secondary);
+    border-right: 1px solid var(--app-border-secondary);
+    background-color: var(--app-bg-primary);
+    z-index: 2;
+
+    .joint-stencil.joint-theme-light {
+        position: absolute;
+        inset: 0;
+        border: none;
+
+        .search {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+        }
+
+        .group > .group-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--app-text-secondary);
+        }
+
+        .joint-paper {
+            background-color: var(--app-paper);
+        }
+
+        .joint-element {
+            cursor: grab;
+        }
+    }
+}
+
+// Right sidebar with the inspector (top) and the Yosys JSON (bottom)
+
+.sidebar-container {
+    position: absolute;
+    right: 0;
+    top: var(--app-toolbar-height);
+    width: var(--app-inspector-width);
+    height: calc(100vh - var(--app-toolbar-height));
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    border-top: 1px solid var(--app-border-secondary);
+    box-shadow: -4px 8px 8px #00000012;
+    background-color: var(--app-bg-primary);
+    z-index: 2;
+
+    .inspector-container {
+        position: relative;
+        top: auto;
+        right: auto;
+        width: 100%;
+        height: auto;
+        max-height: 55%;
+        flex: 0 0 auto;
+        border-top: none;
+        box-shadow: none;
+
+        &.inspector-closed {
+            padding: 24px 0;
+
+            .inspector-content {
+                transform: none;
+            }
+        }
+    }
+
+    .json-container {
+        flex: 1 1 auto;
+        min-height: 0;
     }
 }

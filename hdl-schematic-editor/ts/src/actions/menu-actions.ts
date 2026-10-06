@@ -35,6 +35,9 @@ import type { Node, Edge, HdlNode } from '../diagram/models';
 export function openPaperMenu(app: App, evt: dia.Event) {
     const { paper } = app;
 
+    // The new nodes are placed at the pointer position
+    const position = paper.clientToLocalPoint(evt.clientX!, evt.clientY!);
+
     const contextMenu = new ui.ContextToolbar({
         root: paper.el,
         tools: [
@@ -49,12 +52,12 @@ export function openPaperMenu(app: App, evt: dia.Event) {
 
     contextMenu.on('action:add-input', () => {
         contextMenu.remove();
-        selectModel(app, addInputNode(app), { scrollIntoView: true });
+        selectModel(app, addInputNode(app, position), { scrollIntoView: true });
     });
 
     contextMenu.on('action:add-output', () => {
         contextMenu.remove();
-        selectModel(app, addOutputNode(app), { scrollIntoView: true });
+        selectModel(app, addOutputNode(app, position), { scrollIntoView: true });
     });
 
     contextMenu.on('action:add-cell', () => {
@@ -62,7 +65,7 @@ export function openPaperMenu(app: App, evt: dia.Event) {
         openCellPicker(app, {
             title: 'Add a cell',
             onSelect: (definition) => {
-                selectModel(app, addCellNode(app, definition), { scrollIntoView: true });
+                selectModel(app, addCellNode(app, definition, position), { scrollIntoView: true });
             }
         });
     });

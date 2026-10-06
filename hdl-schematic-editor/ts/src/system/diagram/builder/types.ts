@@ -19,4 +19,9 @@ export interface BuildDiagramOptions {
      */
     buildNode?: BuildNode;
     disableOptimalOrderHeuristic?: boolean;
+    /**
+     * Lay out the graph every time it is built (default).
+     * If false, the nodes are positioned by the `position` stored in the data.
+     */
+    autoLayout?: boolean;
 }

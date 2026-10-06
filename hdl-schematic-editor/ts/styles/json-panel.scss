@@ -1,14 +1,7 @@
 .json-container {
-    position: absolute;
-    left: 0;
-    top: var(--app-toolbar-height);
-    width: var(--app-json-width);
-    height: calc(100vh - var(--app-toolbar-height));
     box-sizing: border-box;
     border-top: 1px solid var(--app-border-secondary);
-    border-right: 1px solid var(--app-border-secondary);
     background-color: var(--app-bg-primary);
-    z-index: 2;
 
     .json-panel {
         display: flex;

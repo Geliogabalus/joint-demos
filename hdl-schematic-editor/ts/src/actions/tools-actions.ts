@@ -4,7 +4,7 @@ import { InsertNodeTool, MenuTool } from '../diagram/tools';
 // Actions
 import { openEdgeMenu, openNodeMenu } from './menu-actions';
 // Utils
-import { addTools, getToolCenter } from '../diagram/tools/utils';
+import { addTools, getToolCenter, cancelToolsRemoval } from '../diagram/tools/utils';
 
 import type { dia } from '@joint/plus';
 import type { App } from '../app';
@@ -54,6 +54,8 @@ export function addNodeHoverTools(app: App, nodeView: NodeView, onLeave?: () => 
  */
 function callOnToolsLeave(cellView: dia.CellView, toolsView: dia.ToolsView | null, onLeave?: () => void) {
     if (!toolsView || !onLeave) return;
+    // The pointer reached the tools: keep them
+    toolsView.el.addEventListener('mouseenter', () => cancelToolsRemoval(cellView));
     toolsView.el.addEventListener('mouseleave', (evt: MouseEvent) => {
         if (evt.relatedTarget instanceof Element && cellView.el.contains(evt.relatedTarget)) return;
         onLeave();

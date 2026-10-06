@@ -1,6 +1,6 @@
 import { Controller } from '../system/controllers';
 // Actions
-import { downloadYosysJSON, openFileDialog, resetDiagram, loadYosysJSON } from '../actions/diagram-actions';
+import { downloadYosysJSON, openFileDialog, resetDiagram, loadYosysJSON, layoutDiagram } from '../actions/diagram-actions';
 
 import type { App } from '../app';
 
@@ -17,6 +17,7 @@ export default class ToolbarController extends Controller<[App]> {
             'load:pointerclick': onLoadPointerClick,
             'new:pointerclick': onNewPointerClick,
             'example:pointerclick': onExamplePointerClick,
+            'layout:pointerclick': onLayoutPointerClick,
             'diagram-name:change': onDiagramNameChange,
         });
     }
@@ -40,6 +41,11 @@ function onNewPointerClick(app: App) {
 function onExamplePointerClick(app: App) {
 
     loadYosysJSON(app, app.config.example);
+}
+
+function onLayoutPointerClick(app: App) {
+
+    layoutDiagram(app);
 }
 
 function onDiagramNameChange(app: App, value: string) {

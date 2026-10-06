@@ -7,7 +7,7 @@ import { validateConnection as validateSystemConnection } from '../system/config
 
 import Theme from '../diagram/theme';
 
-export const gridSize: dia.Paper.Options['gridSize'] = 10;
+export const gridSize: dia.Paper.Options['gridSize'] = Theme.GridSize;
 
 export const drawGrid: dia.Paper.Options['drawGrid'] = {
     name: 'dot',
@@ -76,6 +76,16 @@ export const validateConnection: dia.Paper.Options['validateConnection'] = funct
         return link !== linkView.model && link.target().port === targetPortId;
     });
     return !isDriven;
+};
+
+/**
+ * The nodes can be moved freely (the wires are rerouted by the avoid router).
+ */
+export const interactive: dia.Paper.Options['interactive'] = {
+    elementMove: true,
+    addLinkFromMagnet: true,
+    linkMove: false,
+    labelMove: false,
 };
 
 // Disable the built-in highlighting effects

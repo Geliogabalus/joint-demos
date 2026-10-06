@@ -1,5 +1,5 @@
 import { util } from '@joint/plus';
-import HdlNode, { measureText } from './HdlNode';
+import HdlNode, { alignToGrid, measureText } from './HdlNode';
 import { Attribute, NodeTypes } from '../const';
 import Theme, { symbolTextAttributes } from '../theme';
 
@@ -71,7 +71,8 @@ export default class Constant extends HdlNode {
 
     protected updateSymbol() {
         const text = this.getLiteral();
-        const bodyWidth = measureText(text) + PADDING * 2;
+        // The pin end is on the grid
+        const bodyWidth = alignToGrid(measureText(text) + PADDING * 2 + PIN_LENGTH) - PIN_LENGTH;
         this.resize(bodyWidth + PIN_LENGTH, HEIGHT);
         this.attr({
             body: { width: bodyWidth },

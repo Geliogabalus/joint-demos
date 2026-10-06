@@ -44,11 +44,9 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
             // Edge labels (e.g. bus widths) are decorations placed along the edge,
             // they should not take part in the layout.
             exportLinkLabel: () => false,
-            setLinkAttributes: ({ link, attributes, elkEdge }) => {
-                // ELK computes junction points for edges sharing a source port (hyperedges).
-                const junctions = (elkEdge.junctionPoints || []).map(({ x, y }) => ({ x, y }));
-                link.set({ ...attributes, [Attribute.JunctionPoints]: junctions });
-            }
+            // The edges are routed by the avoid router (libavoid) after the nodes are moved,
+            // only the node positions computed by ELK are used.
+            setLinkAttributes: () => {}
         });
     } catch (error) {
         console.warn('ELK layout error:', error);

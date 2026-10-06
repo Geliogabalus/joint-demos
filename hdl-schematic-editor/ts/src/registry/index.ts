@@ -367,3 +367,10 @@ export function getDefaultParameters(definition: CellDefinition): CellParameters
     });
     return parameters;
 }
+
+/**
+ * Get a short label of the cell (e.g. `ADFF` for `$adff`), used in the stencil.
+ */
+export function getCellShortName(definition: CellDefinition): string {
+    return definition.type.replace(/[$_]/g, '').toUpperCase();
+}

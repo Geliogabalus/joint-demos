@@ -10,6 +10,9 @@ const Theme = {
     /** Color of the grid dots */
     GridColor: '#B5B5B5',
 
+    /** Size of the paper grid. The shapes and their pins are aligned to it. */
+    GridSize: 10,
+
     /** Color of single-bit wires and junctions */
     WireColor: '#009600',
 

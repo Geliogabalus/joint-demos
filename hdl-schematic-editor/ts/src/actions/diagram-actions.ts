@@ -1,13 +1,14 @@
 // Diagram
-import { Attribute } from '../diagram/const';
-import { runAfterLayout } from '../diagram/utils';
+import { Attribute, NodeTypes } from '../diagram/const';
+import { layoutGraph } from '../system/diagram/builder';
 import { HdlNode } from '../diagram/models';
 import {
     appendNodeToPort,
     prependNodeToPort,
     insertNodeOnEdge,
     replaceNodeData,
-    disconnectInputPort
+    disconnectInputPort,
+    snapToGrid
 } from '../diagram/data/manipulation';
 import {
     getDefaultCellData,
@@ -18,7 +19,7 @@ import {
 } from '../diagram/data/defaults';
 // Yosys
 import { getTopModuleName, yosysToDiagram } from '../yosys/import';
-import { getDefaultParameters } from '../registry';
+import { getDefaultParameters, resolveCellDefinition } from '../registry';
 // Config
 import { appConfig } from '../configs';
 // Actions
@@ -33,9 +34,10 @@ import type { CellDefinition } from '../registry';
 
 /**
  * Loads the top module of the given Yosys JSON into the app.
+ * Yosys JSON does not store the positions, so the loaded diagram is laid out with ELK.
  */
-export function loadYosysJSON(app: App, document: YosysJSON) {
-    const { diagramData, graph, history, scroller } = app;
+export async function loadYosysJSON(app: App, document: YosysJSON) {
+    const { diagramData, history, scroller, paperContainerEl } = app;
 
     let moduleName: string;
     let diagram;
@@ -47,22 +49,64 @@ export function loadYosysJSON(app: App, document: YosysJSON) {
         return;
     }
 
+    // Hide the diagram until it's laid out
+    paperContainerEl.classList.add('loading');
+
     app.setYosysDocument(document, moduleName);
     // Reset the diagram data
     diagramData.fromJSON(diagram);
-    // Reset the history after loading a new diagram
+    // Compute the initial positions
+    await layoutDiagram(app);
+    // Reset the history after loading a new diagram (the layout is not undoable)
     history.reset();
 
-    const zoomToFit = () => {
-        // Zoom to fit the loaded diagram.
-        scroller.zoomToFit({
-            useModelGeometry: true,
-            padding: 50,
-            maxScale: 1.5,
-        });
-    };
+    // Zoom to fit the loaded diagram.
+    scroller.zoomToFit({
+        useModelGeometry: true,
+        padding: 50,
+        maxScale: 1.5,
+    });
 
-    runAfterLayout(graph, zoomToFit);
+    paperContainerEl.classList.remove('loading');
+}
+
+/**
+ * Lays out the diagram with ELK and stores the new positions in the data (it can be undone).
+ * The links are then routed by the avoid router.
+ */
+export async function layoutDiagram(app: App) {
+    const { graph } = app;
+
+    await layoutGraph(graph, false);
+    // Align the nodes (and so the pins and the wires) to the grid
+    graph.getElements().forEach((element) => {
+        const { x, y } = snapToGrid(element.position());
+        element.position(x, y);
+    });
+    storeNodePositions(app);
+}
+
+/**
+ * Stores the current positions of the nodes (e.g. after they are moved) in the diagram data.
+ * Only the positions which differ from the data are stored.
+ */
+export function storeNodePositions(app: App) {
+    const { graph, diagramData } = app;
+
+    const ids: dia.Cell.ID[] = [];
+    const changes: { [id: string]: Partial<NodeData> } = {};
+    graph.getElements().forEach((element) => {
+        const data = diagramData.get(element.id as string) as NodeData | undefined;
+        if (!data) return;
+        const { x, y } = element.position();
+        const position = data.position as dia.Point | undefined;
+        if (position && position.x === x && position.y === y) return;
+        ids.push(element.id);
+        changes[element.id] = { position: { x, y }};
+    });
+    if (ids.length === 0) return;
+    // The graph is already up to date, no need to rebuild it
+    diagramData.changeNodes(ids, changes, { build: false });
 }
 
 /**
@@ -121,21 +165,53 @@ export function getPortWidth(element: dia.Element, portId: string): number {
 
 // Adding nodes
 
-export function addInputNode(app: App): Node {
+export function addInputNode(app: App, position: dia.Point): Node {
     const { diagramData, graph } = app;
-    const id = diagramData.createNode(getDefaultInputData(diagramData.toJSON()));
+    const id = diagramData.createNode({ ...getDefaultInputData(diagramData.toJSON()), position: snapToGrid(position) });
     return graph.getCell(id) as Node;
 }
 
-export function addOutputNode(app: App): Node {
+export function addOutputNode(app: App, position: dia.Point): Node {
     const { diagramData, graph } = app;
-    const id = diagramData.createNode(getDefaultOutputData(diagramData.toJSON()));
+    const id = diagramData.createNode({ ...getDefaultOutputData(diagramData.toJSON()), position: snapToGrid(position) });
     return graph.getCell(id) as Node;
 }
 
-export function addCellNode(app: App, definition: CellDefinition): Node {
+/**
+ * Creates the data of a node dropped from the stencil. The dropped element (already
+ * added to the graph by the stencil) becomes the node: it keeps its id.
+ */
+export function addDroppedNode(app: App, element: dia.Element): Node {
     const { diagramData, graph } = app;
-    const id = diagramData.createNode(getDefaultCellData(definition, diagramData.toJSON()));
+    const json = diagramData.toJSON();
+    let data: NodeData;
+    switch (element.get('type')) {
+        case NodeTypes.Input:
+            data = getDefaultInputData(json);
+            break;
+        case NodeTypes.Output:
+            data = getDefaultOutputData(json);
+            break;
+        case NodeTypes.Constant:
+            data = getDefaultConstantData();
+            break;
+        default: {
+            const definition = resolveCellDefinition(element.get(Attribute.CellType));
+            if (!definition) {
+                element.remove();
+                throw new Error(`Unknown cell type: ${element.get(Attribute.CellType)}`);
+            }
+            data = getDefaultCellData(definition, json);
+        }
+    }
+    const position = snapToGrid(element.position());
+    diagramData.createNode({ ...data, position }, element.id);
+    return graph.getCell(element.id) as Node;
+}
+
+export function addCellNode(app: App, definition: CellDefinition, position: dia.Point): Node {
+    const { diagramData, graph } = app;
+    const id = diagramData.createNode({ ...getDefaultCellData(definition, diagramData.toJSON()), position: snapToGrid(position) });
     return graph.getCell(id) as Node;
 }
 

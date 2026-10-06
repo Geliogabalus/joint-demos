@@ -1,6 +1,7 @@
-import { util } from '@joint/plus';
+import { g, util } from '@joint/plus';
 import { Attribute, NodeTypes } from '../const';
 import { resolveCellDefinition } from '../../registry';
+import Theme from '../theme';
 import { getCellPorts } from '../../yosys/export';
 
 import type { dia } from '@joint/plus';
@@ -33,14 +34,43 @@ export function getDataPrimaryPortId(data: NodeData, direction: PortDirection): 
 }
 
 /**
+ * The distance between a port and a node added next to it.
+ */
+const NEW_NODE_GAP = 60;
+
+/**
+ * Estimated size of a new node (the real size is known once the node is created).
+ */
+const NEW_NODE_SIZE = { width: 50, height: 40 };
+
+const GRID_SIZE = Theme.GridSize;
+
+/**
+ * Align the point to the paper grid.
+ */
+export function snapToGrid({ x, y }: dia.Point): dia.Point {
+    return {
+        x: Math.round(x / GRID_SIZE) * GRID_SIZE,
+        y: Math.round(y / GRID_SIZE) * GRID_SIZE
+    };
+}
+
+/**
  * Creates a new node driven by the given output port.
+ * The node is placed to the right of the port.
  */
 export function appendNodeToPort(diagram: Diagram, data: NodeData, sourceNode: dia.Element, sourcePortId: string): Node {
     const { diagramData, graph } = diagram;
 
+    const portCenter = sourceNode.getPortCenter(sourcePortId);
+    const position = snapToGrid({
+        x: portCenter.x + NEW_NODE_GAP,
+        y: portCenter.y - NEW_NODE_SIZE.height / 2
+    });
+
     const id = util.uuid();
     diagramData.runInBatch('append-node', () => {
-        diagramData.createNode(data, id);
+        diagramData.createNode({ ...data, position }, id);
         const targetPortId = getDataPrimaryPortId(data, 'in');
         if (!targetPortId) return;
         diagramData.addEdge({
@@ -58,14 +88,21 @@ export function appendNodeToPort(diagram: Diagram, data: NodeData, sourceNode: d
 /**
  * Creates a new node driving the given input port.
  * The current driver of the port (if any) is disconnected.
+ * The node is placed to the left of the port.
  */
 export function prependNodeToPort(diagram: Diagram, data: NodeData, targetNode: dia.Element, targetPortId: string): Node {
     const { diagramData, graph } = diagram;
 
+    const portCenter = targetNode.getPortCenter(targetPortId);
+    const position = snapToGrid({
+        x: portCenter.x - NEW_NODE_GAP - NEW_NODE_SIZE.width,
+        y: portCenter.y - NEW_NODE_SIZE.height / 2
+    });
+
     const id = util.uuid();
     diagramData.runInBatch('prepend-node', () => {
         disconnectInputPort(diagram, targetNode.id, targetPortId);
-        diagramData.createNode(data, id);
+        diagramData.createNode({ ...data, position }, id);
         const sourcePortId = getDataPrimaryPortId(data, 'out');
         if (!sourcePortId) return;
         diagramData.addEdge({
@@ -82,6 +119,7 @@ export function prependNodeToPort(diagram: Diagram, data: NodeData, targetNode: 
 
 /**
  * Inserts a new node on the given link.
+ * The node is placed in the middle of the link route.
  */
 export function insertNodeOnEdge(diagram: Diagram, data: NodeData, link: dia.Link): Node {
     const { diagramData, graph } = diagram;
@@ -92,9 +130,15 @@ export function insertNodeOnEdge(diagram: Diagram, data: NodeData, link: dia.Lin
         throw new Error('Link must have both source and target nodes');
     }
 
+    const middle = getLinkRoute(link).pointAtLength(getLinkRoute(link).length() / 2) || new g.Point();
+    const position = snapToGrid({
+        x: middle.x - NEW_NODE_SIZE.width / 2,
+        y: middle.y - NEW_NODE_SIZE.height / 2
+    });
+
     const id = util.uuid();
     diagramData.runInBatch('insert-node', () => {
-        diagramData.createNode(data, id);
+        diagramData.createNode({ ...data, position }, id);
         const inputPortId = getDataPrimaryPortId(data, 'in');
         const outputPortId = getDataPrimaryPortId(data, 'out');
         // Redirect the edge to the new node
@@ -164,4 +208,23 @@ export function disconnectInputPort(diagram: Diagram, nodeId: dia.Cell.ID, portI
             diagramData.removeEdge({ id: sourceId, portId: edge.sourcePortId }, { id: nodeId, portId });
         });
     });
+}
+
+/**
+ * Get the route of the link: from the source pin through the vertices to the target pin.
+ */
+export function getLinkRoute(link: dia.Link): g.Polyline {
+    const points: dia.Point[] = [];
+    const source = link.getSourceElement();
+    const target = link.getTargetElement();
+    const sourcePort = link.source().port;
+    const targetPort = link.target().port;
+    if (source) {
+        points.push(sourcePort ? source.getPortCenter(sourcePort) : source.getBBox().center());
+    }
+    points.push(...link.vertices());
+    if (target) {
+        points.push(targetPort ? target.getPortCenter(targetPort) : target.getBBox().center());
+    }
+    return new g.Polyline(points);
 }

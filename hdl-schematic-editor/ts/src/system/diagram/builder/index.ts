@@ -22,8 +22,11 @@ export async function buildDiagram(data: SystemDiagramJSON, graph: dia.Graph, op
         // By default the data node is used as-is to create the model.
         buildNode = (node) => node as dia.Graph.CellInit,
         disableOptimalOrderHeuristic = true,
+        autoLayout = true,
     } = options;
     updateGraph(graph, data, buildNode);
+    // Without the automatic layout, the nodes keep the positions stored in the data
+    if (!autoLayout) return;
     await layoutGraph(graph, disableOptimalOrderHeuristic);
 }
 
@@ -97,7 +100,7 @@ function updateGraph(graph: dia.Graph, json: SystemDiagramJSON, buildNode: Build
 /**
  * Asynchronously layouts the graph using the ELK layout engine.
  */
-async function layoutGraph(
+export async function layoutGraph(
     graph: dia.Graph,
     disableOptimalOrderHeuristic: boolean
 ): Promise<void> {

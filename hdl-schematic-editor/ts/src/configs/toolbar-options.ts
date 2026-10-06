@@ -76,6 +76,18 @@ export const tools: ui.Toolbar.Options['tools'] = [
     },
     {
         type: 'button',
+        name: 'layout',
+        text: 'Auto layout',
+        group: 'right',
+        attrs: {
+            button: {
+                'data-tooltip': 'Arrange the diagram with the ELK layered layout',
+                'data-tooltip-position': 'top'
+            }
+        }
+    },
+    {
+        type: 'button',
         name: 'example',
         text: 'Load example',
         group: 'right'

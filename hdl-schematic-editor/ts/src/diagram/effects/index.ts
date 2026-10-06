@@ -63,3 +63,17 @@ export function removeEffect(paper: dia.Paper, effect: typeof Effect[keyof typeo
             break;
     }
 }
+
+/**
+ * Remove an effect (highlighter) from the given cell view only.
+ */
+export function removeCellEffect(cellView: dia.CellView, effect: typeof Effect[keyof typeof Effect]) {
+    switch (effect) {
+        case Effect.NodeHover:
+            HoverEffect.remove(cellView, effect);
+            break;
+        default:
+            highlighters.addClass.remove(cellView, effect);
+            break;
+    }
+}

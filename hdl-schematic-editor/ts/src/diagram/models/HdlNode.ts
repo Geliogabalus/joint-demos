@@ -95,9 +95,9 @@ export default abstract class HdlNode<A extends HdlNodeAttributes = HdlNodeAttri
     override defaults(): Partial<A> {
         return {
             ...super.defaults(),
-            // The menu button overlaps the top-right corner, so the pointer
-            // can move from the node to the button without leaving the node first
-            [Attribute.ContextMenu]: { x: `calc(w - ${Theme.NodeToolSize / 2})`, y: -Theme.NodeToolSize / 2 },
+            // The menu button sits on the top-right corner, touching the node (so the pointer
+            // can move from the node to the button directly) without covering any pin
+            [Attribute.ContextMenu]: { x: `calc(w - ${Theme.NodeToolSize / 2})`, y: -Theme.NodeToolSize },
             ports: {
                 items: [],
                 groups: {
@@ -299,6 +299,14 @@ export function distribute(count: number, length: number, grid = 10): number[] {
         positions.push(Math.round(step * i / grid) * grid);
     }
     return positions;
+}
+
+/**
+ * Round the length up to whole grid cells, so the pins placed at the edges
+ * of a shape (positioned on the grid) are on the grid too.
+ */
+export function alignToGrid(length: number): number {
+    return Math.ceil(length / Theme.GridSize) * Theme.GridSize;
 }
 
 /**

@@ -7,7 +7,8 @@ import {
     NetlistController,
     KeyboardController,
     SelectionController,
-    ToolbarController
+    ToolbarController,
+    StencilController
 } from './controllers';
 // Configs
 import {
@@ -31,8 +32,11 @@ import { diagramToYosys } from './yosys/export';
 import { enableFileDrop } from './features/file-drop';
 import Navigator from './features/Navigator';
 import JsonPanel from './features/JsonPanel';
+import { createStencil } from './features/Stencil';
+import { startAvoidRouter } from './features/avoid-router';
 
 import type { mvc } from '@joint/plus';
+import type { RouterService } from '@joint/router-avoid';
 import type { Controller } from './system/controllers';
 import type { AppConfig } from './types';
 import type { Model } from './diagram/types';
@@ -93,6 +97,19 @@ export class App extends Diagram {
     jsonPanel: JsonPanel;
 
     /**
+     * Joint UI Stencil instance with the shapes to drag and drop onto the paper.
+     * @see https://docs.jointjs.com/api/ui/Stencil
+     * @tutorial https://docs.jointjs.com/learn/features/stencil
+     */
+    stencil: ui.Stencil;
+
+    /**
+     * The avoid router service routing the wires (resolved once the libavoid module is loaded).
+     * @see https://www.npmjs.com/package/@joint/router-avoid
+     */
+    routerReady: Promise<RouterService>;
+
+    /**
      * All controllers used in the application.
      */
     controllers: Controller<[App]>[];
@@ -103,6 +120,7 @@ export class App extends Diagram {
     navigatorContainerEl: HTMLElement;
     inspectorContainerEl: HTMLElement;
     jsonContainerEl: HTMLElement;
+    stencilContainerEl: HTMLElement;
 
     // The name of the edited module
     private moduleName: string = appConfig.defaultModuleName;
@@ -117,6 +135,7 @@ export class App extends Diagram {
         this.inspectorContainerEl = this.el.querySelector('.inspector-container') as HTMLElement;
         this.navigatorContainerEl = this.el.querySelector('.navigator-container') as HTMLElement;
         this.jsonContainerEl = this.el.querySelector('.json-container') as HTMLElement;
+        this.stencilContainerEl = this.el.querySelector('.stencil-container') as HTMLElement;
 
         // Paper Scroller
         this.scroller = new ui.PaperScroller({
@@ -169,6 +188,15 @@ export class App extends Diagram {
             title: 'Yosys JSON'
         });
 
+        // Stencil
+        this.stencil = createStencil({
+            containerEl: this.stencilContainerEl,
+            paperScroller: this.scroller,
+        });
+
+        // Wire routing
+        this.routerReady = startAvoidRouter(this.graph);
+
         // Call this function to render the placeholder content
         closeInspector(this);
 
@@ -180,6 +208,7 @@ export class App extends Diagram {
             new KeyboardController(this),
             new NetlistController(this),
             new SelectionController(this),
+            new StencilController(this),
         ];
         this.controllers.forEach(controller => controller.startListening());
 
@@ -237,6 +266,8 @@ export class App extends Diagram {
         this.toolbar.remove();
         this.navigator.remove();
         this.jsonPanel.remove();
+        this.stencil.remove();
+        this.routerReady.then(routerService => routerService.destroy());
         this.keyboard.disable();
     }
 

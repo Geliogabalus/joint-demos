@@ -4,16 +4,16 @@ import { Controller } from '../system/controllers';
 import { State } from '../const';
 import { appConfig } from '../configs';
 import { Node, Edge, HdlNode, HdlCell } from '../diagram/models';
-import { addEffect, removeEffect, Effect } from '../diagram/effects';
+import { addEffect, removeEffect, removeCellEffect, Effect } from '../diagram/effects';
 // Actions
 import { openPortMenu, openPaperMenu, openChangeCellPicker } from '../actions/menu-actions';
 import { addNodeHoverTools, addEdgeHoverTools, removeCellTools } from '../actions/tools-actions';
 import { selectModel } from '../actions/selection-actions';
-import { loadYosysJSON } from '../actions/diagram-actions';
+import { loadYosysJSON, storeNodePositions } from '../actions/diagram-actions';
 import { openMessageDialog } from '../actions/dialog-actions';
 import { getNetEdges } from '../actions/wire-actions';
 // Utils
-import { isToolElement } from '../diagram/tools/utils';
+import { isToolElement, scheduleToolsRemoval, cancelToolsRemoval } from '../diagram/tools/utils';
 
 import type { App } from '../app';
 import type { YosysJSON } from '../yosys/types';
@@ -38,6 +38,7 @@ export default class DiagramController extends Controller<[App]> {
             'port:pointerclick': onPortClick,
             'element:pointerclick': onNodePointerClick,
             'element:pointerdblclick': onNodePointerDblClick,
+            'element:pointerup': onNodePointerUp,
             'cell:highlight': onCellHighlight,
             'cell:unhighlight': onCellUnhighlight,
             // Paper
@@ -61,7 +62,8 @@ export default class DiagramController extends Controller<[App]> {
 // UI interactions with elements
 
 function onElementMouseEnter(app: App, elementView: dia.ElementView) {
-    // The pointer is coming back from the node tools (they are still there)
+    // The pointer is back (e.g. from the node tools): keep the hover state
+    cancelToolsRemoval(elementView);
     if (elementView.hasTools()) return;
     addEffect(elementView, Effect.NodeHover);
     if (elementView.model instanceof Node) {
@@ -72,13 +74,13 @@ function onElementMouseEnter(app: App, elementView: dia.ElementView) {
 function onElementMouseLeave(app: App, elementView: dia.ElementView, evt: dia.Event) {
     // Keep the tools while the pointer is moving to them (e.g. to the menu button)
     if (isToolElement((evt.originalEvent as MouseEvent | undefined)?.relatedTarget)) return;
-    hideElementHover(app, elementView);
+    // Give the pointer a moment to reach the tools across a gap
+    scheduleToolsRemoval(elementView, () => hideElementHover(app, elementView));
 }
 
 function hideElementHover(app: App, elementView: dia.ElementView) {
-    const { paper } = app;
-
-    removeEffect(paper, Effect.NodeHover);
+    cancelToolsRemoval(elementView);
+    removeCellEffect(elementView, Effect.NodeHover);
     removeCellTools(app, elementView);
 }
 
@@ -92,6 +94,11 @@ function onNodePointerClick(app: App, elementView: dia.ElementView<Node>, evt: d
     const node = elementView.model;
 
     selectModel(app, node, { cherryPick: evt.ctrlKey || evt.metaKey });
+}
+
+function onNodePointerUp(app: App) {
+    // Store the positions of the moved nodes (if any) in the data
+    storeNodePositions(app);
 }
 
 function onNodePointerDblClick(app: App, elementView: dia.ElementView<Node>) {
