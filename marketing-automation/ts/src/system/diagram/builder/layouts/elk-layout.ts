@@ -1,8 +1,8 @@
-import { dia } from '@joint/plus';
 import { layout } from '@joint/layout-elk';
 import { SystemButton } from '../../models';
 import { LAYOUT_BATCH_NAME } from '../../../../diagram/const';
 
+import type { dia } from '@joint/plus';
 import type { AutoLayoutDiagramCells } from '../types';
 import type { ElkLayoutOptions } from '@joint/layout-elk';
 
