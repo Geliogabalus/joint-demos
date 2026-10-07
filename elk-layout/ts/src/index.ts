@@ -1,5 +1,5 @@
 import { dia, shapes, g } from '@joint/core';
-import { layout } from '@joint/layout-elk';
+import { layout, createWorkerElk } from '@joint/layout-elk';
 import dependenciesJSON from './dependencies.json';
 import './styles.scss';
 
@@ -9,6 +9,9 @@ const colors = ['#F8FCDA', '#E3E9C2', '#F9FBB2', '#C89F9C'];
 const ELK_DIRECTION: Direction = 'RIGHT';
 const DEFAULT_LABEL_WIDTH = 50;
 const DEFAULT_LABEL_HEIGHT = 20;
+
+// ELK runs in a Web Worker, so the page stays responsive while it lays out the (large) diagram.
+const elk = createWorkerElk(() => new Worker(new URL('@joint/layout-elk/worker', import.meta.url), { type: 'module' }));
 
 const ELK_LAYOUT_OPTIONS: ElkLayoutOptions = {
     /**
@@ -103,6 +106,7 @@ const init = () => {
 
     // Perform ELK layout
     layout({ graph }, {
+        elk,
         elkLayoutOptions: ELK_LAYOUT_OPTIONS
     }).then(() => {
         paper.unfreeze();

@@ -178,6 +178,7 @@ export const init = () => {
         exportElement:({ element, elkNode }) => {
             // The labels are not laid out as nodes, but as labels of their node
             if (element instanceof Label) return false;
+            // ELK places the ports on their side (instead of keeping them in place)
             elkNode.layoutOptions['elk.portConstraints'] = 'FIXED_ORDER';
             elkNode.labels = nodeLabels.get(element.id).map(labelElement => ({
                 text: labelElement.attr('label/text'),

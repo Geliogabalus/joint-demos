@@ -27,11 +27,8 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
             elkLayoutOptions: getElkLayoutOptions(options),
             exportElement: ({ element, elkNode }) => {
                 const node = element as SystemNode;
-                const partitionIndex = node.get(Attribute.PartitionIndex) == null ? '1000' : (node.get(Attribute.PartitionIndex) as number).toString();
-                Object.assign(elkNode.layoutOptions, {
-                    'elk.portConstraints': 'FIXED_POS',
-                    'elk.partitioning.partition': partitionIndex,
-                });
+                const partitionIndex: number = node.get(Attribute.PartitionIndex) ?? 1000;
+                elkNode.layoutOptions['elk.partitioning.partition'] = `${partitionIndex}`;
                 if (node.get('type') === 'trigger') {
                     elkNode.layoutOptions['elk.layered.layering.layerChoiceConstraint'] = '0';
                 }

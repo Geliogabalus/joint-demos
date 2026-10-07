@@ -1,10 +1,13 @@
-import { layout } from '@joint/layout-elk';
+import { layout, createWorkerElk } from '@joint/layout-elk';
 
 import type { dia } from '@joint/plus';
 
 import type { ElkLayoutOptions, NodeElkLayoutOptions } from '@joint/layout-elk';
 import { isClusterSpec, type ClusterSpec, type NodeSpec } from './dataset';
 import { Cluster, Edge, Leaf, isCellVisible, CLUSTER_PADDING, COLLAPSED_SIZE, HEADER_HEIGHT, LEAF_SIZE } from './shapes';
+
+// ELK runs in a Web Worker, so the page stays responsive while it lays out the diagram.
+const elk = createWorkerElk(() => new Worker(new URL('@joint/layout-elk/worker', import.meta.url), { type: 'module' }));
 
 const ROOT_LAYOUT_OPTIONS: ElkLayoutOptions = {
     /**
@@ -102,6 +105,7 @@ export async function layoutDiagram(graph: dia.Graph): Promise<void> {
         graph,
         elements: graph.getElements().filter(isCellVisible)
     }, {
+        elk,
         elkLayoutOptions: ROOT_LAYOUT_OPTIONS,
         exportElement: ({ element, elkNode }) => {
             if (element instanceof Cluster && !element.isCollapsed()) {

@@ -10,11 +10,8 @@ export async function layoutCells(graph, cells, options) {
         await layout({ graph, elements: nodes, links: edges }, {
             elkLayoutOptions: getElkLayoutOptions(options),
             exportElement: ({ element, elkNode }) => {
-                const partitionIndex = element.get(Attribute.PartitionIndex) == null ? '1000' : element.get(Attribute.PartitionIndex).toString();
-                Object.assign(elkNode.layoutOptions, {
-                    'elk.portConstraints': 'FIXED_POS',
-                    'elk.partitioning.partition': partitionIndex,
-                });
+                const partitionIndex = element.get(Attribute.PartitionIndex) ?? 1000;
+                elkNode.layoutOptions['elk.partitioning.partition'] = `${partitionIndex}`;
                 if (element.get('type') === 'trigger') {
                     elkNode.layoutOptions['elk.layered.layering.layerChoiceConstraint'] = '0';
                 }
