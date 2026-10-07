@@ -6,7 +6,7 @@ HDL Schematic Editor is a JointJS+ demo application that lets you edit a [Yosys]
 - Drag ports, constants and cells from the stencil and move them freely. The wires are routed with libavoid (`@joint/router-avoid`) and rerouted while you move the shapes.
 - Add cells from the output and input port menus, insert cells on wires, connect ports by dragging, change cell types and parameters in the inspector.
 - Click **Auto layout** in the toolbar to arrange the whole diagram with ELK (it can be undone).
-- The Yosys JSON of the module is displayed (and kept in sync) in the right sidebar. Save it to continue in the Yosys flow (e.g. `yosys -p "read_json netlist.json; ..."`). Yosys JSON has no place for the positions, so they are not saved.
+- The Yosys JSON of the module is displayed (and kept in sync) in the collapsible panel at the bottom of the right sidebar (click its header to expand it). Save it to continue in the Yosys flow (e.g. `yosys -p "read_json netlist.json; ..."`). Yosys JSON has no place for the positions, so they are not saved.
 
 ## Architecture
 

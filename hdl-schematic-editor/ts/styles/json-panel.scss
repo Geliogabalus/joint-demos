@@ -9,14 +9,50 @@
         height: 100%;
     }
 
+    &.collapsed {
+        .json-panel-header {
+            border-bottom: none;
+
+            // The panel expands upwards
+            .json-panel-toggle {
+                transform: translateY(2px) rotate(-135deg);
+            }
+        }
+
+        .json-panel-code {
+            display: none;
+        }
+    }
+
     .json-panel-header {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        padding: 14px 16px 14px 20px;
+        gap: 10px;
+        padding: 14px 16px 14px 16px;
         border-bottom: 1px solid var(--app-border-secondary);
+        cursor: pointer;
+        user-select: none;
+        outline: none;
+
+        &:hover,
+        &:focus-visible {
+            background-color: var(--app-bg-tertiary);
+        }
+
+        // A chevron pointing down (expanded) or up (collapsed)
+        .json-panel-toggle {
+            flex: 0 0 auto;
+            width: 6px;
+            height: 6px;
+            margin: 0 4px;
+            border-right: 2px solid var(--app-text-secondary);
+            border-bottom: 2px solid var(--app-text-secondary);
+            transform: rotate(45deg);
+            transition: transform 150ms ease-in-out;
+        }
 
         .json-panel-title-wrapper {
+            flex: 1 1 auto;
             display: flex;
             flex-direction: column;
         }

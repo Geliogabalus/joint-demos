@@ -16,6 +16,14 @@ export interface EdgeAttributes extends SystemEdgeAttributes {
 
 /** SVG markup for the edge */
 const edgeMarkup = util.svg/* xml */`
+    <path @selector="highlight"
+        class="wire-highlight"
+        stroke-linejoin="round"
+        stroke-linecap="round"
+        stroke="transparent"
+        fill="none"
+        pointer-events="none"
+    />
     <path @selector="wrapper"
         stroke-linejoin="round"
         stroke-linecap="round"
@@ -43,6 +51,13 @@ const busSlashMarkup = util.svg/* xml */`
 const busWidthMarkup = util.svg/* xml */`
     <text @selector="text"/>
 `;
+
+/**
+ * The width of the area around the wire reacting to the pointer.
+ * It's constant (the hover and selection effects are drawn by the `highlight` path),
+ * so the hovered state can't change the area and make it flicker.
+ */
+const WRAPPER_WIDTH = 10;
 
 /** Distance of the bus width label from the wire source */
 const BUS_LABEL_DISTANCE = 18;
@@ -80,10 +95,13 @@ export default class Edge extends SystemEdge<EdgeAttributes> {
                     stroke: Theme.WireColor,
                     strokeWidth: Theme.WireWidth,
                 },
+                highlight: {
+                    connection: true,
+                },
                 wrapper: {
                     connection: true,
                     // An extra buffer around the edge for easier interaction
-                    strokeWidth: 10,
+                    strokeWidth: WRAPPER_WIDTH,
                 },
                 junctions: {
                     fill: Theme.WireColor,

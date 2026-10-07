@@ -1,6 +1,7 @@
 // Diagram
 import { Attribute, NodeTypes } from '../diagram/const';
 import { layoutGraph } from '../system/diagram/builder';
+import { extractNodesIds } from '../system/diagram/data/utils';
 import { HdlNode } from '../diagram/models';
 import {
     appendNodeToPort,
@@ -75,9 +76,12 @@ export async function loadYosysJSON(app: App, document: YosysJSON) {
  * The links are then routed by the avoid router.
  */
 export async function layoutDiagram(app: App) {
-    const { graph } = app;
+    const { graph, diagramData } = app;
 
-    await layoutGraph(graph, false);
+    // The layout input is ordered by the diagram data (the same order the graph is built in),
+    // so the same diagram is always laid out the same way (e.g. after loading or with the
+    // "Auto layout" button), whatever the order of the cells in the graph is after the edits.
+    await layoutGraph(graph, false, extractNodesIds(diagramData.toJSON()));
     // Align the nodes (and so the pins and the wires) to the grid
     graph.getElements().forEach((element) => {
         const { x, y } = snapToGrid(element.position());

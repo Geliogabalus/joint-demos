@@ -47,23 +47,22 @@ $color-transition-duration: 150ms;
 
     &.joint-type-edge {
 
-        [joint-selector="wrapper"] {
+        // The hover and selection effects are drawn by the `highlight` path below the wire.
+        // The `wrapper` (the area reacting to the pointer) is never restyled, so its size
+        // is the same in all states.
+        .wire-highlight {
             transition: stroke $color-transition-duration ease-in-out;
         }
 
         // All the wires of the hovered net
-        &.net-hover {
-            [joint-selector="wrapper"] {
-                stroke: var(--app-selection-shadow);
-                stroke-width: 7;
-            }
+        &.net-hover .wire-highlight {
+            stroke: var(--app-selection-shadow);
+            stroke-width: 7;
         }
 
-        &.selected {
-            [joint-selector="wrapper"] {
-                stroke: var(--app-selection);
-                stroke-width: 8;
-            }
+        &.selected .wire-highlight {
+            stroke: var(--app-selection);
+            stroke-width: 8;
         }
     }
 }

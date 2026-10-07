@@ -185,7 +185,8 @@ export class App extends Diagram {
         // JSON Panel
         this.jsonPanel = new JsonPanel({
             containerEl: this.jsonContainerEl,
-            title: 'Yosys JSON'
+            title: 'Yosys JSON',
+            collapsed: true
         });
 
         // Stencil

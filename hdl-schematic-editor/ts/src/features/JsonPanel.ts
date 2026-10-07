@@ -6,6 +6,10 @@
 export interface JsonPanelOptions {
     containerEl: HTMLElement;
     title?: string;
+    /**
+     * Show only the header of the panel (default: false).
+     */
+    collapsed?: boolean;
 }
 
 const INDENT = '  ';
@@ -18,6 +22,8 @@ const ENTRY_PATH_REGEX = /^modules\/[^/]+\/(ports|cells|netnames)\/[^/]+$/;
 export default class JsonPanel {
 
     el: HTMLElement;
+    containerEl: HTMLElement;
+    headerEl: HTMLElement;
     codeEl: HTMLElement;
     subtitleEl: HTMLElement;
     copyButtonEl: HTMLButtonElement;
@@ -27,12 +33,13 @@ export default class JsonPanel {
     private highlightedEl: HTMLElement | null = null;
 
     constructor(options: JsonPanelOptions) {
-        const { containerEl, title = 'JSON' } = options;
+        const { containerEl, title = 'JSON', collapsed = false } = options;
 
         const el = document.createElement('div');
         el.classList.add('json-panel');
         el.innerHTML = /* html */`
-            <div class="json-panel-header">
+            <div class="json-panel-header" role="button" tabindex="0">
+                <span class="json-panel-toggle"></span>
                 <div class="json-panel-title-wrapper">
                     <span class="json-panel-title"></span>
                     <span class="json-panel-subtitle"></span>
@@ -45,10 +52,44 @@ export default class JsonPanel {
         containerEl.appendChild(el);
 
         this.el = el;
+        this.containerEl = containerEl;
+        this.headerEl = el.querySelector('.json-panel-header') as HTMLElement;
         this.codeEl = el.querySelector('.json-panel-code') as HTMLElement;
         this.subtitleEl = el.querySelector('.json-panel-subtitle') as HTMLElement;
         this.copyButtonEl = el.querySelector('.json-panel-copy') as HTMLButtonElement;
-        this.copyButtonEl.addEventListener('click', () => this.copyToClipboard());
+        this.copyButtonEl.addEventListener('click', (evt) => {
+            // Do not toggle the panel
+            evt.stopPropagation();
+            this.copyToClipboard();
+        });
+
+        // Clicking the header collapses / expands the panel
+        this.headerEl.addEventListener('click', () => this.toggle());
+        this.headerEl.addEventListener('keydown', (evt) => {
+            if (evt.key !== 'Enter' && evt.key !== ' ') return;
+            evt.preventDefault();
+            this.toggle();
+        });
+
+        this.setCollapsed(collapsed);
+    }
+
+    isCollapsed(): boolean {
+        return this.containerEl.classList.contains('collapsed');
+    }
+
+    setCollapsed(collapsed: boolean) {
+        this.containerEl.classList.toggle('collapsed', collapsed);
+        this.headerEl.setAttribute('aria-expanded', String(!collapsed));
+        this.headerEl.dataset.tooltip = collapsed ? 'Show the JSON' : 'Hide the JSON';
+        // Bring the highlighted entry into view when the panel is expanded
+        if (!collapsed && this.highlightedEl) {
+            this.highlight(this.highlightedEl.dataset.path || null);
+        }
+    }
+
+    toggle() {
+        this.setCollapsed(!this.isCollapsed());
     }
 
     /**
@@ -79,7 +120,7 @@ export default class JsonPanel {
         if (!entryEl) return;
         entryEl.classList.add('highlighted');
         this.highlightedEl = entryEl;
-        if (scroll) {
+        if (scroll && !this.isCollapsed()) {
             const codeRect = this.codeEl.getBoundingClientRect();
             const entryRect = entryEl.getBoundingClientRect();
             this.codeEl.scrollTo({

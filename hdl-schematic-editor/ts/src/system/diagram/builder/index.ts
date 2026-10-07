@@ -27,7 +27,7 @@ export async function buildDiagram(data: SystemDiagramJSON, graph: dia.Graph, op
     updateGraph(graph, data, buildNode);
     // Without the automatic layout, the nodes keep the positions stored in the data
     if (!autoLayout) return;
-    await layoutGraph(graph, disableOptimalOrderHeuristic);
+    await layoutGraph(graph, disableOptimalOrderHeuristic, extractNodesIds(data));
 }
 
 function updateGraph(graph: dia.Graph, json: SystemDiagramJSON, buildNode: BuildNode) {
@@ -102,13 +102,17 @@ function updateGraph(graph: dia.Graph, json: SystemDiagramJSON, buildNode: Build
  */
 export async function layoutGraph(
     graph: dia.Graph,
-    disableOptimalOrderHeuristic: boolean
+    disableOptimalOrderHeuristic: boolean,
+    /**
+     * The ids of the nodes in the data order (the layout depends on the order of the nodes).
+     */
+    nodeIds?: dia.Cell.ID[]
 ): Promise<void> {
 
     const {
         fixedNodes,
         ...cells
-    } = extractGraphCells(graph);
+    } = extractGraphCells(graph, nodeIds);
 
     const setFixedPositions = () => {
         fixedNodes.forEach(node => setCustomPosition(graph, node));

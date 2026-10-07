@@ -106,16 +106,22 @@ body {
     background-color: var(--app-bg-primary);
     z-index: 2;
 
+    // The inspector takes the space left by the JSON panel
     .inspector-container {
         position: relative;
         top: auto;
         right: auto;
         width: 100%;
         height: auto;
-        max-height: 55%;
-        flex: 0 0 auto;
+        flex: 1 1 auto;
+        min-height: 0;
         border-top: none;
         box-shadow: none;
+
+        .inspector-content {
+            flex: 1 1 auto;
+            min-height: 0;
+        }
 
         &.inspector-closed {
             padding: 24px 0;
@@ -126,8 +132,13 @@ body {
         }
     }
 
+    // The JSON panel takes 60% of the sidebar when expanded, only its header is shown when collapsed
     .json-container {
-        flex: 1 1 auto;
+        flex: 0 0 60%;
         min-height: 0;
+
+        &.collapsed {
+            flex: 0 0 auto;
+        }
     }
 }
