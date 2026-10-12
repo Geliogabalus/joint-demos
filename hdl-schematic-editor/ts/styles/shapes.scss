@@ -38,7 +38,7 @@ $color-transition-duration: 150ms;
         // The port the dragged wire will be connected to
         .port-body.connection-target {
             fill: var(--app-selection);
-            stroke: var(--app-hover);
+            stroke: var(--selection);
             stroke-width: 1;
         }
     }
@@ -88,24 +88,24 @@ $color-transition-duration: 150ms;
                 }
 
                 path {
-                    stroke: var(--app-bg-primary);
+                    stroke: var(--background);
                 }
             }
         }
 
         .menu-button-background {
-            fill: var(--app-bg-primary);
-            stroke: var(--app-border-primary);
+            fill: var(--background);
+            stroke: var(--border);
         }
 
         .menu-button-icon {
             transition: fill $color-transition-duration ease-in-out;
-            fill: var(--app-text-secondary);
+            fill: var(--muted-foreground);
         }
 
         &:hover {
             .menu-button-icon {
-                fill: var(--app-text-primary);
+                fill: var(--foreground);
             }
         }
     }

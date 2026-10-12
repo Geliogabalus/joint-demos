@@ -1,6 +1,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import '@joint/plus/joint-plus.css';
+import './styles/theme.css';
 import './styles/main.scss';
 import { App } from './src/app';
 import { setTheme } from '@joint/plus';
@@ -18,4 +18,4 @@ fetch('assets/examples/counter.json')
         console.warn('Failed to load the example:', err);
     });
 
-setTheme('light');
+setTheme('minimal');

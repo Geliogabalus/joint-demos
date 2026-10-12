@@ -2,26 +2,20 @@ import { ui } from '@joint/plus';
 
 import type { dia } from '@joint/plus';
 
-/** Default URL for navigator icons */
-const defaultIconUrl = '.';
-
 /**
  * A button widget that displays an icon and a tooltip.
+ * The icon is one of the `--icon-*` tokens of the theme (e.g. `scan` for `--icon-scan`),
+ * drawn by the theme as a mask in the color of the text.
  * */
 class IconButton extends ui.widgets.button {
     render() {
-        const size = this.options.size || 20;
-        const imageEl = document.createElement('img');
-        imageEl.style.width = `${size}px`;
-        imageEl.style.height = `${size}px`;
-        this.el.appendChild(imageEl);
         this.setIcon(this.options.icon);
         this.setTooltip(this.options.tooltip);
         return this;
     }
 
     setIcon(icon: string = '') {
-        this.el.querySelector('img')!.src = icon;
+        this.el.style.setProperty('--icon', icon ? `var(--icon-${icon})` : null);
     }
 
     setTooltip(tooltip: string = '') {
@@ -46,7 +40,6 @@ export interface NavigatorOptions {
     paperScroller: ui.PaperScroller;
     paperOptions?: dia.Paper.Options;
     zoom?: NavigatorZoomOptions;
-    iconUrl?: string;
 }
 
 /**
@@ -91,7 +84,6 @@ export default class Navigator {
         const {
             zoom,
             paperScroller,
-            iconUrl = defaultIconUrl
         } = this.options;
 
         const zoomOptions: NavigatorZoomOptions = {
@@ -115,7 +107,7 @@ export default class Navigator {
                 {
                     type: 'icon-button',
                     name: 'fit-to-screen',
-                    icon: `${iconUrl}/fit-to-screen.svg`,
+                    icon: 'scan',
                     tooltip: 'Fit to screen'
                 },
                 {
@@ -129,7 +121,7 @@ export default class Navigator {
                 {
                     type: 'icon-button',
                     name: 'minimap',
-                    icon: `${iconUrl}/minimap.svg`,
+                    icon: 'map',
                 }
             ],
             widgetNamespace: {
@@ -248,8 +240,6 @@ export default class Navigator {
     }
 
     updateToolbarButtons() {
-        const { iconUrl = defaultIconUrl } = this.options;
-
         // Minimap
         const minimapButton = this.toolbar.getWidgetByName('minimap') as IconButton;
         if (this.isMinimapVisible()) {
@@ -262,10 +252,10 @@ export default class Navigator {
         // Full screen
         const fullscreenButton = this.toolbar.getWidgetByName('fullscreen') as IconButton;
         if (document.fullscreenElement) {
-            fullscreenButton.setIcon(`${iconUrl}/exit-fullscreen.svg`);
+            fullscreenButton.setIcon('minimize');
             fullscreenButton.setTooltip('Exit full screen');
         } else {
-            fullscreenButton.setIcon(`${iconUrl}/request-fullscreen.svg`);
+            fullscreenButton.setIcon('maximize');
             fullscreenButton.setTooltip('Toggle full screen');
         }
     }

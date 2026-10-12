@@ -17,6 +17,7 @@ The application is built on the same architecture as the [Workflow Builder](../.
 - `src/registry` - the cell registry. Every supported Yosys cell type is described by a single definition (ports, parameters, shape, Yosys parameter mapping). To support another cell type, add a definition to `src/registry/index.ts`. Cells without a definition are displayed as generic blocks and exported unchanged.
 - `src/diagram` - the schematic shapes (gates, operators, multiplexers, registers, module ports, constants, bus split/join and generic blocks).
 - `src/features/Stencil.ts` - the stencil with all the shapes. A dropped shape becomes a node of the diagram data.
+- `src/theme` - the `minimal` theme of the JointJS+ components (design tokens, light and dark schemes, Lucide icons), see its [README](./src/theme/README.md). It's loaded in CSS cascade layers (`styles/theme.css`), the styles of the application (`styles/*.scss`, not layered) override it. The application adds its own icons to the tokens (`src/theme/tokens.css`). The schematic itself keeps the KiCad colors (`src/diagram/theme.ts`).
 - `src/features/avoid-router.ts` - the wire routing. The wires of a net share their path from the output port, the junction dots are drawn where they split (`src/actions/wire-actions.ts`).
 
 The avoid router depends on `libavoid-js`, a WebAssembly build of libavoid licensed under LGPL-2.1-or-later. The `libavoid.wasm` binary is served as a separate file (see `webpack.config.js`).

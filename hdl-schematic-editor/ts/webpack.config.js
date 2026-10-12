@@ -30,6 +30,11 @@ module.exports = {
                 use: ['style-loader', 'css-loader']
             },
             {
+                // The icons of the theme (used as CSS masks)
+                test: /\.svg$/i,
+                type: 'asset/inline'
+            },
+            {
                 test: /\.s[ac]ss$/i,
                 use: [
                     {
@@ -46,10 +51,6 @@ module.exports = {
             patterns: [
                 { from: './index.html', to: './' },
                 { from: './assets', to: './assets', noErrorOnMissing: true },
-                { from: './styles/joint-light-theme/assets', to: './assets', noErrorOnMissing: true },
-                { from: './styles/joint-light-theme/icons', to: './assets/icons', noErrorOnMissing: true },
-                { from: './styles/joint-light-theme/fonts', to: './assets/fonts', noErrorOnMissing: true },
-                { from: './styles/navigator/icons', to: './assets/icons/navigator', noErrorOnMissing: true },
                 // The libavoid WebAssembly module used by the avoid router (@joint/router-avoid)
                 { from: './node_modules/libavoid-js/dist/libavoid.wasm', to: './' },
             ]

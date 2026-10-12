@@ -1,61 +1,62 @@
-$color-transition-duration: 200ms;
-
 .joint-dialog {
+    font-family: var(--font);
+
+    // The cell picker: a stencil of cards (see `CellOption`)
     .joint-stencil {
-        .content {
-            padding: 0 8px;
-
-
-            .group {
-                padding: 0 !important;
-            }
+        .joint-paper {
+            background-color: var(--background);
         }
 
-        .group-label {
-            font-family: 'Inter', sans-serif !important;
-            height: 24px !important;
-            background-color: unset !important;
+        .cell-option-body {
+            fill: var(--background);
+            stroke: var(--border);
+            transition: fill 0.15s, stroke 0.15s;
         }
 
-        .joint-element:hover {
-            [joint-selector="body"] {
-                stroke: var(--app-border-accent-hover);
-            }
+        .joint-element:hover .cell-option-body {
+            fill: var(--muted);
+            stroke: var(--ring-strong);
+        }
+
+        .cell-option-label {
+            fill: var(--foreground);
+            font-family: var(--font);
+        }
+
+        .cell-option-description {
+            fill: var(--muted-foreground);
+            font-family: var(--font);
         }
     }
 
+    // A message: a text and a button closing it
     &.message-dialog {
-        div.body {
+        .body {
             padding: 16px;
-            color: var(--app-text-primary);
+            color: var(--foreground);
             font-size: 14px;
         }
 
-        div.controls {
+        .controls {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0 16px 16px;
 
-            button.control-button {
-                margin-left: 16px !important;
-                font-family: 'Inter', sans-serif;
-                font-size: 12px;
-                font-weight: 500;
-                border-radius: var(--app-border-radius-small);
-                border: 1px solid var(--app-border-primary);
-                background-color: var(--app-bg-primary);
-                color: var(--app-text-primary);
-                padding: 6px 10px;
+            // As the buttons of the toolbar (the theme)
+            .control-button {
+                height: 36px;
+                padding: 0 14px;
+                border: 1px solid var(--input);
+                border-radius: var(--radius-md);
+                background: var(--background);
+                box-shadow: var(--shadow-xs);
+                color: var(--foreground);
+                font: 500 14px/1 var(--font);
                 cursor: pointer;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                transition:
-                    color $color-transition-duration ease-in-out,
-                    border-color $color-transition-duration ease-in-out,
-                    background-color $color-transition-duration ease-in-out;
+                transition: background-color 0.15s;
 
                 &:hover {
-                    border-color: var(--app-border-accent-hover);
-                    color: var(--app-primary);
-                    background-color: var(--app-accent-hover);
+                    background: var(--muted);
                 }
             }
         }

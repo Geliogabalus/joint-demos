@@ -39,7 +39,6 @@ export function openPaperMenu(app: App, evt: dia.Event) {
     const position = paper.clientToLocalPoint(evt.clientX!, evt.clientY!);
 
     const contextMenu = new ui.ContextToolbar({
-        root: paper.el,
         tools: [
             { action: 'add-input', content: 'Add input port' },
             { action: 'add-output', content: 'Add output port' },
@@ -77,8 +76,6 @@ export function openPaperMenu(app: App, evt: dia.Event) {
  * Open the node menu when user clicks on a node's menu button
  */
 export function openNodeMenu(app: App, node: Node, position: dia.Point) {
-    const { paper } = app;
-
     const tools: ui.ContextToolbar.Options['tools'] = [];
 
     if (node instanceof HdlCell) {
@@ -90,7 +87,6 @@ export function openNodeMenu(app: App, node: Node, position: dia.Point) {
     }
 
     const nodeMenu = new ui.ContextToolbar({
-        root: paper.el,
         tools: tools,
         vertical: true,
         anchor: 'top-left',
@@ -152,7 +148,6 @@ function openOutputPortMenu(app: App, node: HdlNode, portId: string) {
     ];
 
     const portMenu = new ui.ContextToolbar({
-        root: paper.el,
         tools,
         vertical: true,
         target: position,
@@ -213,7 +208,6 @@ function openInputPortMenu(app: App, node: HdlNode, portId: string) {
     }
 
     const portMenu = new ui.ContextToolbar({
-        root: paper.el,
         tools,
         vertical: true,
         target: position,
@@ -252,8 +246,6 @@ function openInputPortMenu(app: App, node: HdlNode, portId: string) {
  * Open the insert node menu when user clicks on a edge's button
  */
 export function openEdgeMenu(app: App, edge: Edge, position: dia.Point) {
-    const { paper } = app;
-
     const edgeMenuMargin = 15;
 
     const tools = [
@@ -262,7 +254,6 @@ export function openEdgeMenu(app: App, edge: Edge, position: dia.Point) {
     ];
 
     const edgeMenu = new ui.ContextToolbar({
-        root: paper.el,
         tools,
         vertical: true,
         target: new g.Point(position).translate(edgeMenuMargin, 0),

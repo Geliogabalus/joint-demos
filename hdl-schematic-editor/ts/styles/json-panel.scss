@@ -1,7 +1,8 @@
 .json-container {
     box-sizing: border-box;
-    border-top: 1px solid var(--app-border-secondary);
-    background-color: var(--app-bg-primary);
+    border-top: 1px solid var(--border);
+    background-color: var(--background);
+    font-family: var(--font);
 
     .json-panel {
         display: flex;
@@ -15,7 +16,7 @@
 
             // The panel expands upwards
             .json-panel-toggle {
-                transform: translateY(2px) rotate(-135deg);
+                transform: rotate(180deg);
             }
         }
 
@@ -28,26 +29,24 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 14px 16px 14px 16px;
-        border-bottom: 1px solid var(--app-border-secondary);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
         cursor: pointer;
         user-select: none;
         outline: none;
 
         &:hover,
         &:focus-visible {
-            background-color: var(--app-bg-tertiary);
+            background-color: var(--muted);
         }
 
-        // A chevron pointing down (expanded) or up (collapsed)
+        // A chevron (the icon of the theme) pointing down (expanded) or up (collapsed)
         .json-panel-toggle {
             flex: 0 0 auto;
-            width: 6px;
-            height: 6px;
-            margin: 0 4px;
-            border-right: 2px solid var(--app-text-secondary);
-            border-bottom: 2px solid var(--app-text-secondary);
-            transform: rotate(45deg);
+            width: 16px;
+            height: 16px;
+            background-color: var(--muted-foreground);
+            mask: var(--icon-chevron) center / contain no-repeat;
             transition: transform 150ms ease-in-out;
         }
 
@@ -58,11 +57,10 @@
         }
 
         .json-panel-title {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             line-height: 16px;
-            color: var(--app-text-primary);
+            color: var(--foreground);
         }
 
         .json-panel-subtitle {
@@ -70,24 +68,41 @@
             font-size: 11px;
             line-height: 14px;
             margin-top: 2px;
-            color: var(--app-text-secondary);
+            color: var(--muted-foreground);
         }
 
+        // As the buttons of the toolbar (the theme)
         .json-panel-copy {
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            font-weight: 500;
-            border-radius: var(--app-border-radius-small);
-            border: 1px solid var(--app-border-primary);
-            background-color: var(--app-bg-primary);
-            color: var(--app-text-primary);
-            padding: 5px 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid var(--input);
+            border-radius: var(--radius-md);
+            background-color: var(--background);
+            box-shadow: var(--shadow-xs);
+            color: var(--foreground);
+            font: 500 13px/1 var(--font);
             cursor: pointer;
-            transition: color 200ms ease-in-out, border-color 200ms ease-in-out;
+            transition: background-color 0.15s;
+
+            &::before {
+                content: '';
+                width: 14px;
+                height: 14px;
+                background-color: currentColor;
+                mask: var(--icon-copy) center / contain no-repeat;
+            }
 
             &:hover {
-                border-color: var(--app-border-accent-hover);
-                color: var(--app-primary);
+                background-color: var(--muted);
+            }
+
+            &:focus-visible {
+                outline: none;
+                border-color: var(--ring-strong);
+                box-shadow: 0 0 0 3px var(--ring);
             }
         }
     }
@@ -100,8 +115,8 @@
         font-family: var(--app-mono-font);
         font-size: 11px;
         line-height: 16px;
-        color: var(--app-text-primary);
-        background-color: var(--app-bg-tertiary);
+        color: var(--foreground);
+        background-color: var(--muted);
 
         .json-key {
             color: var(--app-json-key);
@@ -125,12 +140,12 @@
             min-width: calc(100% - 12px);
             margin-left: -4px;
             padding-left: 4px;
-            border-radius: 4px;
+            border-radius: var(--radius-sm);
             transition: background-color 200ms ease-in-out;
 
             &.highlighted {
-                background-color: rgba(77, 179, 255, 0.18);
-                box-shadow: inset 2px 0 0 var(--app-selection);
+                background-color: color-mix(in srgb, var(--selection) 12%, transparent);
+                box-shadow: inset 2px 0 0 var(--selection);
             }
         }
     }

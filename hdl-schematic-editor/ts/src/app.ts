@@ -178,8 +178,7 @@ export class App extends Diagram {
         this.navigator = new Navigator({
             ...navigatorOptions,
             containerEl: this.navigatorContainerEl,
-            paperScroller: this.scroller,
-            iconUrl: 'assets/icons/navigator'
+            paperScroller: this.scroller
         });
 
         // JSON Panel

@@ -5,13 +5,13 @@ import { gateSymbols } from '../../diagram/models/Gate';
 import type { CellDefinition } from '../types';
 
 const markup = util.svg/* xml*/`
-    <rect @selector="body"/>
+    <rect @selector="body" class="cell-option-body"/>
     <g @selector="preview">
         <path @selector="symbol"/>
         <text @selector="symbolText"/>
     </g>
-    <text @selector="label"/>
-    <text @selector="description"/>
+    <text @selector="label" class="cell-option-label"/>
+    <text @selector="description" class="cell-option-description"/>
     <text @selector="cellType"/>
 `;
 
@@ -58,8 +58,7 @@ export default class CellOption extends dia.Element {
                 body: {
                     width: 'calc(w)',
                     height: 'calc(h)',
-                    fill: '#F8F9FC',
-                    stroke: '#D6E0E7',
+                    // The colors are the tokens of the theme (see `dialog.scss`)
                     strokeWidth: 1,
                     rx: 8,
                     ry: 8
@@ -83,10 +82,8 @@ export default class CellOption extends dia.Element {
                 label: {
                     x: 76,
                     y: 20,
-                    fill: '#333333',
                     fontSize: 14,
                     fontWeight: '600',
-                    fontFamily: 'Inter',
                     textVerticalAnchor: 'middle',
                     textAnchor: 'start',
                 },
@@ -102,10 +99,8 @@ export default class CellOption extends dia.Element {
                 description: {
                     x: 76,
                     y: 44,
-                    fill: '#888888',
                     fontSize: 11,
                     fontWeight: '500',
-                    fontFamily: 'Inter',
                     textVerticalAnchor: 'middle',
                     textAnchor: 'start',
                     textWrap: {
