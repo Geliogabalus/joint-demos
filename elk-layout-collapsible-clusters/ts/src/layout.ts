@@ -101,10 +101,7 @@ function embedCluster(graph: dia.Graph, cluster: ClusterSpec): void {
  * is laid out as a plain node).
  */
 export async function layoutDiagram(graph: dia.Graph): Promise<void> {
-    await layout({
-        graph,
-        elements: graph.getElements().filter(isCellVisible)
-    }, {
+    await layout(graph.getCells().filter(isCellVisible), {
         elk,
         elkLayoutOptions: ROOT_LAYOUT_OPTIONS,
         exportElement: ({ element, elkNode }) => {

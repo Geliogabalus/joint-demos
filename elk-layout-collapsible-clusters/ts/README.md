@@ -36,7 +36,7 @@ This demo is also available online at [jointjs.com](https://jointjs.com/demos/el
 
 **The cells are created once.** `createCells()` builds the whole graph, including the content of the clusters which are collapsed later on. A layout only changes the geometry of the cells: `layout()` turns the embedded elements into the children of their cluster in the ELK graph and sets the positions (and the sizes of the expanded clusters) without moving the children along with their parent. The `exportElement` callback only adds the layout options of the expanded clusters.
 
-**Collapsing** sets the `collapsed` attribute of the cluster and gives it the size of its header, which schedules a layout. Only the visible elements are passed to `layout()`, so the content of the collapsed clusters is left out and a collapsed cluster is laid out as a plain node. The cells which are left out keep the geometry of the previous layout - they are not rendered, and they are not measured either:
+**Collapsing** sets the `collapsed` attribute of the cluster and gives it the size of its header, which schedules a layout. Only the visible cells (elements and links) are passed to `layout()`, so the content of the collapsed clusters is left out and a collapsed cluster is laid out as a plain node. The cells which are left out keep the geometry of the previous layout - they are not rendered, and they are not measured either:
 
 ```ts
 function isCellVisible(cell: dia.Cell): boolean {

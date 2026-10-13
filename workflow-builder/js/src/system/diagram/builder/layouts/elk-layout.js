@@ -7,7 +7,7 @@ export async function layoutCells(graph, cells, options) {
     try {
         graph.startBatch(LAYOUT_BATCH_NAME);
         // Lay out the given cells only (e.g. not the notes), in the order ELK should consider
-        await layout({ graph, elements: nodes, links: edges }, {
+        await layout([...nodes, ...edges], {
             elkLayoutOptions: getElkLayoutOptions(options),
             exportElement: ({ element, elkNode }) => {
                 const partitionIndex = element.get(Attribute.PartitionIndex) ?? 1000;
@@ -16,7 +16,6 @@ export async function layoutCells(graph, cells, options) {
                     elkNode.layoutOptions['elk.layered.layering.layerChoiceConstraint'] = '0';
                 }
                 elkNode.labels = element.getLabelsRelativeRects().map(rect => ({
-                    text: '-', // some text is required (ELK ignores empty labels)
                     width: rect.width,
                     height: rect.height,
                     x: rect.x,

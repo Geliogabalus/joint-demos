@@ -23,7 +23,7 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
     try {
         graph.startBatch(LAYOUT_BATCH_NAME);
         // Lay out the given cells only (e.g. not the notes), in the order ELK should consider
-        await layout({ graph, elements: nodes, links: edges }, {
+        await layout([...nodes, ...edges], {
             elkLayoutOptions: getElkLayoutOptions(options),
             exportElement: ({ element, elkNode }) => {
                 const node = element as SystemNode;
@@ -33,7 +33,6 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
                     elkNode.layoutOptions['elk.layered.layering.layerChoiceConstraint'] = '0';
                 }
                 elkNode.labels = node.getLabelsRelativeRects().map(rect => ({
-                    text: '-', // some text is required (ELK ignores empty labels)
                     width: rect.width,
                     height: rect.height,
                     x: rect.x,

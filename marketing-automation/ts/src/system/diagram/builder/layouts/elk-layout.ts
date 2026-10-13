@@ -35,11 +35,7 @@ export async function layoutCells(graph: dia.Graph, cells: AutoLayoutDiagramCell
     try {
         graph.startBatch(LAYOUT_BATCH_NAME);
         // Lay out the given cells only (e.g. not the notes), in the order ELK should consider
-        await layout({
-            graph,
-            elements: [...nodes, ...buttons],
-            links: [...edges, ...buttonLines]
-        }, {
+        await layout([...nodes, ...buttons, ...edges, ...buttonLines], {
             elkLayoutOptions: getElkLayoutOptions(options),
             // The edge labels are not taken into account
             exportLinkLabel: () => false,
