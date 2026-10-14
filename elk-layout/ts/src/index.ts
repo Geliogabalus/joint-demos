@@ -28,15 +28,13 @@ const ELK_LAYOUT_OPTIONS: ElkLayoutOptions = {
 
     /**
      * Spacing between nodes (siblings).
-     * A number value as a string.
      */
-    'elk.spacing.nodeNode': '20',
+    'elk.spacing.nodeNode': 20,
 
     /**
      * Spacing between layers (for layered algorithm).
-     * A number value as a string.
      */
-    'elk.layered.spacing.nodeNodeBetweenLayers': '50',
+    'elk.layered.spacing.nodeNodeBetweenLayers': 50,
 
     /**
      * Edge routing style.
@@ -52,22 +50,19 @@ const ELK_LAYOUT_OPTIONS: ElkLayoutOptions = {
 
     /**
      * Merging edges that share the same source and target nodes into a single edge.
-     * 'true' | 'false'
      */
-    'elk.layered.mergeEdges': 'false',
+    'elk.layered.mergeEdges': false,
 
     /**
      * Distance between edge labels and the edge itself.
-     * A number value as a string.
      */
-    'elk.spacing.edgeLabel': '3',
+    'elk.spacing.edgeLabel': 3,
 
     /**
      * Enable partitioning i.e., assigning nodes to layers. You need to add
      * `partitioning.partition` attribute to nodes for this to take effect.
-     * 'true' | 'false'
      */
-    'elk.partitioning.activate': 'false',
+    'elk.partitioning.activate': false,
 
     // Does not seem to work as expected:
     // 'elk.layered.edgeLabels.centerLabelPlacementStrategy': 'HEAD_LAYER',

@@ -189,7 +189,7 @@ export const init = () => {
         },
         exportPort: ({ element, portId, elkPort }) => {
             elkPort.layoutOptions['elk.port.side'] = element.portProp(portId, 'side');
-            elkPort.layoutOptions['elk.port.index'] = `${element.getPortIndex(portId)}`;
+            elkPort.layoutOptions['elk.port.index'] = element.getPortIndex(portId);
         },
         setPortAttributes: ({ element, portId, elkPort }) => {
             // Keep the port where ELK placed it (next to the node border),

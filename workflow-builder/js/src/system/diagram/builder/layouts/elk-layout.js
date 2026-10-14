@@ -11,9 +11,9 @@ export async function layoutCells(graph, cells, options) {
             elkLayoutOptions: getElkLayoutOptions(options),
             exportElement: ({ element, elkNode }) => {
                 const partitionIndex = element.get(Attribute.PartitionIndex) ?? 1000;
-                elkNode.layoutOptions['elk.partitioning.partition'] = `${partitionIndex}`;
+                elkNode.layoutOptions['elk.partitioning.partition'] = partitionIndex;
                 if (element.get('type') === 'trigger') {
-                    elkNode.layoutOptions['elk.layered.layering.layerChoiceConstraint'] = '0';
+                    elkNode.layoutOptions['elk.layered.layering.layerChoiceConstraint'] = 0;
                 }
                 elkNode.labels = element.getLabelsRelativeRects().map(rect => ({
                     width: rect.width,
@@ -38,20 +38,20 @@ function getElkLayoutOptions(options) {
     const layoutOptions = {
         'elk.algorithm': 'layered',
         'elk.direction': 'RIGHT',
-        'elk.separateConnectedComponents': 'false',
+        'elk.separateConnectedComponents': false,
         'elk.edgeRouting': 'ORTHOGONAL',
-        'elk.partitioning.activate': 'true',
-        'elk.layered.spacing.nodeNodeBetweenLayers': '100',
-        'elk.spacing.edgeNode': '50',
-        'elk.layered.spacing.edgeNodeBetweenLayers': '50',
-        'elk.layered.feedbackEdges': 'true',
+        'elk.partitioning.activate': true,
+        'elk.layered.spacing.nodeNodeBetweenLayers': 100,
+        'elk.spacing.edgeNode': 50,
+        'elk.layered.spacing.edgeNodeBetweenLayers': 50,
+        'elk.layered.feedbackEdges': true,
 
         // Preserve model order
         'elk.layered.considerModelOrder.strategy': 'PREFER_EDGES',
         'elk.layered.cycleBreaking.strategy': 'DFS_NODE_ORDER',
 
         // Don't reorder nodes within a layer during crossing minimization
-        'elk.layered.crossingMinimization.forceNodeModelOrder': 'true',
+        'elk.layered.crossingMinimization.forceNodeModelOrder': true,
 
         // Center layers as a whole (optional)
         'elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED'

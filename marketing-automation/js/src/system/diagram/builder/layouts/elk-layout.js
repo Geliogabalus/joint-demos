@@ -53,7 +53,7 @@ function getElkLayoutOptions(options) {
         'elk.edgeRouting': 'ORTHOGONAL',
 
         // Ensure the feedback edges are routed to the side of graph.
-        'elk.layered.feedbackEdges': 'true',
+        'elk.layered.feedbackEdges': true,
 
         // Layout the graph based on order of edges we provided in the model.
         'elk.layered.considerModelOrder.strategy': 'PREFER_EDGES',
@@ -62,22 +62,22 @@ function getElkLayoutOptions(options) {
         'elk.layered.cycleBreaking.strategy': 'DFS_NODE_ORDER',
 
         // Don't reorder nodes within a layer during crossing minimization
-        'elk.layered.crossingMinimization.forceNodeModelOrder': 'true',
+        'elk.layered.crossingMinimization.forceNodeModelOrder': true,
 
         // Center layers as a whole
         'elk.layered.nodePlacement.bk.fixedAlignment': 'BALANCED',
 
         // Spacing between layers
-        'elk.layered.spacing.nodeNodeBetweenLayers': `${LayoutConfig.NodeNodeBetweenLayers}`,
+        'elk.layered.spacing.nodeNodeBetweenLayers': LayoutConfig.NodeNodeBetweenLayers,
 
         // Spacing to be preserved between nodes on the same layer.
-        'elk.spacing.nodeNode': `${LayoutConfig.NodeNode}`,
+        'elk.spacing.nodeNode': LayoutConfig.NodeNode,
 
         // The spacing to be preserved between nodes and edges that are routed next to the node’s layer.
-        'elk.layered.spacing.edgeNodeBetweenLayers': `${LayoutConfig.EdgeNodeBetweenLayers}`,
+        'elk.layered.spacing.edgeNodeBetweenLayers': LayoutConfig.EdgeNodeBetweenLayers,
 
         // Spacing to be preserved between pairs of edges that are routed between the same pair of layers.
-        'elk.layered.spacing.edgeEdgeBetweenLayers': `${LayoutConfig.EdgeEdgeBetweenLayers}`,
+        'elk.layered.spacing.edgeEdgeBetweenLayers': LayoutConfig.EdgeEdgeBetweenLayers,
     };
 
     if (options?.disableOptimalOrderHeuristic) {

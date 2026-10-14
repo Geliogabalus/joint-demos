@@ -2,7 +2,7 @@ import { layout, createWorkerElk } from '@joint/layout-elk';
 
 import type { dia } from '@joint/plus';
 
-import type { ElkLayoutOptions, NodeElkLayoutOptions } from '@joint/layout-elk';
+import type { ElkLayoutOptions, ElkNodeLayoutOptions } from '@joint/layout-elk';
 import { isClusterSpec, type ClusterSpec, type NodeSpec } from './dataset';
 import { Cluster, Edge, Leaf, isCellVisible, CLUSTER_PADDING, COLLAPSED_SIZE, HEADER_HEIGHT, LEAF_SIZE } from './shapes';
 
@@ -15,8 +15,8 @@ const ROOT_LAYOUT_OPTIONS: ElkLayoutOptions = {
      * into a compact area instead of being placed in a single row.
      */
     'elk.algorithm': 'rectpacking',
-    'elk.aspectRatio': '1.6',
-    'elk.spacing.nodeNode': '60',
+    'elk.aspectRatio': 1.6,
+    'elk.spacing.nodeNode': 60,
     /**
      * No link crosses a cluster boundary in this example, so every cluster can
      * be laid out on its own.
@@ -24,15 +24,15 @@ const ROOT_LAYOUT_OPTIONS: ElkLayoutOptions = {
     'elk.hierarchyHandling': 'SEPARATE_CHILDREN'
 };
 
-const CLUSTER_LAYOUT_OPTIONS: NodeElkLayoutOptions = {
+const CLUSTER_LAYOUT_OPTIONS: ElkNodeLayoutOptions = {
     'elk.algorithm': 'layered',
     'elk.direction': 'RIGHT',
     'elk.edgeRouting': 'ORTHOGONAL',
-    'elk.spacing.nodeNode': '24',
-    'elk.spacing.edgeNode': '16',
-    'elk.layered.spacing.nodeNodeBetweenLayers': '48',
+    'elk.spacing.nodeNode': 24,
+    'elk.spacing.edgeNode': 16,
+    'elk.layered.spacing.nodeNodeBetweenLayers': 48,
     /** Reserve the space of the cluster header. */
-    'elk.padding': `[top=${HEADER_HEIGHT + CLUSTER_PADDING},left=${CLUSTER_PADDING},bottom=${CLUSTER_PADDING},right=${CLUSTER_PADDING}]`
+    'elk.padding': { top: HEADER_HEIGHT + CLUSTER_PADDING, horizontal: CLUSTER_PADDING, bottom: CLUSTER_PADDING }
 };
 
 /**
