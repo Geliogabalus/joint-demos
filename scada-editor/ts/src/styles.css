@@ -1,0 +1,23 @@
+/*
+ * JointJS+ styles and the theme of its components (`minimal`, see `theme/theme-minimal.css` and `main.ts`) go into cascade
+ * layers: the styles of the app below are not layered, so they win over them whatever the specificity of the selectors.
+ */
+@import '@joint/plus/joint-plus.css' layer(joint);
+@import './theme/theme-minimal.css' layer(theme);
+
+/* The design tokens (of the theme, of the app) and the colors of the shapes, both with their dark scheme */
+@import './theme/tokens.css';
+@import './tokens.css';
+@import './shapes/shapes.css';
+
+/* The styles of the app, by its parts */
+@import './layout.css';
+@import './toolbar/toolbar.css';
+@import './palette/palette.css';
+@import './inspector/inspector.css';
+@import './canvas/canvas.css';
+@import './runtime/runtime.css';
+@import './list/list.css';
+@import './log/log.css';
+@import './find/find.css';
+@import './phone.css';

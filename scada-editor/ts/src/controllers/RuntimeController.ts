@@ -1,0 +1,54 @@
+import type { dia } from '@joint/plus';
+import Controller from './Controller';
+import type { App } from '../app';
+import { isControlEvent } from '../runtime/controls';
+import { zoomToFit } from '../actions';
+import { getScreen, isScreenShown } from '../canvas/screen';
+import { isPhone, setNativeZoom } from '../phone';
+
+/**
+ * The runtime mode: the diagram can't be changed, but the equipment
+ * can be operated with its controls. Dragging anywhere pans the canvas
+ * (unless it shows the screen: it fills the canvas, also when the window is resized).
+ */
+export default class RuntimeController extends Controller {
+
+    onWindowResize = () => onWindowResize(this.app);
+
+    startListening(): void {
+        const { paper, graph } = this.app;
+
+        // The controls are shown in every mode (see `ControlsController`),
+        // operated in this one.
+        this.listenTo(paper, {
+            'cell:pointerdown': onCellPointerdown
+        });
+        window.addEventListener('resize', this.onWindowResize);
+        // On a phone, a screen (fitted to it: small, not zoomed nor panned on the canvas) zoomed with the page by a pinch
+        if (isPhone() && getScreen(graph)) {
+            setNativeZoom(paper, true);
+        }
+    }
+
+    stopListening(): void {
+        super.stopListening();
+        window.removeEventListener('resize', this.onWindowResize);
+        setNativeZoom(this.app.paper, false);
+    }
+}
+
+function onCellPointerdown(app: App, _cellView: dia.CellView, evt: dia.Event) {
+    const { scroller } = app;
+    // Dragging the slider (or anything else on a control) must not pan the canvas.
+    if (isControlEvent(evt) || isScreenShown(app)) {
+        return;
+    }
+    scroller.startPanning(evt);
+}
+
+/** The window resized: the screen shown fills the canvas again */
+function onWindowResize(app: App) {
+    if (isScreenShown(app)) {
+        zoomToFit(app);
+    }
+}

@@ -1,0 +1,98 @@
+import type { dia } from '@joint/plus';
+import { dataOf } from '../shapes/common/data';
+
+/*
+ * The properties of the equipment as the plant knows them: by the tag of an element and the name of a property
+ * (`power`, `open`, `level`, `value`), a plain value - a number or a boolean, nothing of the shapes. Here the diagram
+ * binds them to its elements: what a property of an element of a type is (what it shows now, read as such a value) and
+ * what a new value of it sets on the element. An element can have several properties (each set on its own).
+ */
+
+/** The value of a property: a reading (a number), a state (on / off, open / closed) */
+export type TagValue = number | boolean;
+
+interface Property {
+    /** The value the element shows now */
+    read: (cell: dia.Cell) => TagValue;
+    /** The changes of the element showing the value (its attributes by their paths) */
+    write: (cell: dia.Cell, value: TagValue) => Record<string, unknown>;
+}
+
+/** Running or not (a pump, a motor, an alarm) */
+const power: Property = {
+    read: element => Boolean(dataOf(element, 'power')),
+    write: (_element, value) => ({ 'data/power': value ? 1 : 0 })
+};
+
+/** Open or closed (a valve, a breaker) */
+const open: Property = {
+    read: element => Boolean(dataOf(element, 'open')),
+    write: (_element, value) => ({ 'data/open': Boolean(value) })
+};
+
+/** How much open, in % (a control valve) */
+const opening: Property = {
+    read: element => Math.round((dataOf<number>(element, 'open') ?? 0) * 100),
+    write: (_element, value) => ({ 'data/open': Number(value) / 100 })
+};
+
+/** A level, in % (a tank, a battery) */
+const level: Property = {
+    read: element => dataOf<number>(element, 'level') ?? 0,
+    write: (_element, value) => ({ 'data/level': Number(value) })
+};
+
+/** A value on a scale (a gauge, a thermometer) */
+const scaled: Property = {
+    read: element => dataOf<number>(element, 'value') ?? 0,
+    write: (_element, value) => ({ 'data/value': Number(value) })
+};
+
+/** A reading shown as a number (a display, a meter): with one decimal */
+const reading: Property = {
+    read: element => Number(dataOf(element, 'value')) || 0,
+    write: (_element, value) => ({ 'data/value': Number(Number(value).toFixed(1)) })
+};
+
+const RUNNING = [
+    'Pump', 'Compressor', 'Fan', 'Blower', 'Motor', 'Turbine', 'ConveyorBelt', 'Conveyor', 'AirCooler', 'MixingTank',
+    'BucketElevator', 'Crusher', 'Mill', 'RotaryKiln', 'Reactor', 'Boiler', 'Generator', 'DieselGenerator', 'WindTurbine', 'Beacon'
+];
+
+const SWITCHED = ['HandValve', 'ButterflyValve', 'BallValve', 'SolenoidValve', 'GateValve', 'CircuitBreaker', 'Disconnector'];
+
+/** The properties of each type of element, by their names */
+const properties: Record<string, Record<string, Property>> = {
+    Panel: { level },
+    BatteryBank: { level },
+    FuelTank: { level },
+    Thermometer: { value: scaled },
+    PressureGauge: { value: scaled },
+    FlowMeter: { value: reading },
+    Display: { value: reading },
+    ElectricMeter: { value: reading },
+    ControlValve: { open: opening },
+    ...Object.fromEntries(SWITCHED.map(type => [type, { open }])),
+    ...Object.fromEntries(RUNNING.map(type => [type, { power }]))
+};
+
+/** The names of the properties of the element (none if the plant knows nothing of it) */
+export function propertiesOf(cell: dia.Cell): string[] {
+    return Object.keys(properties[cell.get('type')] ?? {});
+}
+
+/** The value of the property of the element: what it shows now (`undefined` if it has no such property) */
+export function readProperty(cell: dia.Cell, name: string): TagValue | undefined {
+    return properties[cell.get('type')]?.[name]?.read(cell);
+}
+
+/** Show the value of the property on the element; `false` if it has no such property */
+export function writeProperty(cell: dia.Cell, name: string, value: TagValue, options?: dia.Cell.Options): boolean {
+    const property = properties[cell.get('type')]?.[name];
+    if (!property) {
+        return false;
+    }
+    // Replaced (an array of values not merged into the one before)
+    Object.entries(property.write(cell, value)).forEach(([path, change]) => cell.prop(path, change, { ...options, rewrite: true }));
+    return true;
+}

@@ -1,0 +1,72 @@
+import type { dia } from '@joint/plus';
+import Controller from './Controller';
+import type { App } from '../app';
+import { inspectSelection } from '../inspector/inspector';
+import { isSettingsOpen } from '../inspector/settings';
+import { hideNewToolsOverPanel } from '../inspector/panel';
+import Screen from '../shapes/models/diagram/Screen';
+import Group from '../shapes/models/diagram/Group';
+import { showSelection, updateGroupBadge } from '../canvas/selection';
+
+/**
+ * Shows the selected cells on the paper (a single selected cell with its tools, see `showSelection()`) and in the
+ * inspector panel (see `inspectSelection()`). Active in every mode.
+ */
+export default class SelectionController extends Controller {
+
+    startListening(): void {
+        const { selection, graph, history } = this.app;
+
+        this.listenTo(selection, 'add reset', onSelectionChange);
+        this.listenTo(selection, 'remove', onSelectionRemove);
+        this.listenTo(graph, 'add remove change:parent', onMembersChange);
+        this.listenTo(history, 'stack:undo stack:redo', onHistoryChange);
+    }
+}
+
+/** Cells selected, the selection replaced */
+function onSelectionChange(app: App) {
+    const { paper, selection } = app;
+    showSelection(paper, selection);
+    hideNewToolsOverPanel(app);
+    inspectSelection(app);
+}
+
+/** The inspector of several cells shows their values (of a stand-in, see `selection-inspector.ts`): after an undo, a redo, again */
+function onHistoryChange(app: App) {
+    const { selection } = app;
+    if (selection.length > 1 || Group.isGroup(selection.at(0))) {
+        inspectSelection(app);
+    }
+}
+
+/** The screen removed while it is edited (switched off, deleted, undone): the settings stay open. */
+function onSelectionRemove(app: App, cell: dia.Cell) {
+    const { graph, paper, selection } = app;
+    // Removed from the diagram (`ui.Selection` drops each removed cell): with more of it removed (the members of a
+    // group, ...), the last one updates
+    if (selection.toArray().some(selected => !graph.getCell(selected.id))) {
+        return;
+    }
+    showSelection(paper, selection);
+    hideNewToolsOverPanel(app);
+    inspectSelection(app, Screen.isScreen(cell) && isSettingsOpen(app));
+}
+
+/**
+ * A cell added to a selected group or removed from it (an undo, a redo, ...): its badge counts the members
+ * again, its inspector lists them again.
+ */
+function onMembersChange(app: App, cell: dia.Cell) {
+    const { paper, selection } = app;
+    const parents = [cell.get('parent'), cell.previous('parent')];
+    const groups = selection.filter(selected => Group.isGroup(selected) && parents.includes(String(selected.id)));
+    if (groups.length === 0) {
+        return;
+    }
+    groups.forEach(group => updateGroupBadge(paper, group));
+    if (selection.length === 1) {
+        inspectSelection(app);
+    }
+}
+

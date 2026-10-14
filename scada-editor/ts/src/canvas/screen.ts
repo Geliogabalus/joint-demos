@@ -1,0 +1,93 @@
+import { type dia, g, V } from '@joint/plus';
+import type { App } from '../app';
+import { GRID_SIZE, Mode } from '../const';
+import Screen from '../shapes/models/diagram/Screen';
+import { PAN_CURSOR } from './config';
+
+/*
+ * The screen of the diagram (see `Screen`): in the runtime mode, the canvas shows it only,
+ * fitted to the canvas (see `zoomToFit()`) - not scrolled, panned nor zoomed, without the navigator.
+ */
+
+const CLIP_ID = 'screen-clip';
+
+/** The screen of the diagram, if it has one */
+export function getScreen(graph: dia.Graph): Screen | undefined {
+    return graph.getElements().find(Screen.isScreen);
+}
+
+/** Add a screen in the middle of what the canvas shows (in one step of the history). */
+export function addScreen(app: App): Screen {
+    const screen = new Screen();
+    const { width, height } = screen.size();
+    const center = app.scroller.getVisibleArea().center();
+    const { x, y } = new g.Point(center.x - width / 2, center.y - height / 2).snapToGrid(GRID_SIZE);
+    screen.position(x, y);
+    app.graph.addCell(screen);
+    return screen;
+}
+
+/** Whether the canvas shows the screen only (the runtime mode of a diagram with a screen) */
+export function isScreenShown(app: App): boolean {
+    return app.el.dataset.screen === 'shown';
+}
+
+/** Show the screen only, clipped (see `canvas.css` for the rest): on entering the runtime mode. */
+export function showScreen(app: App): void {
+    const screen = app.mode === Mode.Runtime ? getScreen(app.graph) : undefined;
+    if (!screen) {
+        return;
+    }
+    const { paper } = app;
+    // The cells are clipped by the screen: in the coordinates of the diagram (the layers are transformed).
+    const clipPath = V('clipPath', { id: CLIP_ID }).append(V('rect', screen.getBBox().toJSON()));
+    V(paper.defs).append(clipPath);
+    paper.layers.setAttribute('clip-path', `url(#${CLIP_ID})`);
+    app.el.dataset.screen = 'shown';
+    // Fitted to the window: nothing pans (the cells: see `canvas.css`)
+    app.scroller.setCursor('default');
+    revealToolbar(app.toolbar.el);
+    holdToolbarWhilePressed(app.toolbar.el);
+}
+
+/**
+ * The toolbar stays down while a press started on it lasts (see `canvas.css`): at the top of a full screen
+ * the system takes the pointer (the menu bar, the exit of the full screen), the toolbar would not be hovered
+ * and slide up under the button being clicked. The toolbar is created again for each mode (the listener with it).
+ */
+function holdToolbarWhilePressed(el: HTMLElement): void {
+    if (el.dataset.held) {
+        return;
+    }
+    el.dataset.held = 'true';
+    el.addEventListener('pointerdown', () => {
+        el.classList.add('pressed');
+        window.addEventListener('pointerup', () => el.classList.remove('pressed'), { once: true });
+    });
+}
+
+// How long the toolbar stays down when the pointer isn't on it (ms)
+const REVEAL_DURATION = 1500;
+
+/**
+ * The toolbar slides up (see `canvas.css`) once the pointer leaves it: it is created again for the mode,
+ * under the pointer that pressed Run, but not hovered until the pointer moves.
+ */
+function revealToolbar(el: HTMLElement): void {
+    el.classList.add('revealed');
+    const conceal = () => el.classList.remove('revealed');
+    el.addEventListener('mouseleave', conceal, { once: true });
+    window.setTimeout(() => {
+        if (!el.matches(':hover')) {
+            conceal();
+        }
+    }, REVEAL_DURATION);
+}
+
+export function hideScreen(app: App): void {
+    const { paper } = app;
+    paper.layers.removeAttribute('clip-path');
+    paper.defs.querySelector(`#${CLIP_ID}`)?.remove();
+    delete app.el.dataset.screen;
+    app.scroller.setCursor(PAN_CURSOR);
+}

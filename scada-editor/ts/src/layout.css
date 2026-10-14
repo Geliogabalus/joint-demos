@@ -1,0 +1,73 @@
+/* The layout of the app: the page, the panels */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Read by screen readers, not shown (the heading of the page) */
+.scada-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+/* Layout */
+
+.scada-app {
+    display: flex;
+    flex-direction: column;
+    /* The space visible (`dvh`: without the browser's bars - iOS Safari's `vh` is the height with them hidden) */
+    height: 100dvh;
+}
+
+.scada-main {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+.scada-canvas {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/*
+ * Runtime mode: the palette and the undo / redo buttons don't exist in it (see `App.enterMode()`),
+ * the inspector is closed - its empty panel is not in the way of the canvas.
+ */
+.scada-app[data-mode="runtime"] .scada-inspector-panel {
+    display: none;
+}
+
+/* Panels (palette and inspector) */
+
+/* Hidden by the buttons of the toolbar (see `App.setPanelShown()`): the canvas takes their place. */
+.scada-app[data-palette="hidden"] .scada-stencil-panel,
+.scada-app[data-inspector="hidden"] .scada-inspector-panel {
+    display: none;
+}
+
+.scada-stencil-panel,
+.scada-inspector-panel {
+    position: relative;
+    flex-shrink: 0;
+    overflow: auto;
+    background: var(--background);
+}

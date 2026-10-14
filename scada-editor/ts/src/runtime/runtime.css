@@ -1,0 +1,176 @@
+/* The runtime mode: the energized circuits, the controls of the equipment (see `controls.ts`) */
+
+/* The energized circuits in the runtime mode (see `ElectricalController`): a live wire, a lit lamp, a glowing heater */
+
+[data-type="Wire"].energized [joint-selector="line"] {
+    stroke: var(--shape-wire-live);
+}
+
+[data-type="Lamp"].energized [joint-selector="glass"] {
+    fill: var(--shape-lamp-on);
+    filter: drop-shadow(0 0 8px var(--shape-lamp-on));
+}
+
+/* The lamps of the cabinets */
+:is([data-type="Switchgear"], [data-type="MotorControlCenter"]).energized [joint-selector^="lamp"] {
+    fill: #22c55e;
+    filter: drop-shadow(0 0 3px #22c55e);
+}
+
+[data-type="Heater"].energized [joint-selector="coil"] {
+    stroke: var(--shape-heater-on);
+    filter: drop-shadow(0 0 4px var(--shape-heater-on));
+}
+
+/* Controls of the equipment (see `controls.ts`) */
+
+.scada-control-switch,
+.scada-control-checkbox,
+.scada-control-slider {
+    /* In the room for the focus ring (see below) */
+    margin: 4px;
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    color: var(--foreground);
+    font: 13px var(--font);
+}
+
+.scada-control-switch,
+.scada-control-slider {
+    padding: 3px;
+}
+
+/* Open / closed: a segmented control, the state the valve is in pressed (see `controls.ts`) */
+.scada-control-switch {
+    display: flex;
+    gap: 2px;
+    background: var(--muted);
+}
+
+.scada-control-switch-on,
+.scada-control-switch-off {
+    flex: 1;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--muted-foreground);
+    font: 500 12px var(--font);
+    cursor: pointer;
+}
+
+.scada-control-switch-on:hover,
+.scada-control-switch-off:hover {
+    color: var(--foreground);
+}
+
+.scada-control-switch [aria-pressed="true"] {
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    color: var(--foreground);
+    font-weight: 600;
+    cursor: default;
+}
+
+.scada-control-checkbox-input {
+    width: 14px;
+    height: 14px;
+    margin: 2px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.scada-control-slider-input {
+    width: 100%;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.scada-control-slider-output {
+    display: block;
+    width: 100%;
+    color: var(--muted-foreground);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+/*
+ * Focused from the keyboard: a ring around the control (on the focused button of a switch), clear of it - in the room
+ * its `foreignObject` has around it (`FOCUS_MARGIN` in `controls.ts`); the room is not a part of the control (the
+ * pointer goes through it to the element)
+ */
+.scada-control {
+    overflow: visible;
+    pointer-events: none;
+}
+
+.scada-control > * {
+    pointer-events: auto;
+}
+
+.scada-control-inert .scada-control > * {
+    pointer-events: none;
+}
+
+.scada-control-checkbox :focus-visible,
+.scada-control-slider :focus-visible {
+    outline: none;
+}
+
+.scada-control-switch :focus-visible,
+.scada-control-checkbox:has(:focus-visible),
+.scada-control-slider:has(:focus-visible) {
+    outline: 2px solid var(--selection);
+    outline-offset: 2px;
+}
+
+/* A button of a switch: in the switch, between its padding and the other button */
+.scada-control-switch :focus-visible {
+    outline-offset: 0;
+}
+
+/* The pointer resting on the canvas in the runtime mode (see `CursorController`): no cursor - over the controls and the clickable cells too */
+.joint-paper-scroller.scada-cursor-hidden,
+.joint-paper-scroller.scada-cursor-hidden * {
+    cursor: none !important;
+}
+
+/* While editing (see `controls.ts`): not operated - the pointer goes through to the element (selected, moved), dimmed */
+.scada-control-inert {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* A command sent, not done by the plant yet (see `controls.ts`): a busy cursor, the state asked for pulsing */
+.scada-control-pending,
+.scada-control-pending * {
+    cursor: progress !important;
+}
+
+.scada-control-switch [data-pending] {
+    background: color-mix(in srgb, var(--selection) 25%, transparent);
+    color: var(--foreground);
+    animation: scada-control-pending-pulse 0.8s ease-in-out infinite alternate;
+}
+
+.scada-control-pending .scada-control-checkbox {
+    outline: 2px solid var(--selection);
+    outline-offset: 1px;
+    animation: scada-control-pending-pulse 0.8s ease-in-out infinite alternate;
+}
+
+.scada-control-pending .scada-control-slider-output {
+    color: var(--selection);
+    animation: scada-control-pending-pulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes scada-control-pending-pulse {
+    from { opacity: 1; }
+    to { opacity: 0.45; }
+}

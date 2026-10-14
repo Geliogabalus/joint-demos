@@ -1,0 +1,212 @@
+/* The canvas: the cursors, the screen, the minimap, the context menu, the texts of the diagram, the marked cell, the pings */
+
+/*
+ * The cursor on the canvas: the blank canvas is panned (`grab` of the paper scroller, see `config.ts`),
+ * a cell is moved in the edit mode; in the runtime mode it is panned too (its controls have their own cursors).
+ */
+.scada-app[data-mode="edit"] .scada-diagram .joint-cell {
+    cursor: move;
+}
+
+/* Moving the selected cells only (the settings, see `App.setMoveSelectedOnly()`): another one is panned, as the blank canvas */
+.scada-app[data-mode="edit"][data-move="selected"] .scada-diagram .joint-cell:not(.scada-selected) {
+    cursor: grab;
+}
+
+/* A selected link: a drag of its line adds a vertex (the vertices tool, see `tools.ts`) - as the tool's own cursor */
+.scada-app[data-mode="edit"] .scada-diagram .joint-link.scada-selected [joint-selector="line"] {
+    cursor: cell;
+}
+
+/* `Cmd` / `Ctrl` held (see `EditController`): a drag copies the cell - over the cursors above */
+.scada-app[data-mode="edit"][data-drag="copy"] .scada-diagram .joint-cell:is(.joint-element, .joint-link),
+.scada-app[data-mode="edit"][data-drag="copy"] .scada-diagram .joint-link.scada-selected [joint-selector="line"] {
+    cursor: copy;
+}
+
+/* The runtime mode: a drag of a cell pans the canvas (see `RuntimeController`) - as the blank canvas */
+.scada-app[data-mode="runtime"] .scada-diagram .joint-cell {
+    cursor: grab;
+}
+
+/* The screen shown: fitted to the window, a drag pans nothing (see `screen.ts`) - nothing to grab */
+.scada-app[data-mode="runtime"][data-screen="shown"] .scada-diagram .joint-cell {
+    cursor: default;
+}
+
+/* The log open: a click on a cell with an ID filters the log by it (see `LogController`, the class: `log-hooks.ts`) */
+.scada-app[data-mode="runtime"] .scada-diagram .joint-cell.scada-log-clickable {
+    cursor: pointer;
+}
+
+/*
+ * The cells the log's filter leaves out (see `canvas/dim.ts`): gray and flat - in the background; faded in Safari, which
+ * does not draw the CSS filter functions on the SVG elements (an SVG filter there: blurred, or a straight pipe gone)
+ */
+.scada-diagram .scada-grayed {
+    filter: grayscale(1) contrast(0.5) brightness(1.15);
+}
+
+.scada-diagram .scada-faded {
+    opacity: 0.25;
+}
+
+/*
+ * The screen (see `Screen`): out of the way unless the settings are open (see `settings.ts`),
+ * without its frame and name in the runtime mode, where the canvas shows it only (see `screen.ts`).
+ */
+
+.scada-screen-editable [data-type="Screen"] [joint-selector="edge"] {
+    pointer-events: stroke;
+    cursor: move;
+}
+
+/* Its name and size above it: a handle too (its whole box, not the glyphs only) */
+.scada-screen-editable [data-type="Screen"] [joint-selector="label"] {
+    pointer-events: bounding-box;
+    cursor: move;
+}
+
+.scada-app[data-mode="runtime"] [data-type="Screen"] [joint-selector="body"] {
+    stroke: none;
+}
+
+.scada-app[data-mode="runtime"] [data-type="Screen"] [joint-selector="label"] {
+    display: none;
+}
+
+.scada-app[data-screen="shown"] .joint-paper-scroller {
+    overflow: hidden;
+}
+
+/* The screen takes the whole window: the toolbar slides up out of the way, and down when the pointer comes to the top. */
+.scada-app[data-screen="shown"] {
+    position: relative;
+}
+
+.scada-app[data-screen="shown"] .scada-toolbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(-100%);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+/* The strip at the top of the window it is shown from (a part of the toolbar: hovered with it) */
+.scada-app[data-screen="shown"] .scada-toolbar::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 32px;
+}
+
+/*
+ * Down while hovered, focused from the keyboard (not a clicked button), just shown (see `revealToolbar()`)
+ * or pressed (see `holdToolbarWhilePressed()`)
+ */
+.scada-app[data-screen="shown"] .scada-toolbar:is(:hover, :has(:focus-visible), .revealed, .pressed) {
+    transform: translateY(0);
+    box-shadow: var(--shadow-md);
+}
+
+.scada-app[data-screen="shown"] :is(.scada-navigator-panel, .scada-toolbar [data-group="zoom"]) {
+    display: none;
+}
+
+/* Navigator: a minimap in the bottom right corner of the canvas */
+
+.scada-navigator-panel {
+    /* Center the minimap (what the navigator does for an element it creates itself). */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    z-index: 2;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--overlay);
+    backdrop-filter: blur(4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* The screen in the minimap (see `navigator.ts`): its frame as on the canvas, its area tinted */
+.joint-navigator .scada-navigator-screen {
+    fill: color-mix(in srgb, var(--shape-screen) 12%, transparent);
+    stroke: var(--shape-screen);
+    /* Solid: dashes would scale down with the minimap; the width not (a CSS rule overrides the attribute) */
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+
+/* A line above the item: the items in groups */
+.joint-context-toolbar [data-separated] {
+    position: relative;
+    margin-top: 9px;
+}
+
+.joint-context-toolbar [data-separated]::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -4px;
+    left: -4px;
+    border-top: 1px solid var(--border);
+}
+
+.joint-context-toolbar :is(kbd, .scada-hint) {
+    color: var(--muted-foreground);
+    font: 12px var(--font);
+    font-variant-numeric: tabular-nums;
+}
+
+/* The texts of the diagram (every paper: the canvas, the palette, the navigator) in the font of the app (Inter, see
+   `main.ts`) - not the readings in monospace. A rule of CSS: over the `font-family` attribute of the shapes. */
+.joint-paper text:not([font-family="monospace"]) {
+    font-family: var(--font);
+}
+
+/* The canvas in a gradient (the style of the diagram, see `diagram-style.ts`): behind the paper, on the viewport
+   (it stays while the paper is scrolled, zoomed, resized) */
+:root[data-canvas-gradient] .joint-paper-scroller {
+    background: linear-gradient(var(--canvas-gradient-top), var(--canvas-gradient-bottom));
+}
+
+
+/* The arrow of the marked cell (see `marker.ts`): dropped onto it once, as it is shown */
+.scada-marker-arrow {
+    animation: scada-marker-drop 0.35s cubic-bezier(0.3, 1.4, 0.6, 1);
+}
+
+@keyframes scada-marker-drop {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* A locked element (see `lock.ts`): as if it weren't there - the pointer on what is below it */
+.scada-locked {
+    pointer-events: none;
+}
+
+/* An element pinged (see `ping.ts`): two rings out of its middle, growing and fading */
+.scada-ping circle {
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0;
+    animation: scada-ping 1s cubic-bezier(0.2, 0.6, 0.3, 1) forwards;
+}
+
+.scada-ping circle + circle {
+    animation-delay: 0.35s;
+}
+
+@keyframes scada-ping {
+    0% { opacity: 0.7; transform: scale(0.3); }
+    60% { opacity: 0.5; }
+    100% { opacity: 0; transform: scale(1); }
+}

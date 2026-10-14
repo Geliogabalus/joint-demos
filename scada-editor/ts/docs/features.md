@@ -1,0 +1,100 @@
+# SCADA Editor - Features
+
+How to use them: [user guide](user-guide.md). How they are built: [developer notes](dev-notes.md).
+
+The editor builds process diagrams (P&ID-style or high-performance HMI screens) and runs them: the diagram shows live plant data, the operator controls the equipment from it. In the demo the plant is simulated.
+
+## Editing
+
+- Drag and drop from a searchable palette, on a grid, with snaplines.
+- Move selected shapes only (the default on a tablet): a drag on any other shape pans the canvas.
+- The editor settings (snaplines, the In Use group, Move selected shapes only) and the theme remembered in the browser.
+- Find a shape by its ID, name or kind, in both modes; several selected as in a list of files (`Cmd`, `Shift`, the arrows).
+- The palette and the inspector hidden for more room (the toolbar, `Cmd + \`); the diagram stays in place.
+- Select by click, region, all, elements only, connections only, or same type.
+- Move, resize, rotate, flip (the shapes that face a way); labels stay horizontal, on the side you choose.
+- Copy, cut, paste, delete, undo, redo.
+- Context menus on shapes and on the canvas.
+- The equipment and the conveyors get an ID (`P-101`, `HV-101`, `CNV-101`) - the tag the plant uses; a picture or a background shape only when asked (it can stand for equipment). Pipes, wires and texts have none.
+- An inspector for one shape or several at once, with help on its fields.
+
+## Shapes
+
+88 shapes in 11 groups (the palette has the table twice: with and without a header):
+
+| Group | Shapes |
+|---|---|
+| Piping | 10 - pipe, join, tee, cross, elbow, end cap, manifold, Y-strainer, orifice plate, zone |
+| Rotating Equipment | 6 - pump, compressor, fan, blower, motor, turbine |
+| Valves | 8 - control, hand, check, butterfly, ball, solenoid, relief, gate |
+| Process | 10 - heat exchanger, filter, separator, boiler, reactor, distillation column, cyclone, air cooler, scrubber, bag filter |
+| Storage | 9 - liquid, conical, mixing, spherical, horizontal and fuel tank, silo, hopper, water tower |
+| Bulk Handling | 6 - conveyor, belt conveyor, bucket elevator, crusher, mill, rotary kiln |
+| Structures | 2 - stack, cooling tower |
+| Instruments | 10 - instrument bubble, pressure gauge, level panel, thermometer, flow meter, beacon, display, signal line, label, arrow |
+| Electrical | 20 - diesel generator, wind turbine, solar array, power transformer, switchgear, motor control center, battery bank, generator, transformer, busbar, battery, breaker, disconnector, fuse, surge arrester, ground, lamp, heater, meter, wire |
+| Charts | 6 - table (2 variants), line chart, bar chart, donut chart, gauge chart |
+| Background | 2 - rectangle, ellipse |
+
+Also: uploaded images (saved with the diagram, with an opacity), Favorites, and the shapes In Use.
+
+## Connections
+
+- Pipes connect to pipe stubs, wires to electrical terminals only, signal lines and arrows to shapes, conveyors to bulk equipment.
+- Routing straight, orthogonal or curved; pipe and arrow sizes (an arrow's arrowheads with it), wire thicknesses; split a connection, insert a join into a pipe, disconnect a shape.
+- A pipe takes the color of its medium.
+
+![The Microgrid example: wires between the terminals of the generators, the breakers, the busbar and the loads](images/microgrid.png)
+
+## Layers and groups
+
+- Five layers (background, pipes, equipment, instruments, foreground): pipes stay under the equipment, gauges over their tanks.
+- Lock a shape (a background image, a frame): the pointer goes through it, links don't connect to it, the minimap leaves it out; unlocked from the canvas menu.
+- Bring to front / send to back within a layer; move a covered shape into the layer above.
+- Groups: nested, moved, copied, deleted and styled as a whole.
+
+## Styling
+
+- Finish: shaded metal, or flat (the ISA-101 high-performance HMI look) - per shape or for the diagram.
+
+  <img src="images/finish-shaded.png" alt="The shaded finish" width="49%" /> <img src="images/finish-flat.png" alt="The flat finish" width="49%" />
+
+- Color, outline, accent - per shape or for the diagram; theme colors adapt to light and dark.
+- Outline width (thin, normal, thick) for outlined shapes and pipe borders - per shape or for the diagram.
+- Labels for the whole diagram: the names, the IDs (as a P&ID) or both (as an operator display); their size and color (theme colors only).
+- Canvas color - a light and a dark tone, flat or in a subtle gradient; the grid follows.
+- Light and dark themes: the editor, the canvas and the shapes, switched in the toolbar (the system setting by default).
+
+![The Cement Plant example in the dark theme](images/editor-dark.png)
+
+## Run mode
+
+- Live data: gauges, levels, displays, charts and tables follow the plant; levels glide to new values.
+- Animations: pumps spin, belts carry, flames burn, liquid flows, live circuits light up. "Alarms only" keeps the steady plant still (ISA-101); also used when the system asks for reduced motion.
+- The mouse cursor hidden while it rests on the canvas (a display watched, not operated).
+- Operator controls: start / stop, open / close, a valve position slider. A control sends a command and shows it pending until the plant confirms the new state (request / confirm, as in real SCADA systems).
+- A log of plant messages (time, tag, property, value): filter by text, direction or element - the rest of the diagram grayed; ping elements as their messages arrive. Hold `Alt` (both modes) to see the IDs on the diagram.
+
+![Run mode with the log](images/run-mode-log.png)
+
+## Integration
+
+- The plant sends tag, property, value (`FM-101 value 18.6`); the editor sends commands the same way. Nothing about the drawings is part of it.
+- Any transport (WebSocket, MQTT, OPC UA, REST): replace the simulated plant with an adapter. Example in the [developer notes](dev-notes.md#connecting-a-plant).
+- The UI theme of the editor's JointJS+ components is reusable in other apps.
+- Screen readers: named toolbar buttons, swatches and run-mode controls (by the equipment's ID), page landmarks; the text contrast at least 4.5:1 in both schemes.
+
+## Files and examples
+
+- New, open, save as JSON (with images, favorites, style); export a WebP image of the screen or the whole diagram.
+- A screen (e.g. 1920 × 1080) marks what the operator sees; in run mode it fills the window.
+- On a phone: the examples run (no editing); the toolbar simplified.
+- Three examples: a boiler house, a microgrid (wind, solar, diesel, battery on a 400 V bus), a cement plant.
+
+## Not included
+
+- A real plant connection - the adapter is yours to write.
+- Users, authentication, permissions.
+- A historian - no data beyond what the charts show during a run.
+- An alarm system - no alarm list, acknowledgement or escalation.
+- Server-side storage - files are opened from and saved to the user's computer.

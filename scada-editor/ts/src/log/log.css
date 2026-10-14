@@ -1,0 +1,98 @@
+/* The log of the messages between the diagram and the plant (see `LogView.ts`; the filter, the rows: `list/list.css`) */
+
+.scada-log-intro {
+    margin: 0;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted-foreground);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.scada-log-options {
+    display: flex;
+    gap: 20px;
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--border);
+}
+
+.scada-log-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--foreground);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.scada-log-option input {
+    margin: 0;
+    accent-color: var(--primary);
+}
+
+/* The direction of the messages, next to the filter: a segmented control (as the switch of a valve) */
+.scada-log-directions {
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border-radius: var(--radius-md);
+    background: var(--muted);
+}
+
+.scada-log-directions button {
+    padding: 0 8px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: none;
+    color: var(--muted-foreground);
+    font: 500 12px var(--font);
+    cursor: pointer;
+}
+
+.scada-log-directions button:hover {
+    color: var(--foreground);
+}
+
+.scada-log-directions [aria-pressed="true"] {
+    background: var(--background);
+    box-shadow: var(--shadow-xs);
+    color: var(--foreground);
+}
+
+/* The messages: in a monospace font; a row marked - the messages of the tag clicked (its element highlighted) */
+.scada-log .scada-list-rows {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.scada-log-message {
+    display: grid;
+    grid-template-columns: auto 74px 64px 48px 1fr;
+    gap: 10px;
+    padding: 3px 14px;
+}
+
+.scada-log-time {
+    color: var(--muted-foreground);
+}
+
+.scada-log-message[data-kind="update"] .scada-log-kind {
+    /* Toward the text: readable on a marked row too (4.5:1) */
+    color: color-mix(in oklab, var(--selection), var(--foreground) 30%);
+}
+
+.scada-log-message[data-kind="command"] .scada-log-kind {
+    color: color-mix(in oklab, var(--color-amber), var(--foreground) 30%);
+}
+
+.scada-log-tag {
+    font-weight: 600;
+}
+
+.scada-log-property {
+    color: var(--muted-foreground);
+}
+
+.scada-log-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
