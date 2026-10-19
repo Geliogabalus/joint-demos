@@ -271,8 +271,41 @@ export function openSettings(app: App): void {
         getFieldValue: attribute => (isColorField(attribute) ? getColorFieldValue(attribute) : undefined)
     });
     inspector.render();
+    renderDisplaySizeButton(app, inspector);
     el.append(inspector.el);
     showInPanel(app, new SettingsPanel(app, el, inspector, listener));
+}
+
+/**
+ * A button under the size of the screen: the size of the display the editor is on (the run mode in the full screen
+ * shows the screen on it - fitted, so its proportions are what matter), with a screen only.
+ */
+function renderDisplaySizeButton(app: App, inspector: ui.Inspector): void {
+    const heightField = inspector.el.querySelector('[data-field="size/height"]');
+    if (!heightField) {
+        return;
+    }
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'scada-display-size-button';
+    button.textContent = 'Fit to display';
+    // The size it sets: of the display when the settings were opened. The window moved to another display
+    // since, it shows the old size - the click reads the current one (and shows it).
+    const sizeEl = document.createElement('span');
+    const showSize = () => {
+        sizeEl.textContent = `${window.screen.width} × ${window.screen.height}`;
+    };
+    showSize();
+    button.append(sizeEl);
+    button.addEventListener('click', () => {
+        showSize();
+        getScreen(app.graph)?.resize(window.screen.width, window.screen.height);
+    });
+    // In a field of the inspector: its padding; hidden with the height (see `inspector.css`)
+    const field = document.createElement('div');
+    field.className = 'field scada-display-size-field';
+    field.append(button);
+    heightField.after(field);
 }
 
 export function closeSettings(app: App): void {
