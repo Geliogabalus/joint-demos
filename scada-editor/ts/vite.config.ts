@@ -2,7 +2,9 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
     server: {
-        // Allow the dev server to be reached through an ngrok tunnel (its subdomain changes every session).
-        allowedHosts: ['.ngrok-free.app']
+        // Run the dev server on a fixed port (Vite defaults to 5173).
+        // port: 3000,
+        // Allow the dev server to be reached through another host name.
+        // allowedHosts: ['.example.com']
     }
 });
