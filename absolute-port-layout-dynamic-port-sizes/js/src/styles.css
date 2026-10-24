@@ -1,3 +1,31 @@
+:root {
+    color-scheme: light;
+    --font: system-ui, sans-serif;
+
+    /* The grid's dot color is set in JS (see paper.setGrid in main.js),
+       since JointJS draws the grid itself rather than reading it from here. */
+    --canvas-color: #e4ebf1;
+
+    --surface: #ffffff;
+    --surface-hover: #f1f5f9;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --shadow-soft: rgba(15, 23, 42, 0.12);
+    --accent: #2563eb;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    font-family: var(--font);
+    color: var(--text);
+    background: var(--canvas-color);
+}
+
 #paper-container {
     position: absolute;
     right: 0;
@@ -5,29 +33,62 @@
     left: 0;
     bottom: 0;
     overflow: scroll;
+    background-color: var(--canvas-color);
 }
 
-#logo {
+/* Port hover feedback: a `:hover` pseudo-class can't be expressed as a static
+   JS attr, so this one bit of styling lives here instead of in main.js (this
+   color should match COLORS.port.stroke there). */
+.joint-port:hover [joint-selector='portBody'] {
+    fill: #2563eb;
+}
+
+/* `link-target`: toggled by JointJS's own highlighter (see the paper's
+   `highlighting` option in main.js) while a link is being dragged, on any
+   valid drop target and on the one under the pointer. */
+.joint-type-standard-ellipse.link-target [joint-selector='body'],
+.joint-type-standard-ellipse [joint-selector='body'].link-target {
+    fill: #eff6ff;
+    stroke: #3b82f6;
+    stroke-width: 2;
+    stroke-dasharray: 5 3;
+    filter: none;
+}
+
+.toolbar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+    display: flex;
+    gap: 6px;
+}
+
+.toolbar button {
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 1px 3px var(--shadow-soft);
+    transition: background-color 100ms ease-out, border-color 100ms ease-out;
+}
+
+.toolbar button:hover {
+    background: var(--surface-hover);
+    border-color: var(--accent);
+}
+
+#logo-link {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    background-color: #ffffff;
-    border: 1px solid #d3d3d3;
-    padding: 5px;
-    box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.3);
 }
 
-button {
-    width: 100px;
-    position: absolute;
-}
-
-#add-port {
-    top: 10px;
-    left: 10px;
-}
-
-#remove-port {
-    top: 10px;
-    left: 120px;
+#logo {
+    display: block;
 }
