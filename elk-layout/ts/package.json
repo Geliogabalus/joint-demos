@@ -15,8 +15,8 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@joint/core": "file:../../.packages/joint-core.tgz",
-    "@joint/layout-elk": "file:../../.packages/joint-layout-elk.tgz"
+    "@joint/core": "4.3.4",
+    "@joint/layout-elk": "4.3.4"
   },
   "devDependencies": {
     "copy-webpack-plugin": "9.0.1",
@@ -29,8 +29,5 @@
     "webpack": "5.98.0",
     "webpack-cli": "6.0.1",
     "webpack-dev-server": "5.2.0"
-  },
-  "overrides": {
-    "@joint/core": "file:../../.packages/joint-core.tgz"
   }
 }
